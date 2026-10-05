@@ -159,7 +159,7 @@
   gap: 3px 8px;
   margin-right: 16px;
   font-family: var(--font-mono);
-  font-size: var(--fs-12);
+  font-size: var(--fs-15);
   line-height: 1;
   color: var(--ueg-text);
   user-select: none;
@@ -212,7 +212,6 @@
 .ueg-era-clock .era-unit {
   margin-left: 2px;
   color: var(--ueg-amber);
-  font-size: var(--fs-9);
   align-self: center;
 }
 @media (prefers-reduced-motion: reduce) {
