@@ -722,3 +722,155 @@
   }
 }
 
+
+/* ============================================================
+   任务状态带：左时间面板（当前纪元时间 + 抵达倒计时）/ 右四指标卡
+   ============================================================ */
+
+.ueg-homev2-page .v2-mission {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
+  gap: 16px;
+}
+
+.ueg-homev2-page .v2-mission-time {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 24px;
+  border: 1px solid var(--ueg-border);
+  background:
+    linear-gradient(rgba(120, 151, 164, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(120, 151, 164, 0.03) 1px, transparent 1px),
+    rgba(8, 17, 24, 0.84);
+  background-size: 32px 32px, 32px 32px, auto;
+  clip-path: polygon(16px 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%, 0 16px);
+}
+
+.ueg-homev2-page .v2-mission-block {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ueg-homev2-page .v2-mission-block + .v2-mission-block {
+  padding-top: 16px;
+  border-top: 1px solid var(--ueg-border);
+}
+
+.ueg-homev2-page .v2-mission-label {
+  font-family: var(--font-mono);
+  font-size: var(--fs-9);
+  letter-spacing: 0.14em;
+  color: var(--ueg-mist);
+}
+
+.ueg-homev2-page .v2-mission-clock {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 12px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-26);
+  font-variant-numeric: tabular-nums;
+  color: var(--ueg-bone);
+}
+
+.ueg-homev2-page .v2-mission-clock.is-countdown .era-num {
+  color: #e6cfac;
+}
+
+.ueg-homev2-page .v2-mission-clock .era-group {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 2px;
+}
+
+.ueg-homev2-page .v2-mission-clock .era-unit {
+  font-size: var(--fs-12);
+  color: var(--ueg-amber);
+}
+
+.ueg-homev2-page .v2-mission-cards {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.ueg-homev2-page .v2-mission-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px;
+  border: 1px solid var(--ueg-border);
+  background: rgba(8, 17, 24, 0.84);
+  clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px);
+  transition: border-color 0.25s, background-color 0.25s;
+}
+
+.ueg-homev2-page .v2-mission-card:hover {
+  border-color: var(--ueg-card-border-hover);
+  background: var(--ueg-card-bg-hover);
+}
+
+.ueg-homev2-page .v2-mission-label {
+  font-family: var(--font-mono);
+  font-size: var(--fs-9);
+  letter-spacing: 0.12em;
+  color: var(--ueg-mist);
+}
+
+.ueg-homev2-page .v2-mission-value {
+  font-family: var(--font-mono);
+  font-size: var(--fs-21);
+  font-weight: 700;
+  color: var(--ueg-bone);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ueg-homev2-page .v2-mission-bar {
+  height: 4px;
+  background: rgba(175, 199, 209, 0.12);
+  overflow: hidden;
+}
+
+.ueg-homev2-page .v2-mission-bar span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--ueg-steel), var(--ueg-amber));
+}
+
+.ueg-homev2-page .v2-mission-sub {
+  margin-top: auto;
+  font-size: var(--fs-9);
+  line-height: 1.5;
+  color: var(--ueg-text-sub);
+}
+
+@media (max-width: 1395px) {
+  .ueg-homev2-page .v2-mission-value {
+    font-size: var(--fs-18);
+  }
+}
+
+@media (max-width: 1180px) {
+  .ueg-homev2-page .v2-mission {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .ueg-homev2-page .v2-mission-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .ueg-homev2-page .v2-mission-cards {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .ueg-homev2-page .v2-mission-clock {
+    font-size: var(--fs-20);
+  }
+}

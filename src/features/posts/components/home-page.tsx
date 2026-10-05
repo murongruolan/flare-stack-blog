@@ -167,6 +167,175 @@ function HeroV2({ images, fallbackImage }: {
   );
 }
 
+/* ---------- 任务状态带：时间面板 + 四指标卡 ---------- */
+
+// 航程设定：纪元 2058 年启航，航程 2500 年
+const JOURNEY_LAUNCH_ERA_YEAR = 2058;
+const JOURNEY_DURATION_YEARS = 2500;
+
+function pad2(value: number) {
+  return String(value).padStart(2, "0");
+}
+
+function MissionMetric({
+  label,
+  value,
+  sub,
+  progress,
+}: {
+  label: string;
+  value: string;
+  sub: string;
+  progress?: number;
+}) {
+  return (
+    <article className="v2-mission-card">
+      <span className="v2-mission-label">{label}</span>
+      <span className="v2-mission-value">{value}</span>
+      {progress !== undefined ? (
+        <span className="v2-mission-bar">
+          <span style={{ width: `${progress}%` }} />
+        </span>
+      ) : null}
+      <span className="v2-mission-sub">{sub}</span>
+    </article>
+  );
+}
+
+function MissionStrip() {
+  // 服务端与客户端时间不一致会破坏水合，挂载后再起表
+  const [now, setNow] = useState<Date | null>(null);
+  useEffect(() => {
+    setNow(new Date());
+    const timer = window.setInterval(() => setNow(new Date()), 1000);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  const dash = "--";
+  let dateText: Array<{ digits: string; unit: string }>;
+  let clockText: Array<{ digits: string; unit: string }>;
+  let remainText: Array<{ digits: string; unit: string }>;
+  if (now) {
+    const era = new Date(now);
+    era.setFullYear(now.getFullYear() + ERA_YEAR_OFFSET);
+    dateText = [
+      { digits: String(era.getFullYear()), unit: "Y" },
+      { digits: pad2(era.getMonth() + 1), unit: "M" },
+      { digits: pad2(era.getDate()), unit: "D" },
+    ];
+    clockText = [
+      { digits: pad2(era.getHours()), unit: "H" },
+      { digits: pad2(era.getMinutes()), unit: "M" },
+      { digits: pad2(era.getSeconds()), unit: "S" },
+    ];
+    const arrival = new Date(era);
+    arrival.setFullYear(JOURNEY_LAUNCH_ERA_YEAR + JOURNEY_DURATION_YEARS);
+    // 固定目标日（纪元 4558 年元旦），倒计时的时分秒才会真实走动
+    arrival.setMonth(0);
+    arrival.setDate(1);
+    arrival.setHours(0, 0, 0, 0);
+    const remainingMs = Math.max(0, arrival.getTime() - era.getTime());
+    const totalDays = Math.floor(remainingMs / 86_400_000);
+    const years = Math.floor(totalDays / 365.2425);
+    const days = Math.floor(totalDays - years * 365.2425);
+    const hours = Math.floor((remainingMs % 86_400_000) / 3_600_000);
+    const minutes = Math.floor((remainingMs % 3_600_000) / 60_000);
+    const seconds = Math.floor((remainingMs % 60_000) / 1000);
+    remainText = [
+      { digits: String(years), unit: "Y" },
+      { digits: pad2(days), unit: "D" },
+      { digits: pad2(hours), unit: "H" },
+      { digits: pad2(minutes), unit: "M" },
+      { digits: pad2(seconds), unit: "S" },
+    ];
+  } else {
+    dateText = [
+      { digits: dash.repeat(4), unit: "Y" },
+      { digits: dash.repeat(2), unit: "M" },
+      { digits: dash.repeat(2), unit: "D" },
+    ];
+    clockText = [
+      { digits: dash.repeat(2), unit: "H" },
+      { digits: dash.repeat(2), unit: "M" },
+      { digits: dash.repeat(2), unit: "S" },
+    ];
+    remainText = [
+      { digits: dash.repeat(4), unit: "Y" },
+      { digits: dash.repeat(2), unit: "D" },
+      { digits: dash.repeat(2), unit: "H" },
+      { digits: dash.repeat(2), unit: "M" },
+      { digits: dash.repeat(2), unit: "S" },
+    ];
+  }
+
+  return (
+    <section className="v2-mission" aria-label="UEG 全球任务状态">
+      <div className="v2-mission-time">
+        <div className="v2-mission-block">
+          <span className="v2-mission-label">CURRENT ERA TIME · 当前时间</span>
+          <span className="v2-mission-clock">
+            {dateText.map((part, index) => (
+              <span key={index} className="era-group">
+                <span className="era-num">{part.digits}</span>
+                <span className="era-unit">{part.unit}</span>
+              </span>
+            ))}
+          </span>
+          <span className="v2-mission-clock">
+            {clockText.map((part, index) => (
+              <span key={index} className="era-group">
+                <span className="era-num">{part.digits}</span>
+                <span className="era-unit">{part.unit}</span>
+              </span>
+            ))}
+          </span>
+        </div>
+        <div className="v2-mission-block">
+          <span className="v2-mission-label">
+            ARRIVAL COUNTDOWN · 到达新家园剩余时间
+          </span>
+          <span className="v2-mission-clock is-countdown">
+            {remainText.map((part, index) => (
+              <span key={index} className="era-group">
+                <span className="era-num">{part.digits}</span>
+                <span className="era-unit">{part.unit}</span>
+              </span>
+            ))}
+          </span>
+          <span className="v2-mission-sub">
+            DESTINATION · 比邻星 PROXIMA CENTAURI · {JOURNEY_DURATION_YEARS}
+            -YEAR VOYAGE
+          </span>
+        </div>
+      </div>
+
+      <div className="v2-mission-cards">
+        <MissionMetric
+          label="POPULATION / 全球人口"
+          value="41.2 亿"
+          sub="全球登记居民 · 地下城 884 座"
+        />
+        <MissionMetric
+          label="CITY LOAD / 地下城负荷"
+          value="78.4%"
+          sub="安全阈值 85% · 状态正常"
+          progress={78.4}
+        />
+        <MissionMetric
+          label="ENGINES / 运行发动机"
+          value="9,751"
+          sub="全网 10,000 台 · 巡检 249 台"
+        />
+        <MissionMetric
+          label="SPEED / 航行速度"
+          value="1,572 km/s"
+          sub="0.52% 光速 · 加速阶段"
+        />
+      </div>
+    </section>
+  );
+}
+
 /* ---------- 通告栏 V2：与 Hero 等高、行基线统一 ---------- */
 
 function NoticePanelV2({ notices }: { notices: Array<PostItem> }) {
@@ -302,6 +471,8 @@ export function HomePage({ posts }: { posts: Array<PostItem> }) {
         <HeroV2 images={heroImages} fallbackImage={fallbackImage} />
         <NoticePanelV2 notices={noticePosts} />
       </div>
+
+      <MissionStrip />
 
       <section className="v2-features">
         <FeatureCardV2
