@@ -39,7 +39,7 @@
 }
 .ueg-home-page .footer-main {
   display: grid;
-  grid-template-columns: max-content minmax(0, 1fr) 420px 220px;
+  grid-template-columns: max-content minmax(0, 1fr) 420px;
   align-items: center;
   gap: 12px 24px;
   min-height: 58px;
@@ -51,9 +51,9 @@
   gap: 10px;
 }
 .ueg-home-page .footer-logo {
-  width: 34px;
-  height: 34px;
-  flex: 0 0 34px;
+  width: 48px;
+  height: 48px;
+  flex: 0 0 48px;
 }
 .ueg-home-page .footer-logo svg,
 .ueg-home-page .footer-logo img {
@@ -65,7 +65,7 @@
   line-height: 1.15;
 }
 .ueg-home-page .footer-brand-name .ueg {
-  font-size: var(--fs-16);
+  font-size: var(--fs-22);
   font-weight: 700;
   letter-spacing: 0.11em;
   color: var(--ueg-bone);
@@ -74,7 +74,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px 26px;
-  font-size: var(--fs-9);
+  font-size: var(--fs-15);
   color: var(--ueg-mist);
 }
 .ueg-home-page .footer-links a {
@@ -90,7 +90,7 @@
 .ueg-home-page .footer-motto {
   position: relative;
   text-align: center;
-  font-size: var(--fs-10);
+  font-size: var(--fs-15);
   color: #7c8e94;
 }
 .ueg-home-page .footer-motto::before,
@@ -104,24 +104,6 @@
   background: var(--ueg-steel);
   opacity: 0.75;
 }
-.ueg-home-page .footer-status {
-  border-left: 1px solid var(--ueg-border);
-  padding-left: 22px;
-  font-size: var(--fs-9);
-  letter-spacing: 0.06em;
-  color: var(--ueg-steel);
-}
-.ueg-home-page .footer-status .ok {
-  margin-left: 4px;
-  color: #3fc7ad;
-}
-.ueg-home-page .footer-clock {
-  display: block;
-  margin-top: 5px;
-  font-family: var(--font-mono);
-  font-size: var(--fs-8);
-  color: var(--ueg-disabled);
-}
 .ueg-home-page .footer-bottom {
   display: flex;
   align-items: center;
@@ -129,7 +111,7 @@
   gap: 10px 20px;
   min-height: 33px;
   border-top: 1px solid rgba(120, 151, 164, 0.13);
-  font-size: var(--fs-8);
+  font-size: var(--fs-11);
   color: #5d7078;
 }
 .ueg-home-page .footer-legal {
@@ -151,7 +133,7 @@
 
 @media (max-width: 1180px) {
   .ueg-home-page .footer-main {
-    grid-template-columns: max-content minmax(0, 1fr) max-content;
+    grid-template-columns: max-content minmax(0, 1fr);
   }
   .ueg-home-page .footer-motto {
     display: none;
@@ -163,11 +145,6 @@
     grid-template-columns: minmax(0, 1fr);
     gap: 12px;
     padding: 14px 0;
-  }
-  .ueg-home-page .footer-status {
-    border-left: 0;
-    border-top: 1px solid var(--ueg-border);
-    padding: 12px 0 0;
   }
 }
 
