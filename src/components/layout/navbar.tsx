@@ -1,12 +1,11 @@
 import { Link, useLocation } from "@tanstack/react-router";
 import { Menu, UserIcon, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { ThemeToggle } from "@/components/common/theme-toggle";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { NavOption, UserInfo } from "./layout-props";
 import { MOTION, useMotionPresence } from "@/hooks/use-motion";
 import { m } from "@/paraglide/messages";
-import { LanguageSwitcher } from "./language-switcher";
+import { UegEraClock } from "./ueg-era-clock";
 import { PublicNavLink } from "./public-nav-link";
 import { MobileMenu } from "./mobile-menu";
 import "./navbar.css";
@@ -182,23 +181,8 @@ export function Navbar({
           </nav>
 
           <div className="ueg-tools">
-            <Link
-              to="/search"
-              className="ueg-search"
-              aria-label={m.nav_search()}
-            >
-              <span>{m.ueg_nav_search_ph()}</span>
-              <span className="ueg-search-mag" aria-hidden="true" />
-            </Link>
-            <div className="ueg-net" aria-hidden="true">
-              {m.ueg_net_name()}
-              <br />
-              <span className="dot" />
-              {m.ueg_net_online()}
-            </div>
-            <LanguageSwitcher className="ueg-lang" />
+            <UegEraClock className="ueg-era-clock" />
             <div className="public-desktop-tools">
-              <ThemeToggle className="public-tool-button" />
               <button
                 type="button"
                 className="public-tool-button public-account-trigger"
