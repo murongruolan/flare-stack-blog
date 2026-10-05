@@ -167,7 +167,7 @@ function HeroV2({ images, fallbackImage }: {
   );
 }
 
-/* ---------- 任务状态带：时间面板 + 四指标卡 ---------- */
+/* ---------- 任务状态带：六段单行（时间×2 + 指标×4） ---------- */
 
 // 航程设定：纪元 2058 年启航，航程 2500 年
 const JOURNEY_LAUNCH_ERA_YEAR = 2058;
@@ -189,7 +189,7 @@ function MissionMetric({
   progress?: number;
 }) {
   return (
-    <article className="v2-mission-card">
+    <div className="v2-mission-cell">
       <span className="v2-mission-label">{label}</span>
       <span className="v2-mission-value">{value}</span>
       {progress !== undefined ? (
@@ -198,7 +198,7 @@ function MissionMetric({
         </span>
       ) : null}
       <span className="v2-mission-sub">{sub}</span>
-    </article>
+    </div>
   );
 }
 
@@ -212,18 +212,15 @@ function MissionStrip() {
   }, []);
 
   const dash = "--";
-  let dateText: Array<{ digits: string; unit: string }>;
-  let clockText: Array<{ digits: string; unit: string }>;
-  let remainText: Array<{ digits: string; unit: string }>;
+  let eraGroups: Array<{ digits: string; unit: string }>;
+  let remainGroups: Array<{ digits: string; unit: string }>;
   if (now) {
     const era = new Date(now);
     era.setFullYear(now.getFullYear() + ERA_YEAR_OFFSET);
-    dateText = [
+    eraGroups = [
       { digits: String(era.getFullYear()), unit: "Y" },
       { digits: pad2(era.getMonth() + 1), unit: "M" },
       { digits: pad2(era.getDate()), unit: "D" },
-    ];
-    clockText = [
       { digits: pad2(era.getHours()), unit: "H" },
       { digits: pad2(era.getMinutes()), unit: "M" },
       { digits: pad2(era.getSeconds()), unit: "S" },
@@ -241,7 +238,7 @@ function MissionStrip() {
     const hours = Math.floor((remainingMs % 86_400_000) / 3_600_000);
     const minutes = Math.floor((remainingMs % 3_600_000) / 60_000);
     const seconds = Math.floor((remainingMs % 60_000) / 1000);
-    remainText = [
+    remainGroups = [
       { digits: String(years), unit: "Y" },
       { digits: pad2(days), unit: "D" },
       { digits: pad2(hours), unit: "H" },
@@ -249,81 +246,68 @@ function MissionStrip() {
       { digits: pad2(seconds), unit: "S" },
     ];
   } else {
-    dateText = [
-      { digits: dash.repeat(4), unit: "Y" },
-      { digits: dash.repeat(2), unit: "M" },
-      { digits: dash.repeat(2), unit: "D" },
-    ];
-    clockText = [
-      { digits: dash.repeat(2), unit: "H" },
-      { digits: dash.repeat(2), unit: "M" },
-      { digits: dash.repeat(2), unit: "S" },
-    ];
-    remainText = [
-      { digits: dash.repeat(4), unit: "Y" },
-      { digits: dash.repeat(2), unit: "D" },
-      { digits: dash.repeat(2), unit: "H" },
-      { digits: dash.repeat(2), unit: "M" },
-      { digits: dash.repeat(2), unit: "S" },
-    ];
+    eraGroups = ["Y", "M", "D", "H", "M", "S"].map((unit) => ({
+      digits: dash.repeat(unit === "Y" ? 4 : 2),
+      unit,
+    }));
+    remainGroups = ["Y", "D", "H", "M", "S"].map((unit) => ({
+      digits: dash.repeat(unit === "Y" ? 4 : 2),
+      unit,
+    }));
   }
+
+  const renderGroups = (groups: Array<{ digits: string; unit: string }>) =>
+    groups.map((part, index) => (
+      <span key={index} className="era-group">
+        <span className="era-num">{part.digits}</span>
+        <span className="era-unit">{part.unit}</span>
+      </span>
+    ));
 
   return (
     <section className="v2-mission" aria-label="UEG 全球任务状态">
-      <div className="v2-mission-time">
-        <div className="v2-mission-block">
-          <span className="v2-mission-label">CURRENT ERA TIME · 当前时间</span>
-          <span className="v2-mission-clock">
-            {[...dateText, ...clockText].map((part, index) => (
-              <span key={index} className="era-group">
-                <span className="era-num">{part.digits}</span>
-                <span className="era-unit">{part.unit}</span>
-              </span>
-            ))}
-          </span>
-        </div>
-        <div className="v2-mission-block">
-          <span className="v2-mission-label">
-            ARRIVAL COUNTDOWN · 到达新家园剩余时间
-          </span>
-          <span className="v2-mission-clock is-countdown">
-            {remainText.map((part, index) => (
-              <span key={index} className="era-group">
-                <span className="era-num">{part.digits}</span>
-                <span className="era-unit">{part.unit}</span>
-              </span>
-            ))}
-          </span>
-          <span className="v2-mission-sub">
-            DESTINATION · 比邻星 PROXIMA CENTAURI · {JOURNEY_DURATION_YEARS}
-            -YEAR VOYAGE
-          </span>
-        </div>
+      <div className="v2-mission-cell">
+        <span className="v2-mission-label">CURRENT ERA TIME · 当前时间</span>
+        <span
+          className="v2-mission-clock"
+          role="timer"
+          aria-label="UEG 纪元时间"
+        >
+          {renderGroups(eraGroups)}
+        </span>
       </div>
-
-      <div className="v2-mission-cards">
-        <MissionMetric
-          label="POPULATION / 全球人口"
-          value="41.2 亿"
-          sub="全球登记居民 · 地下城 884 座"
-        />
-        <MissionMetric
-          label="CITY LOAD / 地下城负荷"
-          value="78.4%"
-          sub="安全阈值 85% · 状态正常"
-          progress={78.4}
-        />
-        <MissionMetric
-          label="ENGINES / 运行发动机"
-          value="9,751"
-          sub="全网 10,000 台 · 巡检 249 台"
-        />
-        <MissionMetric
-          label="SPEED / 航行速度"
-          value="1,572 km/s"
-          sub="0.52% 光速 · 加速阶段"
-        />
+      <div className="v2-mission-cell">
+        <span className="v2-mission-label">
+          ARRIVAL COUNTDOWN · 到达新家园剩余时间
+        </span>
+        <span className="v2-mission-clock is-countdown">
+          {renderGroups(remainGroups)}
+        </span>
+        <span className="v2-mission-sub">
+          比邻星 PROXIMA CENTAURI · {JOURNEY_DURATION_YEARS}-YEAR VOYAGE
+        </span>
       </div>
+      <MissionMetric
+        label="POPULATION · 全球人口"
+        value="41.2 亿"
+        sub="全球登记居民 · 地下城 884 座"
+      />
+      <MissionMetric
+        label="CITY LOAD · 地下城综合负荷"
+        value="78.4%"
+        sub="安全阈值 85% · 状态正常"
+        progress={78.4}
+      />
+      <MissionMetric
+        label="ENGINES · 运行发动机"
+        value="9,751"
+        sub="全网 10,000 台 · 巡检 249 台"
+      />
+      <MissionMetric
+        label="SPEED · 航行速度"
+        value="1,572 km/s"
+        sub="0.52% 光速 · 加速阶段"
+      />
     </section>
   );
 }

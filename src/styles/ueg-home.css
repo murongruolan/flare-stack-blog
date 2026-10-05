@@ -725,40 +725,30 @@
 
 
 /* ============================================================
-   任务状态带：左时间面板（当前纪元时间 + 抵达倒计时）/ 右指标容器
-   两列与 .v2-features 等宽；时间单行排布，宽不足时自然换行
+   任务状态带：六段单行（时间×2 + 指标×4），1px 缝隙透出分隔线
    ============================================================ */
 
 .ueg-homev2-page .v2-mission {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
-}
-
-.ueg-homev2-page .v2-mission-time {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 24px;
+  /* 列宽按内容配比：两个时间格最宽，指标格依数值收窄 */
+  grid-template-columns: 1.25fr 1.12fr 0.72fr 0.78fr 0.7fr 0.95fr;
+  gap: 1px;
   border: 1px solid var(--ueg-border);
-  background:
-    linear-gradient(rgba(120, 151, 164, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(120, 151, 164, 0.03) 1px, transparent 1px),
-    rgba(8, 17, 24, 0.84);
-  background-size: 32px 32px, 32px 32px, auto;
+  background: var(--ueg-border); /* 1px 缝隙透出即分隔线，任意列数自动成形 */
   clip-path: polygon(16px 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%, 0 16px);
 }
 
-.ueg-homev2-page .v2-mission-block {
+.ueg-homev2-page .v2-mission-cell {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
+  padding: 16px 18px;
+  background: #0b151e;
+  transition: background-color 0.25s;
 }
 
-.ueg-homev2-page .v2-mission-block + .v2-mission-block {
-  padding-top: 16px;
-  border-top: 1px solid var(--ueg-border);
+.ueg-homev2-page .v2-mission-cell:hover {
+  background: #0e1a24;
 }
 
 .ueg-homev2-page .v2-mission-label {
@@ -772,10 +762,10 @@
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
-  gap: 6px 12px;
+  gap: 4px 6px;
   max-width: 100%;
   font-family: var(--font-mono);
-  font-size: var(--fs-26);
+  font-size: var(--fs-15);
   font-variant-numeric: tabular-nums;
   color: var(--ueg-bone);
 }
@@ -791,49 +781,12 @@
 }
 
 .ueg-homev2-page .v2-mission-clock .era-unit {
-  font-size: var(--fs-12);
   color: var(--ueg-amber);
-}
-
-/* 右侧：四指标同一容器，内部细分隔线 */
-.ueg-homev2-page .v2-mission-cards {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  border: 1px solid var(--ueg-border);
-  background: rgba(8, 17, 24, 0.84);
-  clip-path: polygon(16px 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%, 0 16px);
-}
-
-.ueg-homev2-page .v2-mission-card {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 20px 24px;
-  transition: background-color 0.25s;
-}
-
-/* 十字分隔线：右列竖线、下行横线 */
-.ueg-homev2-page .v2-mission-card:nth-child(even) {
-  border-left: 1px solid var(--ueg-border);
-}
-
-.ueg-homev2-page .v2-mission-card:nth-child(n + 3) {
-  border-top: 1px solid var(--ueg-border);
-}
-
-.ueg-homev2-page .v2-mission-card:hover {
-  background: var(--ueg-card-bg-hover);
-}
-
-.ueg-homev2-page .v2-mission-card .v2-mission-label {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .ueg-homev2-page .v2-mission-value {
   font-family: var(--font-mono);
-  font-size: var(--fs-21);
+  font-size: var(--fs-20);
   font-weight: 700;
   color: var(--ueg-bone);
   font-variant-numeric: tabular-nums;
@@ -862,31 +815,13 @@
 }
 
 @media (max-width: 1395px) {
-  .ueg-homev2-page .v2-mission-value {
-    font-size: var(--fs-18);
-  }
-}
-
-@media (max-width: 1180px) {
   .ueg-homev2-page .v2-mission {
-    grid-template-columns: minmax(0, 1fr);
-  }
-  .ueg-homev2-page .v2-mission-cards {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
-@media (max-width: 560px) {
-  .ueg-homev2-page .v2-mission-cards {
-    grid-template-columns: minmax(0, 1fr);
-  }
-  .ueg-homev2-page .v2-mission-card:nth-child(even) {
-    border-left: 0;
-  }
-  .ueg-homev2-page .v2-mission-card:nth-child(n + 2) {
-    border-top: 1px solid var(--ueg-border);
-  }
-  .ueg-homev2-page .v2-mission-clock {
-    font-size: var(--fs-20);
+@media (max-width: 720px) {
+  .ueg-homev2-page .v2-mission {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
