@@ -8,6 +8,8 @@ export function getContentTypeFromKey(key: string): string | undefined {
     gif: "image/gif",
     svg: "image/svg+xml",
     avif: "image/avif",
+    json: "application/json",
+    glb: "model/gltf-binary",
   };
   return contentTypes[extension || ""];
 }
