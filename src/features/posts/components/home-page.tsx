@@ -274,15 +274,7 @@ function MissionStrip() {
         <div className="v2-mission-block">
           <span className="v2-mission-label">CURRENT ERA TIME · 当前时间</span>
           <span className="v2-mission-clock">
-            {dateText.map((part, index) => (
-              <span key={index} className="era-group">
-                <span className="era-num">{part.digits}</span>
-                <span className="era-unit">{part.unit}</span>
-              </span>
-            ))}
-          </span>
-          <span className="v2-mission-clock">
-            {clockText.map((part, index) => (
+            {[...dateText, ...clockText].map((part, index) => (
               <span key={index} className="era-group">
                 <span className="era-num">{part.digits}</span>
                 <span className="era-unit">{part.unit}</span>

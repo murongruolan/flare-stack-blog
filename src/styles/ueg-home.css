@@ -724,12 +724,13 @@
 
 
 /* ============================================================
-   任务状态带：左时间面板（当前纪元时间 + 抵达倒计时）/ 右四指标卡
+   任务状态带：左时间面板（当前纪元时间 + 抵达倒计时）/ 右指标容器
+   两列与 .v2-features 等宽；时间单行排布，宽不足时自然换行
    ============================================================ */
 
 .ueg-homev2-page .v2-mission {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
 }
 
@@ -762,7 +763,7 @@
 .ueg-homev2-page .v2-mission-label {
   font-family: var(--font-mono);
   font-size: var(--fs-9);
-  letter-spacing: 0.14em;
+  letter-spacing: 0.12em;
   color: var(--ueg-mist);
 }
 
@@ -771,6 +772,7 @@
   flex-wrap: wrap;
   align-items: baseline;
   gap: 6px 12px;
+  max-width: 100%;
   font-family: var(--font-mono);
   font-size: var(--fs-26);
   font-variant-numeric: tabular-nums;
@@ -792,10 +794,13 @@
   color: var(--ueg-amber);
 }
 
+/* 右侧：四指标同一容器，内部细分隔线 */
 .ueg-homev2-page .v2-mission-cards {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 16px;
+  border: 1px solid var(--ueg-border);
+  background: rgba(8, 17, 24, 0.84);
+  clip-path: polygon(16px 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%, 0 16px);
 }
 
 .ueg-homev2-page .v2-mission-card {
@@ -803,22 +808,22 @@
   flex-direction: column;
   gap: 10px;
   padding: 20px;
-  border: 1px solid var(--ueg-border);
-  background: rgba(8, 17, 24, 0.84);
-  clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px);
-  transition: border-color 0.25s, background-color 0.25s;
+  border-left: 1px solid var(--ueg-border);
+  transition: background-color 0.25s;
+}
+
+.ueg-homev2-page .v2-mission-card:first-child {
+  border-left: 0;
 }
 
 .ueg-homev2-page .v2-mission-card:hover {
-  border-color: var(--ueg-card-border-hover);
   background: var(--ueg-card-bg-hover);
 }
 
-.ueg-homev2-page .v2-mission-label {
-  font-family: var(--font-mono);
-  font-size: var(--fs-9);
-  letter-spacing: 0.12em;
-  color: var(--ueg-mist);
+.ueg-homev2-page .v2-mission-card .v2-mission-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .ueg-homev2-page .v2-mission-value {
@@ -864,11 +869,23 @@
   .ueg-homev2-page .v2-mission-cards {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+  .ueg-homev2-page .v2-mission-card:nth-child(odd) {
+    border-left: 0;
+  }
+  .ueg-homev2-page .v2-mission-card:nth-child(n + 3) {
+    border-top: 1px solid var(--ueg-border);
+  }
 }
 
 @media (max-width: 560px) {
   .ueg-homev2-page .v2-mission-cards {
     grid-template-columns: minmax(0, 1fr);
+  }
+  .ueg-homev2-page .v2-mission-card {
+    border-left: 0;
+  }
+  .ueg-homev2-page .v2-mission-card:nth-child(n + 2) {
+    border-top: 1px solid var(--ueg-border);
   }
   .ueg-homev2-page .v2-mission-clock {
     font-size: var(--fs-20);
