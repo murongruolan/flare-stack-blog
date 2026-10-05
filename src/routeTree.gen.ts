@@ -25,7 +25,6 @@ import { Route as PublicUserRouteRouteImport } from './routes/_public/_user/rout
 import { Route as PublicAboutRouteImport } from './routes/_public/about'
 import { Route as PublicEnginesRouteImport } from './routes/_public/engines'
 import { Route as PublicFriendLinksRouteImport } from './routes/_public/friend-links'
-import { Route as PublicHomeV2RouteImport } from './routes/_public/home-v2'
 import { Route as PublicNavigatorRouteImport } from './routes/_public/navigator'
 import { Route as PublicPolicyRouteImport } from './routes/_public/policy'
 import { Route as PublicPostsRouteImport } from './routes/_public/posts'
@@ -141,11 +140,6 @@ const PublicEnginesRoute = PublicEnginesRouteImport.update({
 const PublicFriendLinksRoute = PublicFriendLinksRouteImport.update({
   id: '/friend-links',
   path: '/friend-links',
-  getParentRoute: () => PublicRouteRoute,
-} as any)
-const PublicHomeV2Route = PublicHomeV2RouteImport.update({
-  id: '/home-v2',
-  path: '/home-v2',
   getParentRoute: () => PublicRouteRoute,
 } as any)
 const PublicNavigatorRoute = PublicNavigatorRouteImport.update({
@@ -365,7 +359,6 @@ export interface FileRoutesByFullPath {
   '/about': typeof PublicAboutRoute
   '/engines': typeof PublicEnginesRoute
   '/friend-links': typeof PublicFriendLinksRoute
-  '/home-v2': typeof PublicHomeV2Route
   '/navigator': typeof PublicNavigatorRoute
   '/policy': typeof PublicPolicyRoute
   '/posts': typeof PublicPostsRoute
@@ -417,7 +410,6 @@ export interface FileRoutesByTo {
   '/about': typeof PublicAboutRoute
   '/engines': typeof PublicEnginesRoute
   '/friend-links': typeof PublicFriendLinksRoute
-  '/home-v2': typeof PublicHomeV2Route
   '/navigator': typeof PublicNavigatorRoute
   '/policy': typeof PublicPolicyRoute
   '/posts': typeof PublicPostsRoute
@@ -474,7 +466,6 @@ export interface FileRoutesById {
   '/_public/about': typeof PublicAboutRoute
   '/_public/engines': typeof PublicEnginesRoute
   '/_public/friend-links': typeof PublicFriendLinksRoute
-  '/_public/home-v2': typeof PublicHomeV2Route
   '/_public/navigator': typeof PublicNavigatorRoute
   '/_public/policy': typeof PublicPolicyRoute
   '/_public/posts': typeof PublicPostsRoute
@@ -532,7 +523,6 @@ export interface FileRouteTypes {
     | '/about'
     | '/engines'
     | '/friend-links'
-    | '/home-v2'
     | '/navigator'
     | '/policy'
     | '/posts'
@@ -584,7 +574,6 @@ export interface FileRouteTypes {
     | '/about'
     | '/engines'
     | '/friend-links'
-    | '/home-v2'
     | '/navigator'
     | '/policy'
     | '/posts'
@@ -640,7 +629,6 @@ export interface FileRouteTypes {
     | '/_public/about'
     | '/_public/engines'
     | '/_public/friend-links'
-    | '/_public/home-v2'
     | '/_public/navigator'
     | '/_public/policy'
     | '/_public/posts'
@@ -809,13 +797,6 @@ declare module '@tanstack/react-router' {
       path: '/friend-links'
       fullPath: '/friend-links'
       preLoaderRoute: typeof PublicFriendLinksRouteImport
-      parentRoute: typeof PublicRouteRoute
-    }
-    '/_public/home-v2': {
-      id: '/_public/home-v2'
-      path: '/home-v2'
-      fullPath: '/home-v2'
-      preLoaderRoute: typeof PublicHomeV2RouteImport
       parentRoute: typeof PublicRouteRoute
     }
     '/_public/navigator': {
@@ -1135,7 +1116,6 @@ interface PublicRouteRouteChildren {
   PublicAboutRoute: typeof PublicAboutRoute
   PublicEnginesRoute: typeof PublicEnginesRoute
   PublicFriendLinksRoute: typeof PublicFriendLinksRoute
-  PublicHomeV2Route: typeof PublicHomeV2Route
   PublicNavigatorRoute: typeof PublicNavigatorRoute
   PublicPolicyRoute: typeof PublicPolicyRoute
   PublicPostsRoute: typeof PublicPostsRoute
@@ -1155,7 +1135,6 @@ const PublicRouteRouteChildren: PublicRouteRouteChildren = {
   PublicAboutRoute: PublicAboutRoute,
   PublicEnginesRoute: PublicEnginesRoute,
   PublicFriendLinksRoute: PublicFriendLinksRoute,
-  PublicHomeV2Route: PublicHomeV2Route,
   PublicNavigatorRoute: PublicNavigatorRoute,
   PublicPolicyRoute: PublicPolicyRoute,
   PublicPostsRoute: PublicPostsRoute,
