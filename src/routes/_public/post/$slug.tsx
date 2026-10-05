@@ -5,9 +5,16 @@ import katexCss from "katex/dist/katex.min.css?url";
 import { z } from "zod";
 import { NotFound } from "@/components/common/not-found";
 import { siteConfigQuery, siteDomainQuery } from "@/features/config/queries";
-import { PostPage } from "@/features/posts/components/post-page";
+import {
+  PostPage,
+  RELATED_LIMIT,
+} from "@/features/posts/components/post-page";
 import { PostPageSkeleton } from "@/features/posts/components/post-page-skeleton";
-import { adjacentPostsQuery, postBySlugQuery } from "@/features/posts/queries";
+import {
+  adjacentPostsQuery,
+  postBySlugQuery,
+  postsInfiniteQueryOptions,
+} from "@/features/posts/queries";
 import { jsonContentHasType } from "@/features/posts/utils/content";
 import {
   buildArticleJsonLd,
@@ -32,6 +39,14 @@ export const Route = createFileRoute("/_public/post/$slug")({
     ]);
 
     if (!post) throw notFound();
+
+    // Related reading for the sidebar; same category first, latest otherwise.
+    await context.queryClient.prefetchInfiniteQuery(
+      postsInfiniteQueryOptions({
+        categoryName: post.category?.name,
+        limit: RELATED_LIMIT,
+      }),
+    );
 
     return {
       post,
@@ -103,9 +118,10 @@ export const Route = createFileRoute("/_public/post/$slug")({
 
 function RouteComponent() {
   const { slug } = Route.useParams();
+  const { authorName } = Route.useLoaderData();
   const { data: post } = useSuspenseQuery(postBySlugQuery(slug));
 
   if (!post) throw notFound();
 
-  return <PostPage post={post} />;
+  return <PostPage post={post} authorName={authorName} />;
 }

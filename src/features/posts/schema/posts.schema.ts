@@ -71,7 +71,9 @@ export const PostListResponseSchema = z.object({
   items: z.array(PostItemSchema),
   nextCursor: z.number().nullable(),
 });
-export const HOME_POSTS_PER_PAGE = 8;
+// Homepage loads a wider slice so notices / trending / dynamics panels
+// each get their own content without pagination UI.
+export const HOME_POSTS_PER_PAGE = 16;
 export const HomePostsInputSchema = z.object({
   page: z.number().int().min(1).max(1_000_000).default(1),
 });

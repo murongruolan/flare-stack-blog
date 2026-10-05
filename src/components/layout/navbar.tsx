@@ -1,5 +1,5 @@
-import { Link, useLocation, useRouteContext } from "@tanstack/react-router";
-import { ChevronDown, Home, Menu, Search, UserIcon, X } from "lucide-react";
+import { Link, useLocation } from "@tanstack/react-router";
+import { Menu, UserIcon, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { ThemeToggle } from "@/components/common/theme-toggle";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -26,7 +26,6 @@ export function Navbar({
   logout,
   bannerHeightVh,
 }: NavbarProps) {
-  const { siteConfig } = useRouteContext({ from: "__root__" });
   const pathname = useLocation({ select: (location) => location.pathname });
   const [isHidden, setIsHidden] = useState(false);
   const [open, setOpen] = useState(false);
@@ -122,95 +121,145 @@ export function Navbar({
       data-hidden={isHidden && !open}
       onFocusCapture={() => setIsHidden(false)}
     >
-      <div id="fuwari-navbar" className="public-navbar fuwari-card-base">
-        <Link to="/" className="public-brand" title={siteConfig.title}>
-          <Home size={28} strokeWidth={1.5} />
-          <span>{siteConfig.title}</span>
-        </Link>
-        <nav className="public-desktop-links">
-          {navOptions.map((option) => (
-            <PublicNavLink
-              key={option.id}
-              option={option}
-              className="public-nav-link"
-              activeClassName="public-nav-active"
-            />
-          ))}
-        </nav>
-        <div className="public-nav-tools">
+      <div id="fuwari-navbar" className="public-navbar">
+        <div className="public-navbar-inner">
           <Link
-            to="/search"
-            className="public-nav-search"
-            aria-label={m.nav_search()}
+            to="/"
+            className="ueg-brand"
+            title={m.ueg_brand_full()}
+            aria-label={m.ueg_brand_full()}
           >
-            <Search size={18} strokeWidth={1.5} />
-            <span>{m.nav_search()}</span>
+            <span className="ueg-brand-logo">
+              <svg viewBox="0 0 100 100" aria-hidden="true">
+                <circle
+                  cx="50"
+                  cy="50"
+                  r="44"
+                  fill="none"
+                  stroke="#dce5e4"
+                  strokeWidth="2"
+                />
+                <circle
+                  cx="50"
+                  cy="50"
+                  r="39"
+                  fill="none"
+                  stroke="#7897a4"
+                  strokeWidth="1"
+                />
+                <path
+                  d="M28 56c13 11 31 14 46 1M27 43c15-10 32-11 46-1M31 35c13-7 27-6 38 0M32 65c12 7 24 8 36 2"
+                  fill="none"
+                  stroke="#b6cbd0"
+                  strokeWidth="2"
+                />
+                <path d="M50 22v56M22 50h56" stroke="#7897a4" strokeWidth="1" />
+                <path
+                  d="M38 44l12-9 12 9-4 16-8 6-8-6z"
+                  fill="none"
+                  stroke="#e2e0d6"
+                  strokeWidth="1.6"
+                />
+                <circle cx="50" cy="49" r="3" fill="#c18a55" />
+              </svg>
+            </span>
+            <span className="ueg-brand-name">
+              <span className="ueg">UEG</span>
+              <span className="en">UNITED EARTH GOVERNMENT</span>
+              <span className="cn">联合地球政府</span>
+            </span>
           </Link>
-          <div className="public-desktop-tools">
-            <ThemeToggle className="public-tool-button" />
-            <LanguageSwitcher className="public-tool-button" />
+
+          <nav className="ueg-nav">
+            {navOptions.map((option) => (
+              <PublicNavLink
+                key={option.id}
+                option={option}
+                className="ueg-nav-link"
+                activeClassName="ueg-nav-link ueg-nav-active"
+              />
+            ))}
+          </nav>
+
+          <div className="ueg-tools">
+            <Link
+              to="/search"
+              className="ueg-search"
+              aria-label={m.nav_search()}
+            >
+              <span>{m.ueg_nav_search_ph()}</span>
+              <span className="ueg-search-mag" aria-hidden="true" />
+            </Link>
+            <div className="ueg-net" aria-hidden="true">
+              {m.ueg_net_name()}
+              <br />
+              <span className="dot" />
+              {m.ueg_net_online()}
+            </div>
+            <LanguageSwitcher className="ueg-lang" />
+            <div className="public-desktop-tools">
+              <ThemeToggle className="public-tool-button" />
+              <button
+                type="button"
+                className="public-tool-button public-account-trigger"
+                aria-label={user ? m.profile_title() : m.nav_login_register()}
+                aria-expanded={open && !mobile}
+                aria-controls="public-navigation-panel"
+                onClick={(event) => toggle(event.currentTarget, false)}
+              >
+                {isLoading ? (
+                  <Skeleton className="w-7 h-7 rounded-lg" />
+                ) : user?.image ? (
+                  <img src={user.image} alt="" />
+                ) : (
+                  <UserIcon size={18} strokeWidth={1.5} />
+                )}
+              </button>
+            </div>
             <button
               type="button"
-              className="public-tool-button public-account-trigger"
-              aria-label={user ? m.profile_title() : m.nav_login_register()}
-              aria-expanded={open && !mobile}
+              className="public-tool-button public-mobile-trigger"
+              aria-label={open && mobile ? m.common_close() : m.common_open_menu()}
+              aria-expanded={open && mobile}
               aria-controls="public-navigation-panel"
-              onClick={(event) => toggle(event.currentTarget, false)}
+              onClick={(event) => toggle(event.currentTarget, true)}
             >
-              {isLoading ? (
-                <Skeleton className="w-7 h-7 rounded-lg" />
-              ) : user?.image ? (
-                <img src={user.image} alt="" />
+              {open && mobile ? (
+                <X size={20} strokeWidth={1.5} />
               ) : (
-                <UserIcon size={18} strokeWidth={1.5} />
+                <Menu size={20} strokeWidth={1.5} />
               )}
-              <ChevronDown size={12} />
             </button>
           </div>
-          <button
-            type="button"
-            className="public-tool-button public-mobile-trigger"
-            aria-label={
-              open && mobile ? m.common_close() : m.common_open_menu()
-            }
-            aria-expanded={open && mobile}
-            aria-controls="public-navigation-panel"
-            onClick={(event) => toggle(event.currentTarget, true)}
-          >
-            {open && mobile ? (
-              <X size={20} strokeWidth={1.5} />
-            ) : (
-              <Menu size={20} strokeWidth={1.5} />
-            )}
-          </button>
+
+          {present && (
+            <div
+              ref={panelRef}
+              id="public-navigation-panel"
+              className="public-navigation-panel fuwari-popover-motion"
+              data-state={open ? "open" : "closing"}
+              inert={!open}
+              aria-hidden={!open}
+              onBlur={(event) => {
+                if (
+                  event.relatedTarget &&
+                  !event.currentTarget.contains(event.relatedTarget as Node) &&
+                  event.relatedTarget !== triggerRef.current
+                )
+                  setOpen(false);
+              }}
+            >
+              <MobileMenu
+                navOptions={navOptions}
+                user={user}
+                isLoading={isLoading}
+                logout={logout}
+                mobile={mobile}
+                onClose={() => setOpen(false)}
+              />
+            </div>
+          )}
         </div>
-        {present && (
-          <div
-            ref={panelRef}
-            id="public-navigation-panel"
-            className="public-navigation-panel fuwari-popover-motion"
-            data-state={open ? "open" : "closing"}
-            inert={!open}
-            aria-hidden={!open}
-            onBlur={(event) => {
-              if (
-                event.relatedTarget &&
-                !event.currentTarget.contains(event.relatedTarget as Node) &&
-                event.relatedTarget !== triggerRef.current
-              )
-                setOpen(false);
-            }}
-          >
-            <MobileMenu
-              navOptions={navOptions}
-              user={user}
-              isLoading={isLoading}
-              logout={logout}
-              mobile={mobile}
-              onClose={() => setOpen(false)}
-            />
-          </div>
-        )}
       </div>
     </div>
   );

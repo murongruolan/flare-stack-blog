@@ -124,6 +124,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
     <html
       lang={locale}
       suppressHydrationWarning
+      className="dark"
       style={getFuwariThemeStyle(siteConfig)}
     >
       <head>

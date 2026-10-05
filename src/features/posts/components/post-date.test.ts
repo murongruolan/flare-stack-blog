@@ -85,6 +85,7 @@ it("renders the footer copyright using the serialized server year even across Ne
   vi.setSystemTime(new Date("2027-01-01T00:00:01Z"));
   const html = renderToString(createElement(Footer, { navOptions: [] }));
   expect(html).toContain("2026");
-  expect(html).toContain("Test author");
+  expect(html).toContain("United Earth Government");
+  expect(html).not.toContain("Test author");
   expect(html).not.toContain("2027");
 });

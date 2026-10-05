@@ -1,5 +1,14 @@
 @import "tailwindcss";
 @import "./styles/motion.css";
+@import "./styles/ueg-home.css";
+@import "./styles/ueg-news.css";
+@import "./styles/ueg-policy.css";
+@import "./styles/ueg-about.css";
+@import "./styles/ueg-org.css";
+@import "./styles/ueg-org-detail.css";
+@import "./styles/ueg-draw.css";
+@import "./styles/ueg-article.css";
+@import "./styles/ueg-engines.css";
 @import "tw-animate-css";
 @import "@fontsource/roboto/400.css";
 @import "@fontsource/roboto/500.css";
@@ -12,9 +21,11 @@
 @custom-variant system (&:is(.system *));
 
 @theme {
+  /* 全站唯一字体族定义：Roboto 覆盖西文，CJK 显式回退，避免各端各自解析 */
   --font-sans:
-    Roboto, sans-serif, ui-sans-serif, system-ui, "Apple Color Emoji",
-    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    Roboto, "Microsoft YaHei", "PingFang SC", "Noto Sans SC", ui-sans-serif,
+    system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    "Segoe UI Symbol", "Noto Color Emoji";
   --font-serif: ui-serif, Georgia, "Noto Serif SC", "Songti SC", serif;
   --font-mono:
     "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, Monaco,
@@ -57,100 +68,223 @@
   }
 
   :root {
-    --fuwari-radius-large: 1rem;
-    --fuwari-hue: 250;
-    --fuwari-success-hue: 145;
-    --fuwari-warning-hue: 85;
-    --fuwari-danger-hue: 25;
+    --fuwari-radius-large: 0.875rem;
+    --fuwari-hue: 205;
     --fuwari-content-delay: 150ms;
     --fuwari-stagger: 1;
-    --fuwari-page-width: 75rem;
+    --fuwari-page-width: 1460px;
     --fuwari-toc-width: calc((100vw - var(--fuwari-page-width)) / 2 - 1rem);
 
-    --fuwari-primary: oklch(0.7 0.14 var(--fuwari-hue));
-    --fuwari-primary-hover: oklch(0.65 0.14 var(--fuwari-hue));
-    --fuwari-primary-active: oklch(0.6 0.14 var(--fuwari-hue));
-    --fuwari-page-bg: oklch(0.95 0.01 var(--fuwari-hue));
-    --fuwari-card-bg: white;
-    --fuwari-btn-content: oklch(0.55 0.12 var(--fuwari-hue));
-    --fuwari-btn-regular-bg: oklch(0.95 0.025 var(--fuwari-hue));
-    --fuwari-btn-regular-bg-hover: oklch(0.9 0.05 var(--fuwari-hue));
-    --fuwari-btn-regular-bg-active: oklch(0.85 0.08 var(--fuwari-hue));
-    --fuwari-btn-plain-bg-hover: oklch(0.95 0.025 var(--fuwari-hue));
-    --fuwari-btn-plain-bg-active: oklch(0.98 0.01 var(--fuwari-hue));
-    --fuwari-deep-text: oklch(0.25 0.02 var(--fuwari-hue));
+    /* ===== UEG 全局字号刻度（全站 font-size 唯一维护点） =====
+       rem 计价，注释为 16px 根字号下的等效像素。
+       调某一级文字：改对应变量；全站整体缩放：改 html 的 font-size（如 112.5% ≈ 18px）。 */
+    --fs-7: 0.4375rem; /* 7px 极小注脚 */
+    --fs-8: 0.5rem; /* 8px kicker / 装饰标 */
+    --fs-9: 0.5625rem; /* 9px 面包屑 / 标签 */
+    --fs-10: 0.625rem; /* 10px 眉题 / 按钮 */
+    --fs-11: 0.6875rem; /* 11px 导航 / 小正文 */
+    --fs-12: 0.75rem; /* 12px 摘要 / 页脚 */
+    --fs-13: 0.8125rem; /* 13px 行标题 / 导航中文 */
+    --fs-14: 0.875rem; /* 14px 面板小标题 */
+    --fs-15: 0.9375rem; /* 15px 卡片标题 */
+    --fs-16: 1rem; /* 16px 区块标题 */
+    --fs-17: 1.0625rem; /* 17px 栏目标题 */
+    --fs-18: 1.125rem; /* 18px 次级标题 */
+    --fs-19: 1.1875rem; /* 19px 品牌 / 文章 h2 */
+    --fs-20: 1.25rem; /* 20px 数字标 */
+    --fs-21: 1.3125rem; /* 21px 重点卡标题 */
+    --fs-22: 1.375rem; /* 22px 品牌 logo 字 */
+    --fs-23: 1.4375rem; /* 23px 文章页 h1（小屏） */
+    --fs-24: 1.5rem; /* 24px 页面 h1（小屏） */
+    --fs-25: 1.5625rem; /* 25px 详情页 h1（小屏） */
+    --fs-26: 1.625rem; /* 26px 数据大字 */
+    --fs-27: 1.6875rem; /* 27px 页面 h1（中屏） */
+    --fs-28: 1.75rem; /* 28px 页面 h1 / 首页 hero（小屏） */
+    --fs-30: 1.875rem; /* 30px 详情页 h1 */
+    --fs-31: 1.9375rem; /* 31px 活动页 hero */
+    --fs-32: 2rem; /* 32px 关于页 h1（中屏） */
+    --fs-34: 2.125rem; /* 34px 文章页 h1（桌面） */
+    --fs-35: 2.1875rem; /* 35px 页面 h1（桌面） */
+    --fs-39: 2.4375rem; /* 39px 活动页 hero（中屏） */
+    --fs-40: 2.5rem; /* 40px 详情页 h1（桌面） */
+    --fs-45: 2.8125rem; /* 45px 关于页 h1（桌面） */
+    --fs-hero: clamp(1.875rem, 3.1vw, 2.625rem); /* 首页主标题流式字号 */
+    --fs-mega: 10.625rem; /* 170px 装饰性巨字 */
+
+    /* ===== UEG 核心色板 ===== */
+    --ueg-space: #071018; /* 深空黑蓝：页面主背景 */
+    --ueg-deep: #0b151e; /* 军政深蓝：区块 / 导航 / 页脚 */
+    --ueg-panel: #101d26; /* 冷钢蓝黑：卡片 / 面板 */
+    --ueg-steel: #afc7d1; /* 冰钢蓝：UEG 核心识别色 */
+    --ueg-bone: #e2e0d6; /* 冷白灰：标题 / 重点信息 */
+    --ueg-mist: #7897a4; /* 雾蓝：次级信息 / 边框 */
+    --ueg-amber: #c18a55; /* 工业琥珀：重要 / 高亮 */
+    --ueg-red: #a94b43; /* UEG 警示红：警告 / 紧急 */
+    --ueg-green: #719e99; /* 冷青绿：正常 / 通过 */
+    --ueg-text: #c8d0d1; /* 灰白：正文 */
+    --ueg-text-sub: #9aa7aa; /* 石墨灰：时间 / 摘要 */
+    --ueg-disabled: #43525a; /* 深灰蓝：禁用 */
+    --ueg-border: #293b45;
+    --ueg-border-2: #3e555f;
+
+    /* 文章系统色 */
+    --ueg-post-title: #e2e0d6; /* 文章标题：暖白，非纯白 */
+    --ueg-post-summary: #9aa7aa; /* 文章简介：灰青 */
+    --ueg-post-time: #63747c; /* 发布时间：弱对比，小号 */
+
+    /* 卡片四态（普通 / Hover / 重点 / 紧急） */
+    --ueg-card-bg: #101d26;
+    --ueg-card-border: #293b45;
+    --ueg-card-bg-hover: #162832;
+    --ueg-card-border-hover: #7897a4;
+    --ueg-card-bg-featured: #182832;
+    --ueg-card-border-featured: #c18a55;
+    --ueg-card-bg-emergency: #23181a;
+    --ueg-card-border-emergency: #a94b43;
+
+    /* ===== 映射到系统变量（默认深色：UEG 深空主题） ===== */
+    --fuwari-primary: var(--ueg-steel);
+    --fuwari-primary-hover: #c2d8e1;
+    --fuwari-primary-active: #96b2be;
+    --fuwari-page-bg: var(--ueg-space);
+    --fuwari-card-bg: var(--ueg-panel);
+    --fuwari-btn-content: var(--ueg-bone);
+    --fuwari-btn-regular-bg: var(--ueg-deep);
+    --fuwari-btn-regular-bg-hover: #1a2a37;
+    --fuwari-btn-regular-bg-active: #1f3342;
+    --fuwari-btn-plain-bg-hover: #10202c;
+    --fuwari-btn-plain-bg-active: #14232e;
+    --fuwari-deep-text: var(--ueg-text);
     --fuwari-enter-btn-bg: var(--fuwari-btn-regular-bg);
     --fuwari-enter-btn-bg-hover: var(--fuwari-btn-regular-bg-hover);
     --fuwari-enter-btn-bg-active: var(--fuwari-btn-regular-bg-active);
-    --fuwari-meta-divider: rgba(0, 0, 0, 0.2);
-    --fuwari-selection-bg: oklch(0.9 0.05 var(--fuwari-hue));
-    --fuwari-inline-code-bg: var(--fuwari-btn-regular-bg);
-    --fuwari-inline-code-color: var(--fuwari-btn-content);
-    --fuwari-code-bg: var(--fuwari-card-bg);
-    --fuwari-input-bg: rgba(0, 0, 0, 0.07);
-    --fuwari-input-border: rgba(0, 0, 0, 0.1);
-    --fuwari-fg: rgb(0 0 0 / 0.9);
-    --fuwari-fg-75: rgb(0 0 0 / 0.75);
-    --fuwari-fg-50: rgb(0 0 0 / 0.5);
-    --fuwari-fg-30: rgb(0 0 0 / 0.3);
+    --fuwari-meta-divider: rgba(175, 199, 209, 0.16);
+    --fuwari-selection-bg: rgba(175, 199, 209, 0.22);
+    --fuwari-inline-code-bg: var(--ueg-deep);
+    --fuwari-inline-code-color: var(--ueg-bone);
+    --fuwari-code-bg: #0a141d;
+    --fuwari-input-bg: rgba(255, 255, 255, 0.06);
+    --fuwari-input-border: var(--ueg-card-border);
+    --fuwari-fg: var(--ueg-text);
+    --fuwari-fg-75: var(--ueg-post-summary);
+    --fuwari-fg-50: var(--ueg-text-sub);
+    --fuwari-fg-30: var(--ueg-disabled);
     --fuwari-link-underline: color-mix(
       in oklab,
-      var(--fuwari-primary) 55%,
+      var(--ueg-steel) 45%,
       transparent
     );
-    --fuwari-link-hover: var(--fuwari-primary);
+    --fuwari-link-hover: var(--ueg-steel);
     --fuwari-codeblock-selection: var(--fuwari-selection-bg);
-    --fuwari-toc-btn-hover: oklch(0.926 0.015 var(--fuwari-hue));
-    --fuwari-toc-btn-active: oklch(0.9 0.015 var(--fuwari-hue));
-    --fuwari-toc-badge-bg: oklch(0.89 0.05 var(--fuwari-hue));
+    --fuwari-toc-btn-hover: #0d1822;
+    --fuwari-toc-btn-active: #14232e;
+    --fuwari-toc-badge-bg: #1a2a37;
 
-    --fuwari-success: oklch(0.7 0.14 var(--fuwari-success-hue));
-    --fuwari-success-fg: oklch(0.45 0.12 var(--fuwari-success-hue));
-    --fuwari-success-bg: oklch(0.95 0.05 var(--fuwari-success-hue));
-    --fuwari-warning: oklch(0.75 0.14 var(--fuwari-warning-hue));
-    --fuwari-warning-fg: oklch(0.5 0.13 var(--fuwari-warning-hue));
-    --fuwari-warning-bg: oklch(0.95 0.07 var(--fuwari-warning-hue));
-    --fuwari-danger: oklch(0.65 0.16 var(--fuwari-danger-hue));
-    --fuwari-danger-fg: oklch(0.5 0.16 var(--fuwari-danger-hue));
-    --fuwari-danger-bg: oklch(0.95 0.05 var(--fuwari-danger-hue));
+    --fuwari-success: var(--ueg-green);
+    --fuwari-success-fg: var(--ueg-green);
+    --fuwari-success-bg: rgba(113, 158, 153, 0.16);
+    --fuwari-warning: var(--ueg-amber);
+    --fuwari-warning-fg: var(--ueg-amber);
+    --fuwari-warning-bg: rgba(193, 138, 85, 0.16);
+    --fuwari-danger: var(--ueg-red);
+    --fuwari-danger-fg: #c98d85;
+    --fuwari-danger-bg: rgba(169, 75, 67, 0.18);
+  }
+
+  .light {
+    /* ===== UEG 浅色变体（骨白工业风） ===== */
+    --fuwari-primary: #2a4a5e;
+    --fuwari-primary-hover: #1f3a4d;
+    --fuwari-primary-active: #36586c;
+    --fuwari-page-bg: #e9eef0;
+    --fuwari-card-bg: #ffffff;
+    --fuwari-btn-content: #16232e;
+    --fuwari-btn-regular-bg: #e2e8ea;
+    --fuwari-btn-regular-bg-hover: #d4dde0;
+    --fuwari-btn-regular-bg-active: #c6d0d4;
+    --fuwari-btn-plain-bg-hover: #eef2f3;
+    --fuwari-btn-plain-bg-active: #e4eaec;
+    --fuwari-deep-text: #16232e;
+    --fuwari-meta-divider: rgba(13, 24, 34, 0.16);
+    --fuwari-selection-bg: rgba(175, 199, 209, 0.5);
+    --fuwari-inline-code-bg: #e2e8ea;
+    --fuwari-inline-code-color: #2a4a5e;
+    --fuwari-code-bg: #ffffff;
+    --fuwari-input-bg: rgba(13, 24, 34, 0.05);
+    --fuwari-input-border: #c6d0d4;
+    --fuwari-fg: #0d1822;
+    --fuwari-fg-75: #46575f;
+    --fuwari-fg-50: #63747c;
+    --fuwari-fg-30: #9aa7aa;
+    --fuwari-link-underline: color-mix(
+      in oklab,
+      var(--fuwari-primary) 35%,
+      transparent
+    );
+    --fuwari-toc-btn-hover: #eef2f3;
+    --fuwari-toc-btn-active: #e2e8ea;
+    --fuwari-toc-badge-bg: #d4dde0;
+
+    --ueg-post-title: #16232e;
+    --ueg-post-summary: #63747c;
+    --ueg-post-time: #7d8a8e;
+    --ueg-card-bg: #ffffff;
+    --ueg-card-border: #d7dfe2;
+    --ueg-card-bg-hover: #f2f6f7;
+    --ueg-card-border-hover: #7897a4;
+    --ueg-card-bg-featured: #fbf7f0;
+    --ueg-card-border-featured: #c18a55;
+    --ueg-card-bg-emergency: #fbf1f0;
+    --ueg-card-border-emergency: #a94b43;
+
+    --fuwari-success: #5d8883;
+    --fuwari-success-fg: #4a726e;
+    --fuwari-success-bg: rgba(113, 158, 153, 0.14);
+    --fuwari-warning: #b0763f;
+    --fuwari-warning-fg: #96602f;
+    --fuwari-warning-bg: rgba(193, 138, 85, 0.14);
+    --fuwari-danger: #a94b43;
+    --fuwari-danger-fg: #8c3a34;
+    --fuwari-danger-bg: rgba(169, 75, 67, 0.1);
   }
 
   .dark {
-    --fuwari-primary: oklch(0.75 0.14 var(--fuwari-hue));
-    --fuwari-primary-hover: oklch(0.8 0.14 var(--fuwari-hue));
-    --fuwari-primary-active: oklch(0.85 0.14 var(--fuwari-hue));
-    --fuwari-page-bg: oklch(0.16 0.014 var(--fuwari-hue));
-    --fuwari-card-bg: oklch(0.23 0.015 var(--fuwari-hue));
-    --fuwari-btn-content: oklch(0.75 0.1 var(--fuwari-hue));
-    --fuwari-btn-regular-bg: oklch(0.33 0.035 var(--fuwari-hue));
-    --fuwari-btn-regular-bg-hover: oklch(0.38 0.04 var(--fuwari-hue));
-    --fuwari-btn-regular-bg-active: oklch(0.43 0.045 var(--fuwari-hue));
-    --fuwari-btn-plain-bg-hover: oklch(0.3 0.035 var(--fuwari-hue));
-    --fuwari-btn-plain-bg-active: oklch(0.27 0.025 var(--fuwari-hue));
-    --fuwari-meta-divider: rgba(255, 255, 255, 0.2);
-    --fuwari-selection-bg: oklch(0.4 0.08 var(--fuwari-hue));
-    --fuwari-inline-code-bg: var(--fuwari-btn-regular-bg);
-    --fuwari-inline-code-color: var(--fuwari-btn-content);
-    --fuwari-code-bg: var(--fuwari-card-bg);
-    --fuwari-input-bg: rgba(255, 255, 255, 0.05);
-    --fuwari-input-border: rgba(255, 255, 255, 0.1);
-    --fuwari-fg: rgb(255 255 255 / 0.9);
-    --fuwari-fg-75: rgb(255 255 255 / 0.75);
-    --fuwari-fg-50: rgb(255 255 255 / 0.5);
-    --fuwari-fg-30: rgb(255 255 255 / 0.3);
-    --fuwari-toc-btn-hover: oklch(0.22 0.02 var(--fuwari-hue));
-    --fuwari-toc-btn-active: oklch(0.25 0.02 var(--fuwari-hue));
-    --fuwari-toc-badge-bg: var(--fuwari-btn-regular-bg);
+    /* 深空黑蓝主题：与 :root 相同，显式声明防止历史变量覆盖 */
+    --fuwari-primary: var(--ueg-steel);
+    --fuwari-primary-hover: #c2d8e1;
+    --fuwari-primary-active: #96b2be;
+    --fuwari-page-bg: var(--ueg-space);
+    --fuwari-card-bg: var(--ueg-panel);
+    --fuwari-btn-content: var(--ueg-bone);
+    --fuwari-btn-regular-bg: var(--ueg-deep);
+    --fuwari-btn-regular-bg-hover: #1a2a37;
+    --fuwari-btn-regular-bg-active: #1f3342;
+    --fuwari-btn-plain-bg-hover: #10202c;
+    --fuwari-btn-plain-bg-active: #14232e;
+    --fuwari-meta-divider: rgba(175, 199, 209, 0.16);
+    --fuwari-selection-bg: rgba(175, 199, 209, 0.22);
+    --fuwari-inline-code-bg: var(--ueg-deep);
+    --fuwari-inline-code-color: var(--ueg-bone);
+    --fuwari-code-bg: #0a141d;
+    --fuwari-input-bg: rgba(255, 255, 255, 0.06);
+    --fuwari-input-border: var(--ueg-card-border);
+    --fuwari-fg: var(--ueg-text);
+    --fuwari-fg-75: var(--ueg-post-summary);
+    --fuwari-fg-50: var(--ueg-text-sub);
+    --fuwari-fg-30: var(--ueg-disabled);
+    --fuwari-toc-btn-hover: #0d1822;
+    --fuwari-toc-btn-active: #14232e;
+    --fuwari-toc-badge-bg: #1a2a37;
 
-    --fuwari-success: oklch(0.75 0.12 var(--fuwari-success-hue));
-    --fuwari-success-fg: oklch(0.8 0.1 var(--fuwari-success-hue));
-    --fuwari-success-bg: oklch(0.33 0.05 var(--fuwari-success-hue));
-    --fuwari-warning: oklch(0.8 0.12 var(--fuwari-warning-hue));
-    --fuwari-warning-fg: oklch(0.82 0.1 var(--fuwari-warning-hue));
-    --fuwari-warning-bg: oklch(0.33 0.055 var(--fuwari-warning-hue));
-    --fuwari-danger: oklch(0.72 0.14 var(--fuwari-danger-hue));
-    --fuwari-danger-fg: oklch(0.8 0.1 var(--fuwari-danger-hue));
-    --fuwari-danger-bg: oklch(0.33 0.05 var(--fuwari-danger-hue));
+    --fuwari-success: var(--ueg-green);
+    --fuwari-success-fg: var(--ueg-green);
+    --fuwari-success-bg: rgba(113, 158, 153, 0.16);
+    --fuwari-warning: var(--ueg-amber);
+    --fuwari-warning-fg: var(--ueg-amber);
+    --fuwari-warning-bg: rgba(193, 138, 85, 0.16);
+    --fuwari-danger: var(--ueg-red);
+    --fuwari-danger-fg: #c98d85;
+    --fuwari-danger-bg: rgba(169, 75, 67, 0.18);
   }
 
   html.dark .shiki,
@@ -295,13 +429,10 @@
     width: 10%;
     height: 100%;
     left: calc(50% - 1px);
-    border-left: 2px dashed rgba(0, 0, 0, 0.1);
+    border-left: 2px dashed var(--fuwari-meta-divider);
     pointer-events: none;
     transition: all 0.3s;
     transform: translateY(-50%);
-  }
-  .dark .fuwari-timeline-dash::before {
-    border-left: 2px dashed rgba(255, 255, 255, 0.1);
   }
 
   .fuwari-code-folding-wrapper {
@@ -355,6 +486,441 @@
   }
   .dark .fuwari-toc-scrollbar:hover::-webkit-scrollbar-thumb {
     background-color: rgba(255, 255, 255, 0.2);
+  }
+
+  /* ===== UEG 信息卡四态 ===== */
+  .ueg-card {
+    background-color: var(--ueg-card-bg);
+    border: 1px solid var(--ueg-card-border);
+    border-radius: var(--fuwari-radius-large);
+    transition:
+      background-color 0.25s,
+      border-color 0.25s,
+      transform 0.25s;
+  }
+  .ueg-card:hover {
+    background-color: var(--ueg-card-bg-hover);
+    border-color: var(--ueg-card-border-hover);
+  }
+  .ueg-card-featured {
+    background-color: var(--ueg-card-bg-featured);
+    border-color: var(--ueg-card-border-featured);
+  }
+  .ueg-card-emergency {
+    background-color: var(--ueg-card-bg-emergency);
+    border-color: var(--ueg-card-border-emergency);
+  }
+  .ueg-card-featured:hover {
+    background-color: #1d3540;
+  }
+  .ueg-card-emergency:hover {
+    background-color: #2b1f1c;
+  }
+
+  /* ===== 文章系统色 ===== */
+  .ueg-post-title {
+    color: var(--ueg-post-title);
+  }
+  .ueg-post-summary {
+    color: var(--ueg-post-summary);
+  }
+  .ueg-post-time {
+    color: var(--ueg-post-time);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .ueg-tag {
+    color: var(--ueg-mist);
+    background: rgba(120, 151, 164, 0.12);
+    border: 1px solid rgba(120, 151, 164, 0.35);
+  }
+  .ueg-tag-important {
+    color: var(--ueg-amber);
+    background: rgba(193, 138, 85, 0.12);
+    border: 1px solid rgba(193, 138, 85, 0.4);
+  }
+  .ueg-tag-emergency {
+    color: #c98d85;
+    background: rgba(169, 75, 67, 0.14);
+    border: 1px solid rgba(169, 75, 67, 0.45);
+  }
+  .ueg-section-title {
+    color: var(--ueg-bone);
+    letter-spacing: 0.03em;
+  }
+  .light .ueg-section-title {
+    color: var(--ueg-deep-text);
+  }
+
+  /* ===== UEG 官网面板与区块标题 ===== */
+  .ueg-panel {
+    background-color: var(--ueg-deep);
+    border: 1px solid var(--ueg-card-border);
+    border-radius: var(--fuwari-radius-large);
+    padding: 18px 20px;
+  }
+  .ueg-panel-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-bottom: 12px;
+    margin-bottom: 4px;
+    border-bottom: 1px solid color-mix(in srgb, var(--ueg-card-border) 70%, transparent);
+  }
+  .ueg-panel-heading .ueg-section-title {
+    font-size: var(--fs-16);
+    font-weight: 800;
+    letter-spacing: 0.04em;
+  }
+  .ueg-more-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: var(--fs-12);
+    font-weight: 700;
+    color: var(--ueg-mist);
+    transition: color 180ms;
+  }
+  .ueg-more-link:hover {
+    color: var(--ueg-steel);
+  }
+
+  /* ===== FEATURE 业务卡 ===== */
+  .ueg-feature-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 22px 22px 24px;
+    border-radius: var(--fuwari-radius-large);
+    background: linear-gradient(180deg, var(--ueg-panel) 0%, var(--ueg-deep) 100%);
+    border: 1px solid var(--ueg-card-border);
+    transition:
+      border-color 0.25s,
+      transform 0.25s;
+  }
+  .ueg-feature-card:hover {
+    border-color: var(--ueg-card-border-hover);
+    transform: translateY(-2px);
+  }
+  .ueg-feature-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 14px;
+  }
+  .ueg-feature-kicker {
+    font-size: var(--fs-11);
+    font-weight: 800;
+    letter-spacing: 0.24em;
+    color: var(--ueg-steel);
+    opacity: 0.85;
+  }
+  .ueg-feature-icon {
+    color: var(--ueg-steel);
+    opacity: 0.85;
+  }
+  .ueg-feature-title {
+    font-size: var(--fs-21);
+    font-weight: 900;
+    letter-spacing: 0.01em;
+    color: var(--ueg-post-title);
+    margin-bottom: 6px;
+  }
+  .ueg-feature-sub {
+    font-size: var(--fs-14);
+    font-weight: 700;
+    color: var(--ueg-steel);
+    margin-bottom: 10px;
+  }
+  .ueg-feature-desc {
+    font-size: var(--fs-13);
+    line-height: 1.7;
+    color: var(--ueg-text-sub);
+    margin-bottom: 18px;
+  }
+  .ueg-feature-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 40px;
+    padding: 0 18px;
+    border-radius: 7px;
+    border: 1px solid color-mix(in srgb, var(--ueg-steel) 55%, transparent);
+    color: var(--ueg-steel);
+    font-size: var(--fs-13);
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    transition:
+      background-color 180ms,
+      color 180ms,
+      border-color 180ms;
+  }
+  .ueg-feature-cta:hover {
+    background: var(--ueg-steel);
+    border-color: var(--ueg-steel);
+    color: var(--ueg-space);
+  }
+
+  /* ===== 右栏列表行 ===== */
+  .ueg-row-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .ueg-row {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    width: 100%;
+    padding: 9px 6px;
+    border-radius: 8px;
+    transition: background-color 180ms;
+  }
+  .ueg-row:hover {
+    background: color-mix(in srgb, var(--ueg-steel) 8%, transparent);
+  }
+  .ueg-row-notice {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+  }
+  .ueg-row-line {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+  }
+  .ueg-row-title {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: var(--fs-13);
+    font-weight: 600;
+    color: var(--ueg-text);
+    transition: color 180ms;
+  }
+  .ueg-row:hover .ueg-row-title {
+    color: var(--ueg-steel);
+  }
+  .ueg-row-summary {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: var(--fs-12);
+    color: var(--ueg-text-sub);
+  }
+  .ueg-row-date {
+    flex-shrink: 0;
+    font-size: var(--fs-11);
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: var(--ueg-post-time);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ===== 最新动态 4 列卡 ===== */
+  .ueg-dynamics-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+  .ueg-dynamic-card {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 16px 16px 14px;
+    border-radius: var(--fuwari-radius-large);
+    background-color: var(--ueg-card-bg);
+    border: 1px solid var(--ueg-card-border);
+    transition:
+      background-color 0.25s,
+      border-color 0.25s;
+  }
+  .ueg-dynamic-card:hover {
+    background-color: var(--ueg-card-bg-hover);
+    border-color: var(--ueg-card-border-hover);
+  }
+  .ueg-dynamic-title {
+    font-size: var(--fs-15);
+    font-weight: 800;
+    line-height: 1.45;
+    color: var(--ueg-post-title);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    transition: color 180ms;
+  }
+  .ueg-dynamic-card:hover .ueg-dynamic-title {
+    color: var(--ueg-steel);
+  }
+  .ueg-dynamic-summary {
+    font-size: var(--fs-12);
+    line-height: 1.6;
+    color: var(--ueg-text-sub);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .ueg-dynamic-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 4px;
+  }
+
+  /* ===== UEG 页脚 ===== */
+  .ueg-footer {
+    margin-top: 40px;
+    border-top: 1px solid var(--ueg-card-border);
+    background-color: var(--ueg-deep);
+  }
+  .ueg-footer-top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px 28px;
+    padding: 22px 0;
+  }
+  .ueg-footer-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+  }
+  .ueg-footer-logo {
+    color: var(--ueg-steel);
+    flex-shrink: 0;
+  }
+  .ueg-footer-brand-text {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+  }
+  .ueg-footer-brand-name {
+    font-size: var(--fs-13);
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    color: var(--ueg-bone);
+    white-space: nowrap;
+  }
+  .ueg-footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 18px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .ueg-footer-link {
+    font-size: var(--fs-12);
+    color: var(--ueg-mist);
+    transition: color 180ms;
+  }
+  .ueg-footer-link:hover {
+    color: var(--ueg-steel);
+  }
+  .ueg-footer-slogan {
+    font-size: var(--fs-13);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--ueg-text-sub);
+    text-align: center;
+    flex: 1;
+    min-width: 220px;
+  }
+  .ueg-footer-sys {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 12px;
+    border-radius: 8px;
+    border: 1px solid color-mix(in srgb, var(--ueg-steel) 30%, transparent);
+    background: color-mix(in srgb, var(--ueg-steel) 6%, transparent);
+  }
+  .ueg-footer-sys-name {
+    font-size: var(--fs-11);
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    color: var(--ueg-steel);
+  }
+  .ueg-footer-sys-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--ueg-green);
+    box-shadow: 0 0 8px color-mix(in srgb, var(--ueg-green) 80%, transparent);
+  }
+  .ueg-footer-sys-state {
+    font-size: var(--fs-10);
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    color: var(--ueg-green);
+  }
+  .ueg-footer-clock {
+    margin-left: 6px;
+    font-size: var(--fs-11);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: var(--ueg-post-time);
+    font-variant-numeric: tabular-nums;
+  }
+  .ueg-footer-bottom {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px 20px;
+    padding: 13px 0;
+    border-top: 1px solid color-mix(in srgb, var(--ueg-card-border) 60%, transparent);
+    font-size: var(--fs-12);
+    color: var(--ueg-post-time);
+  }
+  .ueg-footer-legal {
+    display: flex;
+    gap: 18px;
+  }
+  .ueg-footer-legal a {
+    color: var(--ueg-post-time);
+    transition: color 180ms;
+  }
+  .ueg-footer-legal a:hover {
+    color: var(--ueg-steel);
+  }
+
+  @media (max-width: 1023px) {
+    .ueg-dynamics-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .ueg-footer-slogan {
+      order: 3;
+      flex-basis: 100%;
+    }
+  }
+  @media (max-width: 639px) {
+    .ueg-dynamics-grid {
+      grid-template-columns: 1fr;
+    }
+    .ueg-footer-top {
+      padding: 18px 0;
+    }
+    .ueg-footer-brand-name {
+      white-space: normal;
+    }
   }
 }
 
@@ -454,45 +1020,45 @@
   background-color: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.4);
+  background-color: rgba(175, 199, 209, 0.32);
   background-clip: padding-box;
   border: 2px solid transparent;
   border-radius: 9999px;
   transition: all 0.2s;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(175, 199, 209, 0.5);
   border-width: 3px;
 }
 ::-webkit-scrollbar-thumb:active {
-  background-color: rgba(0, 0, 0, 0.6);
+  background-color: rgba(175, 199, 209, 0.6);
   border-width: 3px;
 }
-.dark ::-webkit-scrollbar-thumb {
-  background-color: rgba(255, 255, 255, 0.4);
+.light ::-webkit-scrollbar-thumb {
+  background-color: rgba(13, 24, 34, 0.28);
 }
-.dark ::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(255, 255, 255, 0.5);
+.light ::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(13, 24, 34, 0.4);
 }
-.dark ::-webkit-scrollbar-thumb:active {
-  background-color: rgba(255, 255, 255, 0.6);
+.light ::-webkit-scrollbar-thumb:active {
+  background-color: rgba(13, 24, 34, 0.5);
 }
 
 .fuwari-custom-md {
-  --tw-prose-body: rgb(0 0 0 / 0.9);
-  --tw-prose-headings: rgb(0 0 0 / 0.9);
-  --tw-prose-lead: rgb(0 0 0 / 0.75);
-  --tw-prose-links: var(--fuwari-primary);
-  --tw-prose-bold: rgb(0 0 0 / 0.9);
-  --tw-prose-counters: rgb(0 0 0 / 0.5);
-  --tw-prose-bullets: rgb(0 0 0 / 0.3);
+  --tw-prose-body: var(--ueg-text);
+  --tw-prose-headings: var(--ueg-post-title);
+  --tw-prose-lead: var(--ueg-post-summary);
+  --tw-prose-links: var(--ueg-steel);
+  --tw-prose-bold: var(--ueg-bone);
+  --tw-prose-counters: var(--ueg-text-sub);
+  --tw-prose-bullets: var(--ueg-disabled);
   --tw-prose-hr: var(--fuwari-meta-divider);
-  --tw-prose-quotes: rgb(0 0 0 / 0.75);
+  --tw-prose-quotes: var(--ueg-post-summary);
   --tw-prose-quote-borders: var(--fuwari-btn-regular-bg);
-  --tw-prose-captions: rgb(0 0 0 / 0.5);
+  --tw-prose-captions: var(--ueg-text-sub);
   --tw-prose-code: var(--fuwari-inline-code-color);
-  --tw-prose-pre-code: var(--fuwari-btn-content);
-  --tw-prose-pre-bg: var(--fuwari-card-bg);
+  --tw-prose-pre-code: var(--ueg-bone);
+  --tw-prose-pre-bg: var(--fuwari-code-bg);
   --tw-prose-th-borders: var(--fuwari-meta-divider);
   --tw-prose-td-borders: var(--fuwari-meta-divider);
   color: var(--tw-prose-body);
@@ -552,16 +1118,7 @@
     @apply bg-(--fuwari-inline-code-bg) text-(--fuwari-inline-code-color) px-1 py-0.5 rounded-md overflow-hidden;
   }
   code {
-    font-family:
-      "JetBrains Mono Variable",
-      ui-monospace,
-      SFMono-Regular,
-      Menlo,
-      Monaco,
-      Consolas,
-      Liberation Mono,
-      Courier New,
-      monospace;
+    font-family: var(--font-mono);
     &:before,
     &:after {
       content: none;
@@ -648,20 +1205,20 @@
 }
 
 :is(.dark .fuwari-custom-md) {
-  --tw-prose-body: rgb(255 255 255 / 0.9);
-  --tw-prose-headings: rgb(255 255 255 / 0.9);
-  --tw-prose-lead: rgb(255 255 255 / 0.75);
-  --tw-prose-links: var(--fuwari-primary);
-  --tw-prose-bold: rgb(255 255 255 / 0.9);
-  --tw-prose-counters: rgb(255 255 255 / 0.5);
-  --tw-prose-bullets: rgb(255 255 255 / 0.3);
+  --tw-prose-body: var(--ueg-text);
+  --tw-prose-headings: var(--ueg-post-title);
+  --tw-prose-lead: var(--ueg-post-summary);
+  --tw-prose-links: var(--ueg-steel);
+  --tw-prose-bold: var(--ueg-bone);
+  --tw-prose-counters: var(--ueg-text-sub);
+  --tw-prose-bullets: var(--ueg-disabled);
   --tw-prose-hr: var(--fuwari-meta-divider);
-  --tw-prose-quotes: rgb(255 255 255 / 0.75);
+  --tw-prose-quotes: var(--ueg-post-summary);
   --tw-prose-quote-borders: var(--fuwari-btn-regular-bg);
-  --tw-prose-captions: rgb(255 255 255 / 0.5);
+  --tw-prose-captions: var(--ueg-text-sub);
   --tw-prose-code: var(--fuwari-inline-code-color);
-  --tw-prose-pre-code: var(--fuwari-btn-content);
-  --tw-prose-pre-bg: var(--fuwari-card-bg);
+  --tw-prose-pre-code: var(--ueg-bone);
+  --tw-prose-pre-bg: var(--fuwari-code-bg);
   --tw-prose-th-borders: var(--fuwari-meta-divider);
   --tw-prose-td-borders: var(--fuwari-meta-divider);
 }

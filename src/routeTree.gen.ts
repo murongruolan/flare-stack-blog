@@ -22,9 +22,14 @@ import { Route as PublicIndexRouteImport } from './routes/_public/index'
 import { Route as PublicSplatRouteImport } from './routes/_public/$'
 import { Route as PublicAuthRouteRouteImport } from './routes/_public/_auth/route'
 import { Route as PublicUserRouteRouteImport } from './routes/_public/_user/route'
+import { Route as PublicAboutRouteImport } from './routes/_public/about'
+import { Route as PublicEnginesRouteImport } from './routes/_public/engines'
 import { Route as PublicFriendLinksRouteImport } from './routes/_public/friend-links'
+import { Route as PublicNavigatorRouteImport } from './routes/_public/navigator'
+import { Route as PublicPolicyRouteImport } from './routes/_public/policy'
 import { Route as PublicPostsRouteImport } from './routes/_public/posts'
 import { Route as PublicSearchRouteImport } from './routes/_public/search'
+import { Route as PublicUndergroundRouteImport } from './routes/_public/underground'
 import { Route as PublicUnsubscribeRouteImport } from './routes/_public/unsubscribe'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AdminSplatRouteImport } from './routes/admin/$'
@@ -41,6 +46,8 @@ import { Route as PublicAuthResetLinkRouteImport } from './routes/_public/_auth/
 import { Route as PublicAuthVerifyEmailRouteImport } from './routes/_public/_auth/verify-email'
 import { Route as PublicUserProfileRouteImport } from './routes/_public/_user/profile'
 import { Route as PublicUserSubmitFriendLinkRouteImport } from './routes/_public/_user/submit-friend-link'
+import { Route as PublicOrganizationIndexRouteImport } from './routes/_public/organization/index'
+import { Route as PublicOrganizationSlugRouteImport } from './routes/_public/organization/$slug'
 import { Route as PublicPostSlugRouteImport } from './routes/_public/post/$slug'
 import { Route as AdminFriendLinksIndexRouteImport } from './routes/admin/friend-links/index'
 import { Route as AdminMediaIndexRouteImport } from './routes/admin/media/index'
@@ -120,9 +127,29 @@ const PublicUserRouteRoute = PublicUserRouteRouteImport.update({
   id: '/_user',
   getParentRoute: () => PublicRouteRoute,
 } as any)
+const PublicAboutRoute = PublicAboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => PublicRouteRoute,
+} as any)
+const PublicEnginesRoute = PublicEnginesRouteImport.update({
+  id: '/engines',
+  path: '/engines',
+  getParentRoute: () => PublicRouteRoute,
+} as any)
 const PublicFriendLinksRoute = PublicFriendLinksRouteImport.update({
   id: '/friend-links',
   path: '/friend-links',
+  getParentRoute: () => PublicRouteRoute,
+} as any)
+const PublicNavigatorRoute = PublicNavigatorRouteImport.update({
+  id: '/navigator',
+  path: '/navigator',
+  getParentRoute: () => PublicRouteRoute,
+} as any)
+const PublicPolicyRoute = PublicPolicyRouteImport.update({
+  id: '/policy',
+  path: '/policy',
   getParentRoute: () => PublicRouteRoute,
 } as any)
 const PublicPostsRoute = PublicPostsRouteImport.update({
@@ -133,6 +160,11 @@ const PublicPostsRoute = PublicPostsRouteImport.update({
 const PublicSearchRoute = PublicSearchRouteImport.update({
   id: '/search',
   path: '/search',
+  getParentRoute: () => PublicRouteRoute,
+} as any)
+const PublicUndergroundRoute = PublicUndergroundRouteImport.update({
+  id: '/underground',
+  path: '/underground',
   getParentRoute: () => PublicRouteRoute,
 } as any)
 const PublicUnsubscribeRoute = PublicUnsubscribeRouteImport.update({
@@ -217,6 +249,16 @@ const PublicUserSubmitFriendLinkRoute =
     path: '/submit-friend-link',
     getParentRoute: () => PublicUserRouteRoute,
   } as any)
+const PublicOrganizationIndexRoute = PublicOrganizationIndexRouteImport.update({
+  id: '/organization/',
+  path: '/organization/',
+  getParentRoute: () => PublicRouteRoute,
+} as any)
+const PublicOrganizationSlugRoute = PublicOrganizationSlugRouteImport.update({
+  id: '/organization/$slug',
+  path: '/organization/$slug',
+  getParentRoute: () => PublicRouteRoute,
+} as any)
 const PublicPostSlugRoute = PublicPostSlugRouteImport.update({
   id: '/post/$slug',
   path: '/post/$slug',
@@ -314,9 +356,14 @@ export interface FileRoutesByFullPath {
   '/admin/posts': typeof AdminPostsRouteRouteWithChildren
   '/admin/settings': typeof AdminSettingsRouteRouteWithChildren
   '/$': typeof PublicSplatRoute
+  '/about': typeof PublicAboutRoute
+  '/engines': typeof PublicEnginesRoute
   '/friend-links': typeof PublicFriendLinksRoute
+  '/navigator': typeof PublicNavigatorRoute
+  '/policy': typeof PublicPolicyRoute
   '/posts': typeof PublicPostsRoute
   '/search': typeof PublicSearchRoute
+  '/underground': typeof PublicUndergroundRoute
   '/unsubscribe': typeof PublicUnsubscribeRoute
   '/admin/$': typeof AdminSplatRoute
   '/api/$': typeof ApiSplatRoute
@@ -331,12 +378,14 @@ export interface FileRoutesByFullPath {
   '/verify-email': typeof PublicAuthVerifyEmailRoute
   '/profile': typeof PublicUserProfileRoute
   '/submit-friend-link': typeof PublicUserSubmitFriendLinkRoute
+  '/organization/$slug': typeof PublicOrganizationSlugRoute
   '/post/$slug': typeof PublicPostSlugRoute
   '/admin/settings/api-keys': typeof AdminSettingsApiKeysRoute
   '/admin/settings/maintenance': typeof AdminSettingsMaintenanceRoute
   '/admin/settings/notifications': typeof AdminSettingsNotificationsRoute
   '/admin/settings/site': typeof AdminSettingsSiteRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/organization/': typeof PublicOrganizationIndexRoute
   '/admin/friend-links/': typeof AdminFriendLinksIndexRoute
   '/admin/media/': typeof AdminMediaIndexRoute
   '/admin/muted-users/': typeof AdminMutedUsersIndexRoute
@@ -358,9 +407,14 @@ export interface FileRoutesByTo {
   '/stats.js': typeof StatsDotjsRoute
   '/': typeof PublicIndexRoute
   '/$': typeof PublicSplatRoute
+  '/about': typeof PublicAboutRoute
+  '/engines': typeof PublicEnginesRoute
   '/friend-links': typeof PublicFriendLinksRoute
+  '/navigator': typeof PublicNavigatorRoute
+  '/policy': typeof PublicPolicyRoute
   '/posts': typeof PublicPostsRoute
   '/search': typeof PublicSearchRoute
+  '/underground': typeof PublicUndergroundRoute
   '/unsubscribe': typeof PublicUnsubscribeRoute
   '/admin/$': typeof AdminSplatRoute
   '/api/$': typeof ApiSplatRoute
@@ -375,12 +429,14 @@ export interface FileRoutesByTo {
   '/verify-email': typeof PublicAuthVerifyEmailRoute
   '/profile': typeof PublicUserProfileRoute
   '/submit-friend-link': typeof PublicUserSubmitFriendLinkRoute
+  '/organization/$slug': typeof PublicOrganizationSlugRoute
   '/post/$slug': typeof PublicPostSlugRoute
   '/admin/settings/api-keys': typeof AdminSettingsApiKeysRoute
   '/admin/settings/maintenance': typeof AdminSettingsMaintenanceRoute
   '/admin/settings/notifications': typeof AdminSettingsNotificationsRoute
   '/admin/settings/site': typeof AdminSettingsSiteRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/organization': typeof PublicOrganizationIndexRoute
   '/admin/friend-links': typeof AdminFriendLinksIndexRoute
   '/admin/media': typeof AdminMediaIndexRoute
   '/admin/muted-users': typeof AdminMutedUsersIndexRoute
@@ -407,9 +463,14 @@ export interface FileRoutesById {
   '/admin/posts': typeof AdminPostsRouteRouteWithChildren
   '/admin/settings': typeof AdminSettingsRouteRouteWithChildren
   '/_public/$': typeof PublicSplatRoute
+  '/_public/about': typeof PublicAboutRoute
+  '/_public/engines': typeof PublicEnginesRoute
   '/_public/friend-links': typeof PublicFriendLinksRoute
+  '/_public/navigator': typeof PublicNavigatorRoute
+  '/_public/policy': typeof PublicPolicyRoute
   '/_public/posts': typeof PublicPostsRoute
   '/_public/search': typeof PublicSearchRoute
+  '/_public/underground': typeof PublicUndergroundRoute
   '/_public/unsubscribe': typeof PublicUnsubscribeRoute
   '/admin/$': typeof AdminSplatRoute
   '/api/$': typeof ApiSplatRoute
@@ -425,12 +486,14 @@ export interface FileRoutesById {
   '/_public/_auth/verify-email': typeof PublicAuthVerifyEmailRoute
   '/_public/_user/profile': typeof PublicUserProfileRoute
   '/_public/_user/submit-friend-link': typeof PublicUserSubmitFriendLinkRoute
+  '/_public/organization/$slug': typeof PublicOrganizationSlugRoute
   '/_public/post/$slug': typeof PublicPostSlugRoute
   '/admin/settings/api-keys': typeof AdminSettingsApiKeysRoute
   '/admin/settings/maintenance': typeof AdminSettingsMaintenanceRoute
   '/admin/settings/notifications': typeof AdminSettingsNotificationsRoute
   '/admin/settings/site': typeof AdminSettingsSiteRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/_public/organization/': typeof PublicOrganizationIndexRoute
   '/admin/friend-links/': typeof AdminFriendLinksIndexRoute
   '/admin/media/': typeof AdminMediaIndexRoute
   '/admin/muted-users/': typeof AdminMutedUsersIndexRoute
@@ -457,9 +520,14 @@ export interface FileRouteTypes {
     | '/admin/posts'
     | '/admin/settings'
     | '/$'
+    | '/about'
+    | '/engines'
     | '/friend-links'
+    | '/navigator'
+    | '/policy'
     | '/posts'
     | '/search'
+    | '/underground'
     | '/unsubscribe'
     | '/admin/$'
     | '/api/$'
@@ -474,12 +542,14 @@ export interface FileRouteTypes {
     | '/verify-email'
     | '/profile'
     | '/submit-friend-link'
+    | '/organization/$slug'
     | '/post/$slug'
     | '/admin/settings/api-keys'
     | '/admin/settings/maintenance'
     | '/admin/settings/notifications'
     | '/admin/settings/site'
     | '/api/auth/$'
+    | '/organization/'
     | '/admin/friend-links/'
     | '/admin/media/'
     | '/admin/muted-users/'
@@ -501,9 +571,14 @@ export interface FileRouteTypes {
     | '/stats.js'
     | '/'
     | '/$'
+    | '/about'
+    | '/engines'
     | '/friend-links'
+    | '/navigator'
+    | '/policy'
     | '/posts'
     | '/search'
+    | '/underground'
     | '/unsubscribe'
     | '/admin/$'
     | '/api/$'
@@ -518,12 +593,14 @@ export interface FileRouteTypes {
     | '/verify-email'
     | '/profile'
     | '/submit-friend-link'
+    | '/organization/$slug'
     | '/post/$slug'
     | '/admin/settings/api-keys'
     | '/admin/settings/maintenance'
     | '/admin/settings/notifications'
     | '/admin/settings/site'
     | '/api/auth/$'
+    | '/organization'
     | '/admin/friend-links'
     | '/admin/media'
     | '/admin/muted-users'
@@ -549,9 +626,14 @@ export interface FileRouteTypes {
     | '/admin/posts'
     | '/admin/settings'
     | '/_public/$'
+    | '/_public/about'
+    | '/_public/engines'
     | '/_public/friend-links'
+    | '/_public/navigator'
+    | '/_public/policy'
     | '/_public/posts'
     | '/_public/search'
+    | '/_public/underground'
     | '/_public/unsubscribe'
     | '/admin/$'
     | '/api/$'
@@ -567,12 +649,14 @@ export interface FileRouteTypes {
     | '/_public/_auth/verify-email'
     | '/_public/_user/profile'
     | '/_public/_user/submit-friend-link'
+    | '/_public/organization/$slug'
     | '/_public/post/$slug'
     | '/admin/settings/api-keys'
     | '/admin/settings/maintenance'
     | '/admin/settings/notifications'
     | '/admin/settings/site'
     | '/api/auth/$'
+    | '/_public/organization/'
     | '/admin/friend-links/'
     | '/admin/media/'
     | '/admin/muted-users/'
@@ -694,11 +778,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicUserRouteRouteImport
       parentRoute: typeof PublicRouteRoute
     }
+    '/_public/about': {
+      id: '/_public/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof PublicAboutRouteImport
+      parentRoute: typeof PublicRouteRoute
+    }
+    '/_public/engines': {
+      id: '/_public/engines'
+      path: '/engines'
+      fullPath: '/engines'
+      preLoaderRoute: typeof PublicEnginesRouteImport
+      parentRoute: typeof PublicRouteRoute
+    }
     '/_public/friend-links': {
       id: '/_public/friend-links'
       path: '/friend-links'
       fullPath: '/friend-links'
       preLoaderRoute: typeof PublicFriendLinksRouteImport
+      parentRoute: typeof PublicRouteRoute
+    }
+    '/_public/navigator': {
+      id: '/_public/navigator'
+      path: '/navigator'
+      fullPath: '/navigator'
+      preLoaderRoute: typeof PublicNavigatorRouteImport
+      parentRoute: typeof PublicRouteRoute
+    }
+    '/_public/policy': {
+      id: '/_public/policy'
+      path: '/policy'
+      fullPath: '/policy'
+      preLoaderRoute: typeof PublicPolicyRouteImport
       parentRoute: typeof PublicRouteRoute
     }
     '/_public/posts': {
@@ -713,6 +825,13 @@ declare module '@tanstack/react-router' {
       path: '/search'
       fullPath: '/search'
       preLoaderRoute: typeof PublicSearchRouteImport
+      parentRoute: typeof PublicRouteRoute
+    }
+    '/_public/underground': {
+      id: '/_public/underground'
+      path: '/underground'
+      fullPath: '/underground'
+      preLoaderRoute: typeof PublicUndergroundRouteImport
       parentRoute: typeof PublicRouteRoute
     }
     '/_public/unsubscribe': {
@@ -826,6 +945,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/submit-friend-link'
       preLoaderRoute: typeof PublicUserSubmitFriendLinkRouteImport
       parentRoute: typeof PublicUserRouteRoute
+    }
+    '/_public/organization/': {
+      id: '/_public/organization/'
+      path: '/organization'
+      fullPath: '/organization/'
+      preLoaderRoute: typeof PublicOrganizationIndexRouteImport
+      parentRoute: typeof PublicRouteRoute
+    }
+    '/_public/organization/$slug': {
+      id: '/_public/organization/$slug'
+      path: '/organization/$slug'
+      fullPath: '/organization/$slug'
+      preLoaderRoute: typeof PublicOrganizationSlugRouteImport
+      parentRoute: typeof PublicRouteRoute
     }
     '/_public/post/$slug': {
       id: '/_public/post/$slug'
@@ -980,24 +1113,38 @@ interface PublicRouteRouteChildren {
   PublicAuthRouteRoute: typeof PublicAuthRouteRouteWithChildren
   PublicUserRouteRoute: typeof PublicUserRouteRouteWithChildren
   PublicSplatRoute: typeof PublicSplatRoute
+  PublicAboutRoute: typeof PublicAboutRoute
+  PublicEnginesRoute: typeof PublicEnginesRoute
   PublicFriendLinksRoute: typeof PublicFriendLinksRoute
+  PublicNavigatorRoute: typeof PublicNavigatorRoute
+  PublicPolicyRoute: typeof PublicPolicyRoute
   PublicPostsRoute: typeof PublicPostsRoute
   PublicSearchRoute: typeof PublicSearchRoute
+  PublicUndergroundRoute: typeof PublicUndergroundRoute
   PublicUnsubscribeRoute: typeof PublicUnsubscribeRoute
   PublicIndexRoute: typeof PublicIndexRoute
+  PublicOrganizationSlugRoute: typeof PublicOrganizationSlugRoute
   PublicPostSlugRoute: typeof PublicPostSlugRoute
+  PublicOrganizationIndexRoute: typeof PublicOrganizationIndexRoute
 }
 
 const PublicRouteRouteChildren: PublicRouteRouteChildren = {
   PublicAuthRouteRoute: PublicAuthRouteRouteWithChildren,
   PublicUserRouteRoute: PublicUserRouteRouteWithChildren,
   PublicSplatRoute: PublicSplatRoute,
+  PublicAboutRoute: PublicAboutRoute,
+  PublicEnginesRoute: PublicEnginesRoute,
   PublicFriendLinksRoute: PublicFriendLinksRoute,
+  PublicNavigatorRoute: PublicNavigatorRoute,
+  PublicPolicyRoute: PublicPolicyRoute,
   PublicPostsRoute: PublicPostsRoute,
   PublicSearchRoute: PublicSearchRoute,
+  PublicUndergroundRoute: PublicUndergroundRoute,
   PublicUnsubscribeRoute: PublicUnsubscribeRoute,
   PublicIndexRoute: PublicIndexRoute,
+  PublicOrganizationSlugRoute: PublicOrganizationSlugRoute,
   PublicPostSlugRoute: PublicPostSlugRoute,
+  PublicOrganizationIndexRoute: PublicOrganizationIndexRoute,
 }
 
 const PublicRouteRouteWithChildren = PublicRouteRoute._addFileChildren(

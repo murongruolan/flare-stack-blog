@@ -5,8 +5,33 @@ import type { NavOption } from "@/components/layout/layout-props";
 const STATIC_HREF = {
   "/": "/",
   "/posts": "/posts",
+  "/policy": "/policy",
+  "/about": "/about",
+  "/organization": "/organization",
+  "/navigator": "/navigator",
+  "/underground": "/underground",
+  "/engines": "/engines",
   "/friend-links": "/friend-links",
 } as const;
+
+/**
+ * English sublabel shown under each primary navigation item, keyed by the
+ * nav option id configured for the public portal.
+ */
+const NAV_ENGLISH: Record<string, string> = {
+  home: "HOME",
+  news: "NEWS",
+  policy: "POLICY",
+  org: "ORGANIZATION",
+  navigator: "NAVIGATOR",
+  underground: "UNDERGROUND",
+  about: "ABOUT",
+  engines: "ENGINES",
+};
+
+export function navEnglishLabel(id: string): string | undefined {
+  return NAV_ENGLISH[id];
+}
 
 function postSlugFromHref(href: string): string | null {
   const [path] = href.split(/[?#]/);
@@ -25,9 +50,12 @@ export function PublicNavLink({
   activeClassName?: string;
   onClick?: () => void;
 }) {
+  const en = NAV_ENGLISH[option.id];
+
   const label = (
     <>
-      <span className="truncate">{option.label}</span>
+      <span className="ueg-nav-cn truncate">{option.label}</span>
+      {en ? <span className="ueg-nav-en">{en}</span> : null}
       {option.external ? (
         <ExternalLink
           size={14}

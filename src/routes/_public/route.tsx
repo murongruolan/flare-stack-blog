@@ -1,9 +1,4 @@
-import {
-  createFileRoute,
-  Outlet,
-  useNavigate,
-  useRouteContext,
-} from "@tanstack/react-router";
+import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { PublicLayout as SitePublicLayout } from "@/components/layout/public-layout";
 import { Toaster } from "@/components/layout/toaster";
@@ -11,7 +6,6 @@ import { useLogout } from "@/features/auth/hooks/use-logout";
 import { authClient } from "@/lib/auth/auth.client";
 import { CACHE_CONTROL } from "@/lib/constants";
 import { clientEnv } from "@/lib/env/client.env";
-import { isExternalNavHref } from "@/features/config/utils/nav-links";
 import { m } from "@/paraglide/messages";
 
 export const Route = createFileRoute("/_public")({
@@ -37,26 +31,39 @@ export const Route = createFileRoute("/_public")({
 
 function PublicLayout() {
   const navigate = useNavigate();
-  const { siteConfig } = useRouteContext({ from: "__root__" });
   const { data: session, isPending: isSessionPending } =
     authClient.useSession();
   const { logout } = useLogout();
 
   const navOptions = [
-    { id: "home", label: m.nav_home(), href: "/", external: false },
-    { id: "posts", label: m.nav_posts(), href: "/posts", external: false },
+    { id: "home", label: m.ueg_nav_home(), href: "/", external: false },
+    { id: "news", label: m.ueg_nav_news(), href: "/posts", external: false },
     {
-      id: "friend-links",
-      label: m.nav_friend_links(),
-      href: "/friend-links",
+      id: "policy",
+      label: m.ueg_nav_policy(),
+      href: "/policy",
       external: false,
     },
-    ...siteConfig.navLinks.map((link, index) => ({
-      id: `custom-${index}`,
-      label: link.label,
-      href: link.href,
-      external: isExternalNavHref(link.href),
-    })),
+    { id: "org", label: m.ueg_nav_org(), href: "/organization", external: false },
+    {
+      id: "navigator",
+      label: m.ueg_nav_navigator(),
+      href: "/navigator",
+      external: false,
+    },
+    {
+      id: "underground",
+      label: m.ueg_nav_underground(),
+      href: "/underground",
+      external: false,
+    },
+    { id: "about", label: m.ueg_nav_about(), href: "/about", external: false },
+    {
+      id: "engines",
+      label: m.ueg_nav_engines(),
+      href: "/engines",
+      external: false,
+    },
   ];
 
   // Global shortcut: Cmd/Ctrl + K to navigate to search

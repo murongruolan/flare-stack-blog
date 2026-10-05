@@ -1,3 +1,9 @@
+/* ============================================================
+   Public top bar (UEG official portal)
+   .public-navbar          full-bleed bar + background
+   .public-navbar-inner    content-width row
+   ============================================================ */
+
 .public-navbar-wrapper {
   position: relative;
   transition:
@@ -14,111 +20,223 @@
   opacity: 1;
   pointer-events: auto;
 }
+
 .public-navbar {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  height: 72px;
-  padding: 0 24px;
-  border-top-left-radius: 0 !important;
-  border-top-right-radius: 0 !important;
-  overflow: visible !important;
+  position: relative;
+  width: 100%;
+  height: 82px;
+  border-bottom: 1px solid #20323c;
+  background: linear-gradient(180deg, rgba(5, 12, 18, 0.96), rgba(7, 16, 24, 0.9));
+  backdrop-filter: blur(10px);
 }
-.public-brand {
+
+.public-navbar-inner {
+  position: relative;
   display: flex;
   align-items: center;
+  gap: 26px;
+  height: 100%;
+  width: min(var(--fuwari-page-width), calc(100% - 48px));
+  margin: 0 auto;
+}
+
+/* ---------- brand ---------- */
+
+.ueg-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 0 0 auto;
+  min-width: 300px;
+  color: inherit;
+}
+.ueg-brand-logo {
+  width: 54px;
+  height: 54px;
+  flex: 0 0 54px;
+}
+.ueg-brand-logo svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.ueg-brand-name {
+  line-height: 1;
+}
+.ueg-brand-name .ueg {
+  font-size: var(--fs-22);
+  font-weight: 700;
+  letter-spacing: 0.11em;
+  color: var(--ueg-bone);
+}
+.ueg-brand-name .en {
+  margin-top: 4px;
+  font-size: var(--fs-9);
+  letter-spacing: 0.09em;
+  color: var(--ueg-steel);
+}
+.ueg-brand-name .cn {
+  margin-top: 5px;
+  font-size: var(--fs-11);
+  letter-spacing: 0.12em;
+  color: var(--ueg-mist);
+}
+
+/* ---------- primary navigation ---------- */
+
+.ueg-nav {
+  display: flex;
+  align-self: stretch;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.ueg-nav-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 84px;
+  padding: 0 9px;
+  border-left: 1px solid rgba(120, 151, 164, 0.18);
+  color: var(--ueg-mist);
+  position: relative;
+  transition: color 0.18s ease, background-color 0.18s ease;
+}
+.ueg-nav-link:last-child {
+  border-right: 1px solid rgba(120, 151, 164, 0.12);
+}
+.ueg-nav-link:hover {
+  color: var(--ueg-bone);
+  background: rgba(120, 151, 164, 0.04);
+}
+.ueg-nav-active {
+  color: var(--ueg-bone);
+  background: rgba(193, 138, 85, 0.055);
+}
+.ueg-nav-active::after {
+  content: "";
+  position: absolute;
+  left: 22%;
+  right: 22%;
+  bottom: 10px;
+  height: 2px;
+  background: var(--ueg-amber);
+  box-shadow: 0 0 12px rgba(193, 138, 85, 0.3);
+}
+.ueg-nav-cn {
+  font-size: var(--fs-13);
+  white-space: nowrap;
+}
+.ueg-nav-en {
+  margin-top: 6px;
+  font-size: var(--fs-8);
+  letter-spacing: 0.1em;
+  color: var(--ueg-mist);
+  white-space: nowrap;
+}
+.ueg-nav-active .ueg-nav-en {
+  color: var(--ueg-steel);
+}
+
+/* ---------- header tools ---------- */
+
+.ueg-tools {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-left: auto;
+  flex: 0 0 auto;
+}
+.ueg-search {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: 8px;
-  min-width: 0;
-  max-width: 200px;
-  flex-shrink: 0;
-  color: var(--fuwari-primary);
-  font-size: 16px;
-  font-weight: 700;
-  border-radius: 10px;
-  min-height: 44px;
+  width: 158px;
+  height: 34px;
+  padding: 0 11px 0 13px;
+  border: 1px solid var(--ueg-border-2);
+  border-radius: 18px;
+  background: rgba(8, 16, 22, 0.45);
+  color: #63747c;
+  font-size: var(--fs-11);
+  transition: border-color 180ms, color 180ms;
 }
-.public-brand svg {
-  flex-shrink: 0;
+.ueg-search:hover {
+  border-color: var(--ueg-steel);
+  color: var(--ueg-mist);
 }
-.public-brand span {
+.ueg-search span:first-child {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.public-desktop-links {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 0;
-  flex: 1;
-  gap: 4px;
+.ueg-search-mag {
+  position: relative;
+  flex: 0 0 12px;
+  width: 12px;
+  height: 12px;
+  border: 1px solid var(--ueg-steel);
+  border-radius: 50%;
 }
-.public-nav-link {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 0;
-  max-width: 132px;
-  min-height: 44px;
-  padding: 0 14px;
-  border-radius: 12px;
-  color: var(--fuwari-fg-75);
-  font-weight: 700;
-  transition:
-    background-color 180ms,
-    color 180ms;
+.ueg-search-mag::after {
+  content: "";
+  position: absolute;
+  right: -4px;
+  bottom: -2px;
+  width: 5px;
+  height: 1px;
+  background: var(--ueg-steel);
+  transform: rotate(45deg);
 }
-.public-nav-active,
-.public-nav-link:hover {
-  background: var(--fuwari-btn-regular-bg);
-  color: var(--fuwari-primary);
-}
-.public-nav-tools,
-.public-desktop-tools {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  flex-shrink: 0;
-}
-.public-nav-search {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  width: clamp(100px, 12vw, 180px);
-  height: 44px;
-  padding: 0 12px;
-  border-radius: 10px;
-  background: var(--fuwari-btn-plain-bg-hover);
-  color: var(--fuwari-fg-50);
-  font-size: 14px;
-  margin-right: 8px;
-  transition: background-color 180ms;
-}
-.public-nav-search svg {
-  flex-shrink: 0;
-}
-.public-nav-search span {
-  overflow: hidden;
-  text-overflow: ellipsis;
+.ueg-net {
+  min-width: 86px;
+  font-size: var(--fs-9);
+  letter-spacing: 0.06em;
+  line-height: 1.5;
+  color: var(--ueg-steel);
   white-space: nowrap;
+}
+.ueg-net .dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: 5px;
+  border-radius: 50%;
+  background: #37c8ac;
+  box-shadow: 0 0 8px rgba(55, 200, 172, 0.5);
+}
+.ueg-lang {
+  display: flex;
+  align-items: center;
+  height: 34px;
+  padding: 0 2px;
+  color: var(--ueg-mist);
+  font-size: var(--fs-11);
+  white-space: nowrap;
+}
+
+.public-desktop-tools,
+.public-nav-tools {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
 }
 .public-navbar .public-tool-button {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-  width: 44px;
-  height: 44px;
+  width: 38px;
+  height: 38px;
   padding: 0;
   border-radius: 10px;
   background: transparent;
   color: var(--fuwari-fg-75);
-  transition:
-    background-color 180ms,
-    color 180ms;
+  transition: background-color 180ms, color 180ms;
 }
 .public-navbar .public-account-trigger {
-  width: 52px;
+  width: 40px;
 }
 .public-account-trigger img {
   width: 28px;
@@ -127,8 +245,7 @@
   object-fit: cover;
 }
 .public-tool-button:hover,
-.public-tool-button[aria-expanded="true"],
-.public-nav-search:hover {
+.public-tool-button[aria-expanded="true"] {
   background: var(--fuwari-btn-regular-bg);
   color: var(--fuwari-primary);
 }
@@ -140,6 +257,9 @@
   outline: 2px solid var(--fuwari-primary);
   outline-offset: 3px;
 }
+
+/* ---------- dropdown panel (account + mobile) ---------- */
+
 .public-navigation-panel {
   position: absolute;
   top: calc(100% + 8px);
@@ -169,11 +289,9 @@
   padding: 10px 14px;
   border-radius: 10px;
   color: var(--fuwari-fg-75);
-  font-size: 14px;
+  font-size: var(--fs-14);
   text-align: left;
-  transition:
-    background-color 180ms,
-    color 180ms;
+  transition: background-color 180ms, color 180ms;
 }
 .public-menu-item:hover,
 .public-menu-active {
@@ -220,13 +338,15 @@
   gap: 8px;
   margin: 8px 6px;
   padding: 8px 0;
-  border-block: 1px solid
-    color-mix(in srgb, var(--fuwari-fg-50) 20%, transparent);
+  border-block: 1px solid color-mix(in srgb, var(--fuwari-fg-50) 20%, transparent);
 }
 .public-menu-theme {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   min-height: 44px;
   padding: 8px !important;
-  font-size: 12px !important;
+  font-size: var(--fs-12) !important;
   border-radius: 8px;
 }
 .public-menu-languages {
@@ -237,7 +357,7 @@
   min-height: 44px;
   padding: 0 8px;
   border-radius: 8px;
-  font-size: 12px;
+  font-size: var(--fs-12);
   color: var(--fuwari-fg-50);
 }
 .public-menu-languages button[aria-pressed="true"] {
@@ -253,63 +373,104 @@
   border-radius: 8px;
   background: var(--fuwari-btn-regular-bg);
 }
-@media (max-width: 1279px) {
-  .public-navbar {
-    gap: 12px;
-    padding-inline: 16px;
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 1439px) {
+  .ueg-net {
+    display: none;
   }
-  .public-nav-search {
+}
+
+@media (max-width: 1279px) {
+  .public-navbar-inner {
+    gap: 16px;
+  }
+  .ueg-brand {
+    min-width: 232px;
+  }
+  .ueg-brand-logo {
+    width: 46px;
+    height: 46px;
+    flex-basis: 46px;
+  }
+  .ueg-brand-name .ueg {
+    font-size: var(--fs-19);
+  }
+  .ueg-nav-link {
+    min-width: 76px;
+    padding: 0 8px;
+  }
+  .ueg-nav-cn {
+    font-size: var(--fs-12);
+  }
+  .ueg-search {
     width: 44px;
     padding: 0;
     justify-content: center;
-    margin: 0;
-    background: transparent;
+    border-radius: 10px;
   }
-  .public-nav-search span {
+  .ueg-search span:first-child {
     display: none;
   }
-  .public-brand {
-    max-width: 180px;
-  }
-  .public-nav-link {
-    padding-inline: 10px;
-  }
 }
+
 @media (max-width: 1099px) {
-  .public-desktop-links,
+  .ueg-nav,
   .public-desktop-tools {
     display: none;
   }
   .public-navbar .public-mobile-trigger {
     display: flex;
   }
-  .public-brand {
-    max-width: none;
-    flex: 1;
-    flex-shrink: 1;
+  .ueg-brand {
+    min-width: 0;
     margin-right: auto;
   }
   .public-navigation-panel {
-    right: 8px;
+    right: 0;
   }
 }
-@media (max-width: 639px) {
+
+@media (max-width: 820px) {
   .public-navbar {
-    padding-inline: 24px;
-    gap: 8px;
+    height: 66px;
+  }
+  .public-navbar-inner {
+    width: min(var(--fuwari-page-width), calc(100% - 28px));
+    gap: 10px;
+  }
+  .ueg-brand-name .en,
+  .ueg-brand-name .cn {
+    display: none;
+  }
+  .ueg-lang {
+    display: none;
   }
 }
+
+@media (max-width: 560px) {
+  .ueg-brand-logo {
+    width: 40px;
+    height: 40px;
+    flex-basis: 40px;
+  }
+  .ueg-brand-name .ueg {
+    font-size: var(--fs-16);
+  }
+  .ueg-search {
+    display: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .public-navbar-wrapper,
-  .public-nav-link,
-  .public-nav-search,
+  .ueg-nav-link,
+  .ueg-search,
   .public-navbar .public-tool-button,
   .public-menu-item {
     transition: none;
   }
-}
-.public-menu-theme {
-  display: flex;
-  align-items: center;
-  gap: 8px;
 }

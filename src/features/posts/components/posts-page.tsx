@@ -1,93 +1,248 @@
-import { useEffect, useRef } from "react";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Link } from "@tanstack/react-router";
+import type { CSSProperties } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { CategoryWithCount } from "@/features/categories/categories.schema";
 import type { PostItem } from "@/features/posts/schema/posts.schema";
-import type { TagWithCount } from "@/features/tags/tags.schema";
+import { formatUegPostDate } from "@/features/posts/utils/format-ueg-post-date";
+import {
+  isEmergencyCategory,
+  postDocCode,
+  postImage,
+} from "@/features/posts/utils/portal-media";
+import { PUBLIC_IMAGE_WIDTH } from "@/features/media/utils/media.utils";
+import { cn } from "@/lib/utils";
 import { m } from "@/paraglide/messages";
-import { ArchivePanel } from "./archive/archive-panel";
+import { UegApplyCards } from "./ueg-apply-cards";
 
-export const POSTS_PER_PAGE = 24;
+export const POSTS_PER_PAGE = 8;
+
+const PAGE_WINDOW = 5;
 
 interface PostsPageProps {
   posts: Array<PostItem>;
-  tags: Array<Omit<TagWithCount, "createdAt">>;
+  categories: Array<CategoryWithCount>;
+  selectedCategory?: string;
   selectedTag?: string;
-  onTagClick: (tag?: string) => void;
+  onCategoryClick: (categoryName?: string) => void;
+  onClearTag: () => void;
   hasNextPage: boolean;
   isFetchingNextPage: boolean;
-  fetchNextPage: () => void;
+  fetchNextPage: () => void | Promise<unknown>;
+}
+
+function pageNumbers(current: number, max: number): Array<number> {
+  const start = Math.max(1, Math.min(current - 2, max - PAGE_WINDOW + 1));
+  const end = Math.min(max, start + PAGE_WINDOW - 1);
+  const numbers: Array<number> = [];
+  for (let value = start; value <= end; value += 1) numbers.push(value);
+  return numbers;
 }
 
 export function PostsPage({
   posts,
+  categories,
+  selectedCategory,
+  selectedTag,
+  onCategoryClick,
+  onClearTag,
   hasNextPage,
   isFetchingNextPage,
   fetchNextPage,
 }: PostsPageProps) {
-  const observerRef = useRef<HTMLDivElement>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const listRef = useRef<HTMLDivElement>(null);
 
+  // A filter change resets pagination.
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
-          fetchNextPage();
-        }
-      },
-      { threshold: 0.1, rootMargin: "0px" },
-    );
+    setCurrentPage(1);
+  }, [selectedCategory, selectedTag]);
 
-    if (observerRef.current) {
-      observer.observe(observerRef.current);
-    }
+  const loadedPages = Math.max(1, Math.ceil(posts.length / POSTS_PER_PAGE));
+  const maxPage = hasNextPage ? loadedPages + 1 : loadedPages;
 
-    return () => observer.disconnect();
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+  // A short final page can leave the reader on a page that no longer exists.
+  useEffect(() => {
+    if (currentPage > maxPage) setCurrentPage(maxPage);
+  }, [currentPage, maxPage]);
+
+  const visiblePosts = useMemo(() => {
+    const start = (currentPage - 1) * POSTS_PER_PAGE;
+    return posts.slice(start, start + POSTS_PER_PAGE);
+  }, [posts, currentPage]);
+
+  const goToPage = useCallback(
+    (target: number) => {
+      if (target < 1 || target > maxPage) return;
+      if (target > loadedPages) {
+        void fetchNextPage();
+      }
+      setCurrentPage(target);
+      listRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    },
+    [fetchNextPage, loadedPages, maxPage],
+  );
+
+  const newest = posts.reduce<Date | null>((latest, post) => {
+    if (!post.publishedAt) return latest;
+    const value = new Date(post.publishedAt);
+    if (Number.isNaN(value.getTime())) return latest;
+    return !latest || value > latest ? value : latest;
+  }, null);
 
   return (
-    <div
-      className="fuwari-onload-animation flex flex-col gap-4"
-      style={{ animationDelay: "var(--fuwari-content-delay)" }}
-    >
-      {posts.length > 0 && <ArchivePanel posts={posts} />}
+    <div className="ueg-news-page">
+      <section className="head">
+        <div className="crumb">UEG / INFORMATION CENTER / NEWS</div>
+        <h1>
+          新闻动态 <span>NEWS &amp; INFORMATION</span>
+        </h1>
+        <p className="intro">
+          联合地球政府官方信息发布平台。查看全球政务、科研、社会、航天任务及紧急状态等最新动态。
+        </p>
+      </section>
 
-      {/* Infinite Scroll trigger and loading indicator */}
-      <div
-        ref={observerRef}
-        className="flex flex-col items-center justify-center pt-2 pb-8"
-      >
-        {isFetchingNextPage ? (
-          <div className="fuwari-card-base w-full px-8 py-6 opacity-70 animate-pulse">
-            {/* Inline Mini Skeleton for appending items */}
-            {Array.from({ length: 3 }).map((_, i) => (
-              <div
-                key={i}
-                className="h-10 w-full rounded-lg flex flex-row justify-start items-center"
-              >
-                <div className="w-[15%] md:w-[10%] flex justify-end pr-2">
-                  <Skeleton className="h-4 w-10 bg-black/10 dark:bg-white/10" />
-                </div>
-                <div className="w-[15%] md:w-[10%] relative h-full flex items-center before:absolute before:w-1 left-1/2 -ml-0.5 pointer-events-none before:border-l-2 before:border-dashed before:border-black/5 dark:before:border-white/5 before:-top-5 before:bottom-0 before:h-20 z-0">
-                  <div className="mx-auto w-2 h-2 rounded-full bg-black/20 dark:bg-white/20 z-10" />
-                </div>
-                <div className="w-[70%] md:max-w-[65%] md:w-[65%] flex justify-start pl-2">
-                  <Skeleton className="h-5 w-3/4 max-w-50 bg-black/10 dark:bg-white/10" />
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : hasNextPage ? (
-          <div className="h-px w-24 bg-black/10 dark:bg-white/10"></div>
-        ) : posts.length > 0 ? (
-          <div className="flex items-center gap-4 text-black/20 dark:text-white/20 mt-4">
-            <span className="h-px w-12 bg-current" />
-            <span className="text-sm font-bold italic">{m.posts_end()}</span>
-            <span className="h-px w-12 bg-current" />
-          </div>
-        ) : (
-          <div className="fuwari-card-base w-full px-8 py-12 text-center text-sm fuwari-text-50">
-            {m.posts_no_posts()}
-          </div>
-        )}
+      <div className="toolbar">
+        <span className="label">CATEGORY</span>
+        <button
+          type="button"
+          className={cn("filter", !selectedCategory && "active")}
+          onClick={() => onCategoryClick(undefined)}
+        >
+          全部
+        </button>
+        {categories.map((category) => (
+          <button
+            key={category.id}
+            type="button"
+            className={cn(
+              "filter",
+              selectedCategory === category.name && "active",
+            )}
+            onClick={() => onCategoryClick(category.name)}
+          >
+            {category.name}
+          </button>
+        ))}
+        {selectedTag ? (
+          <button type="button" className="active-tag" onClick={onClearTag}>
+            标签：{selectedTag} <b>×</b>
+          </button>
+        ) : null}
+        <span className="spacer" />
+        <span className="count">
+          TOTAL {posts.length} RECORDS
+          {newest ? ` · UPDATED ${formatUegPostDate(newest)}` : ""}
+        </span>
       </div>
+
+      <section className="layout">
+        <div ref={listRef}>
+          {visiblePosts.length > 0 ? (
+            <div className="list">
+              {visiblePosts.map((post) => {
+                const category = post.category?.name;
+                const emergency = isEmergencyCategory(category);
+                return (
+                  <article
+                    key={post.id}
+                    className={cn("card", emergency && "is-emergency")}
+                  >
+                    <Link
+                      to="/post/$slug"
+                      params={{ slug: post.slug }}
+                      className="thumb"
+                      style={
+                        {
+                          "--thumb-image": `url('${postImage(
+                            post,
+                            PUBLIC_IMAGE_WIDTH.cover,
+                          )}')`,
+                        } as CSSProperties
+                      }
+                      aria-label={post.title}
+                    />
+                    <div className="body">
+                      <div className="meta">
+                        <span className={cn("tag", emergency && "alert")}>
+                          {category ?? m.ueg_nav_news()}
+                        </span>
+                        <span>{formatUegPostDate(post.publishedAt)}</span>
+                        <span className="code">{postDocCode(post)}</span>
+                      </div>
+                      <h2 className="title">
+                        <Link to="/post/$slug" params={{ slug: post.slug }}>
+                          {post.title}
+                        </Link>
+                      </h2>
+                      <p className="desc">{post.summary ?? ""}</p>
+                      <Link
+                        to="/post/$slug"
+                        params={{ slug: post.slug }}
+                        className="read"
+                      >
+                        阅读全文 <b>→</b>
+                      </Link>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="empty">{m.posts_no_posts()}</div>
+          )}
+
+          {isFetchingNextPage ? (
+            <div className="list" style={{ marginTop: "12px" }}>
+              {Array.from({ length: 2 }).map((_, index) => (
+                <div key={index} className="card is-skeleton">
+                  <span className="thumb" />
+                  <div className="body">
+                    <div className="sk-line w-30" />
+                    <div className="sk-line w-70" />
+                    <div className="sk-line w-90" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : null}
+
+          {maxPage > 1 ? (
+            <div className="pages">
+              <button
+                type="button"
+                className="pagebtn"
+                onClick={() => goToPage(currentPage - 1)}
+                disabled={currentPage === 1}
+                aria-label="上一页"
+              >
+                ‹
+              </button>
+              {pageNumbers(currentPage, maxPage).map((number) => (
+                <button
+                  key={number}
+                  type="button"
+                  className={cn("pagebtn", number === currentPage && "active")}
+                  onClick={() => goToPage(number)}
+                  aria-current={number === currentPage ? "page" : undefined}
+                >
+                  {number}
+                </button>
+              ))}
+              <button
+                type="button"
+                className="pagebtn"
+                onClick={() => goToPage(currentPage + 1)}
+                disabled={currentPage === maxPage}
+                aria-label="下一页"
+              >
+                ›
+              </button>
+            </div>
+          ) : null}
+        </div>
+
+        <UegApplyCards />
+      </section>
     </div>
   );
 }

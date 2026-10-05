@@ -13,10 +13,10 @@ type AppTheme = z.infer<typeof _AppThemeSchema>;
 const themeStorageKey = "ui-theme";
 
 const getStoredUserTheme = createIsomorphicFn()
-  .server((): UserTheme => "system")
+  .server((): UserTheme => "dark")
   .client((): UserTheme => {
     const stored = localStorage.getItem(themeStorageKey);
-    return UserThemeSchema.parse(stored);
+    return UserThemeSchema.parse(stored ?? "dark");
   });
 
 const setStoredTheme = createClientOnlyFn((theme: UserTheme) => {
@@ -56,10 +56,10 @@ const setupPreferredListener = createClientOnlyFn(() => {
 const themeScript = (() => {
   function themeFn() {
     try {
-      const storedTheme = localStorage.getItem("ui-theme") || "system";
+      const storedTheme = localStorage.getItem("ui-theme") || "dark";
       const validTheme = ["light", "dark", "system"].includes(storedTheme)
         ? storedTheme
-        : "system";
+        : "dark";
 
       if (validTheme === "system") {
         const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
@@ -71,11 +71,7 @@ const themeScript = (() => {
         document.documentElement.classList.add(validTheme);
       }
     } catch {
-      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
-        .matches
-        ? "dark"
-        : "light";
-      document.documentElement.classList.add(systemTheme, "system");
+      document.documentElement.classList.add("dark");
     }
   }
   return `(${themeFn.toString()})();`;

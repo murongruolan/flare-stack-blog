@@ -1,0 +1,487 @@
+/* ============================================================
+   UEG public portal — 机构详情 / organization detail
+   Ported from the approved reference. Every selector is scoped
+   under `.ueg-org-detail-page` so nothing leaks into other pages.
+   ============================================================ */
+.ueg-org-detail-page {
+--bg:#071018;
+--surface:#101d26;
+--surface2:#14232e;
+--primary:#afc7d1;
+--primary2:#7897a4;
+--title:#e2e0d6;
+--text:#c8d0d1;
+--muted:#9aa7aa;
+--muted2:#63747c;
+--accent:#c18a55;
+--success:#719e99;
+--danger:#a94b43;
+--border:#293b45;
+--border2:#3e555f;
+
+}
+.ueg-org-detail-page * {
+box-sizing:border-box}
+.ueg-org-detail-page {
+margin:0;
+min-width:320px;
+background:var(--bg);
+color:var(--text);
+font-family:var(--font-sans)}
+.ueg-org-detail-page {
+background:radial-gradient(circle at 75% 5%,rgba(120,151,164,.08),transparent 25%),linear-gradient(rgba(120,151,164,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(120,151,164,.022) 1px,transparent 1px),var(--bg);
+background-size:auto,36px 36px,36px 36px,auto}
+.ueg-org-detail-page a {
+color:inherit;
+text-decoration:none}
+.ueg-org-detail-page .topbar {
+height:82px;
+border-bottom:1px solid #20323c;
+background:linear-gradient(180deg,rgba(5,12,18,.97),rgba(7,16,24,.92));
+position:sticky;
+top:0;
+z-index:20;
+backdrop-filter:blur(10px)}
+.ueg-org-detail-page .topbar-inner {
+width:min(1460px,calc(100% - 48px));
+height:100%;
+margin:auto;
+display:flex;
+align-items:center;
+gap:24px}
+.ueg-org-detail-page .brand {
+display:flex;
+align-items:center;
+gap:12px;
+min-width:300px}
+.ueg-org-detail-page .logo {
+width:54px;
+height:54px;
+flex:0 0 54px}
+.ueg-org-detail-page .logo svg {
+width:100%;
+height:100%}
+.ueg-org-detail-page .brand-name {
+line-height:1}
+.ueg-org-detail-page .brand-name .ueg {
+font-size: var(--fs-22);
+font-weight:700;
+letter-spacing:.11em;
+color:var(--title)}
+.ueg-org-detail-page .brand-name .en {
+margin-top:4px;
+font-size: var(--fs-9);
+letter-spacing:.09em;
+color:var(--primary)}
+.ueg-org-detail-page .brand-name .cn {
+margin-top:5px;
+font-size: var(--fs-11);
+letter-spacing:.12em;
+color:var(--muted)}
+.ueg-org-detail-page .nav {
+display:flex;
+flex:1;
+align-self:stretch}
+.ueg-org-detail-page .nav a {
+min-width:92px;
+padding:0 10px;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+border-left:1px solid rgba(120,151,164,.18);
+color:var(--muted);
+position:relative}
+.ueg-org-detail-page .nav a:last-child {
+border-right:1px solid rgba(120,151,164,.12)}
+.ueg-org-detail-page .nav a.active {
+color:var(--title);
+background:rgba(193,138,85,.055)}
+.ueg-org-detail-page .nav a.active:after {
+content:"";
+position:absolute;
+left:22%;
+right:22%;
+bottom:10px;
+height:2px;
+background:var(--accent)}
+.ueg-org-detail-page .nav-cn {
+font-size: var(--fs-13)}
+.ueg-org-detail-page .nav-en {
+margin-top:6px;
+color:var(--primary2);
+font-size: var(--fs-8);
+letter-spacing:.1em}
+.ueg-org-detail-page .header-tools {
+display:flex;
+align-items:center;
+gap:14px;
+margin-left:auto}
+.ueg-org-detail-page .search {
+width:200px;
+height:34px;
+padding:0 12px;
+border:1px solid var(--border2);
+border-radius:18px;
+display:flex;
+align-items:center;
+background:rgba(8,16,22,.45);
+color:var(--muted2);
+font-size: var(--fs-11)}
+.ueg-org-detail-page .network {
+min-width:88px;
+color:var(--primary2);
+font-size: var(--fs-9);
+letter-spacing:.06em}
+.ueg-org-detail-page .dot {
+display:inline-block;
+width:7px;
+height:7px;
+margin-right:5px;
+border-radius:50%;
+background:#37c8ac;
+box-shadow:0 0 8px rgba(55,200,172,.5)}
+.ueg-org-detail-page .lang {
+color:var(--muted);
+font-size: var(--fs-11);
+white-space:nowrap}
+.ueg-org-detail-page .shell {
+width:min(1460px,calc(100% - 48px));
+margin:auto}
+.ueg-org-detail-page .hero {
+margin-top:18px;
+padding:30px 32px;
+min-height:240px;
+border:1px solid var(--border);
+background:linear-gradient(90deg,rgba(8,17,24,.98),rgba(15,29,39,.82));
+position:relative;
+overflow:hidden;
+clip-path:polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px)}
+.ueg-org-detail-page .hero:before {
+content:"";
+position:absolute;
+inset:0;
+background:linear-gradient(rgba(120,151,164,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(120,151,164,.03) 1px,transparent 1px);
+background-size:30px 30px}
+.ueg-org-detail-page .hero-content {
+position:relative;
+z-index:1;
+max-width:900px}
+.ueg-org-detail-page .crumb {
+color:var(--primary2);
+font:var(--fs-9) var(--font-mono);
+letter-spacing:.14em}
+.ueg-org-detail-page .code {
+margin-top:13px;
+color:var(--accent);
+font:var(--fs-9) var(--font-mono);
+letter-spacing:.14em}
+.ueg-org-detail-page .hero h1 {
+margin:7px 0 0;
+color:var(--title);
+font-size: var(--fs-40);
+line-height:1.2}
+.ueg-org-detail-page .hero .en {
+margin-top:6px;
+color:var(--primary2);
+font:var(--fs-11) var(--font-mono);
+letter-spacing:.08em}
+.ueg-org-detail-page .hero p {
+max-width:850px;
+margin:13px 0 0;
+color:var(--muted);
+font-size: var(--fs-11);
+line-height:1.75}
+.ueg-org-detail-page .hero-actions {
+margin-top:18px;
+display:flex;
+gap:9px;
+flex-wrap:wrap}
+.ueg-org-detail-page .btn {
+display:inline-flex;
+align-items:center;
+gap:10px;
+padding:8px 12px;
+border:1px solid var(--border2);
+color:var(--primary);
+font-size: var(--fs-9);
+background:rgba(120,151,164,.025)}
+.ueg-org-detail-page .btn.accent {
+border-color:var(--accent);
+color:#e1c8a2;
+background:rgba(193,138,85,.05)}
+.ueg-org-detail-page .btn b {
+font-size: var(--fs-13);
+color:var(--accent);
+font-weight:400}
+.ueg-org-detail-page .grid {
+display:grid;
+grid-template-columns:minmax(0,1fr) 340px;
+gap:18px;
+margin-top:18px}
+.ueg-org-detail-page .panel {
+padding:18px;
+border:1px solid var(--border);
+background:rgba(10,20,28,.82);
+position:relative;
+overflow:hidden;
+clip-path:polygon(11px 0,100% 0,100% calc(100% - 11px),calc(100% - 11px) 100%,0 100%,0 11px)}
+.ueg-org-detail-page .panel h2 {
+margin:0;
+color:var(--title);
+font-size: var(--fs-15)}
+.ueg-org-detail-page .panel .subline {
+margin-top:5px;
+color:var(--primary2);
+font:var(--fs-8) var(--font-mono);
+letter-spacing:.08em}
+.ueg-org-detail-page .facts {
+margin-top:16px;
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:10px}
+.ueg-org-detail-page .fact {
+padding:11px;
+border:1px solid var(--border);
+background:rgba(8,17,24,.55)}
+.ueg-org-detail-page .fact .k {
+color:var(--muted2);
+font:var(--fs-8) var(--font-mono);
+letter-spacing:.08em}
+.ueg-org-detail-page .fact .v {
+margin-top:6px;
+color:var(--text);
+font-size: var(--fs-11);
+line-height:1.4}
+.ueg-org-detail-page .summary {
+margin-top:15px;
+color:var(--muted);
+font-size: var(--fs-10);
+line-height:1.8}
+.ueg-org-detail-page .side-list {
+margin-top:14px;
+display:flex;
+flex-direction:column;
+gap:8px}
+.ueg-org-detail-page .side-item {
+padding:10px 11px;
+border:1px solid var(--border);
+background:rgba(8,17,24,.55)}
+.ueg-org-detail-page .side-item .k {
+color:var(--accent);
+font:var(--fs-8) var(--font-mono)}
+.ueg-org-detail-page .side-item .t {
+margin-top:5px;
+color:var(--title);
+font-size: var(--fs-11)}
+.ueg-org-detail-page .side-item .d {
+margin-top:4px;
+color:var(--muted2);
+font-size: var(--fs-8);
+line-height:1.5}
+.ueg-org-detail-page .detail-list {
+margin-top:14px;
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:9px}
+.ueg-org-detail-page .detail-item {
+padding:12px;
+border:1px solid rgba(120,151,164,.15);
+background:rgba(10,20,28,.42)}
+.ueg-org-detail-page .detail-item .k {
+color:var(--accent);
+font:var(--fs-8) var(--font-mono)}
+.ueg-org-detail-page .detail-item .t {
+margin-top:6px;
+color:var(--text);
+font-size: var(--fs-10);
+line-height:1.55}
+.ueg-org-detail-page .facility-grid {
+margin-top:14px;
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:10px}
+.ueg-org-detail-page .facility {
+padding:13px;
+border:1px solid var(--border);
+background:rgba(8,17,24,.55)}
+.ueg-org-detail-page .facility .k {
+color:var(--accent);
+font:var(--fs-8) var(--font-mono)}
+.ueg-org-detail-page .facility h3 {
+margin:6px 0 0;
+color:var(--title);
+font-size: var(--fs-12)}
+.ueg-org-detail-page .facility .en {
+margin-top:4px;
+color:var(--primary2);
+font:var(--fs-7) var(--font-mono)}
+.ueg-org-detail-page .facility p {
+margin-top:6px;
+color:var(--muted2);
+font-size: var(--fs-8);
+line-height:1.55}
+.ueg-org-detail-page .timeline {
+margin-top:15px;
+border-left:1px solid var(--border2);
+padding-left:18px}
+.ueg-org-detail-page .titem {
+position:relative;
+padding:0 0 18px}
+.ueg-org-detail-page .titem:before {
+content:"";
+position:absolute;
+left:-23px;
+top:4px;
+width:7px;
+height:7px;
+border:1px solid var(--primary2);
+background:var(--bg);
+border-radius:50%}
+.ueg-org-detail-page .titem.current:before {
+border-color:var(--accent);
+background:var(--accent)}
+.ueg-org-detail-page .titem .y {
+color:var(--accent);
+font:var(--fs-8) var(--font-mono)}
+.ueg-org-detail-page .titem h3 {
+margin:5px 0 0;
+color:var(--title);
+font-size: var(--fs-11)}
+.ueg-org-detail-page .titem p {
+margin:5px 0 0;
+color:var(--muted);
+font-size: var(--fs-8);
+line-height:1.6}
+.ueg-org-detail-page .back {
+display:inline-flex;
+align-items:center;
+gap:9px;
+color:var(--muted);
+font-size: var(--fs-9);
+margin-bottom:10px}
+.ueg-org-detail-page .back b {
+color:var(--accent);
+font-weight:400;
+font-size: var(--fs-13)}
+.ueg-org-detail-page .footer {
+margin-top:18px;
+border-top:1px solid var(--border2);
+border-bottom:1px solid var(--border2);
+background:rgba(5,12,18,.84)}
+.ueg-org-detail-page .footer-main {
+min-height:58px;
+display:grid;
+grid-template-columns:220px 1fr 340px 210px;
+align-items:center;
+gap:18px}
+.ueg-org-detail-page .footer-brand {
+display:flex;
+align-items:center;
+gap:10px}
+.ueg-org-detail-page .footer-brand .logo {
+width:34px;
+height:34px;
+flex-basis:34px}
+.ueg-org-detail-page .footer-brand .ueg {
+font-size: var(--fs-16)}
+.ueg-org-detail-page .footer-brand .en {
+font-size: var(--fs-7)}
+.ueg-org-detail-page .footer-brand .cn {
+font-size: var(--fs-8)}
+.ueg-org-detail-page .footer-links {
+display:flex;
+flex-wrap:wrap;
+gap:20px;
+color:var(--muted);
+font-size: var(--fs-9)}
+.ueg-org-detail-page .footer-motto {
+text-align:center;
+color:#7c8e94;
+font-size: var(--fs-10)}
+.ueg-org-detail-page .footer-status {
+padding-left:20px;
+border-left:1px solid var(--border);
+color:var(--primary2);
+font-size: var(--fs-9)}
+.ueg-org-detail-page .footer-status .ok {
+margin-left:4px;
+color:#3fc7ad}
+.ueg-org-detail-page .footer-status .time {
+margin-top:5px;
+color:var(--muted2);
+font:var(--fs-8) var(--font-mono)}
+.ueg-org-detail-page .footer-bottom {
+min-height:33px;
+display:flex;
+align-items:center;
+justify-content:space-between;
+border-top:1px solid rgba(120,151,164,.13);
+color:#5d7078;
+font-size: var(--fs-8)}
+@media(max-width:1180px) {
+.ueg-org-detail-page .brand {
+min-width:230px}
+.ueg-org-detail-page .nav a {
+min-width:76px}
+.ueg-org-detail-page .header-tools .search {
+display:none}
+.ueg-org-detail-page .grid {
+grid-template-columns:1fr}
+.ueg-org-detail-page .footer-main {
+grid-template-columns:180px 1fr 180px}
+.ueg-org-detail-page .footer-motto {
+display:none}
+}
+@media(max-width:820px) {
+.ueg-org-detail-page .topbar {
+height:66px}
+.ueg-org-detail-page .topbar-inner, .ueg-org-detail-page .shell {
+width:calc(100% - 28px)}
+.ueg-org-detail-page .brand {
+min-width:0}
+.ueg-org-detail-page .brand-name .en, .ueg-org-detail-page .brand-name .cn, .ueg-org-detail-page .nav {
+display:none}
+.ueg-org-detail-page .brand-name .ueg {
+font-size: var(--fs-19)}
+.ueg-org-detail-page .network, .ueg-org-detail-page .lang {
+display:none}
+.ueg-org-detail-page .header-tools:after {
+content:"MENU";
+padding:7px 9px;
+border:1px solid var(--border);
+color:var(--muted2);
+font:var(--fs-8) var(--font-mono)}
+.ueg-org-detail-page .hero {
+padding:24px 18px}
+.ueg-org-detail-page .hero h1 {
+font-size: var(--fs-30)}
+.ueg-org-detail-page .facts, .ueg-org-detail-page .detail-list, .ueg-org-detail-page .facility-grid {
+grid-template-columns:1fr 1fr}
+.ueg-org-detail-page .footer-main {
+grid-template-columns:1fr;
+gap:12px;
+padding:14px 0}
+.ueg-org-detail-page .footer-status {
+padding:12px 0 0;
+border-top:1px solid var(--border);
+border-left:0}
+}
+@media(max-width:560px) {
+.ueg-org-detail-page .shell {
+width:calc(100% - 20px)}
+.ueg-org-detail-page .hero h1 {
+font-size: var(--fs-25)}
+.ueg-org-detail-page .facts, .ueg-org-detail-page .detail-list, .ueg-org-detail-page .facility-grid {
+grid-template-columns:1fr}
+.ueg-org-detail-page .footer-links {
+gap:10px 16px}
+.ueg-org-detail-page .footer-bottom {
+min-height:48px;
+flex-direction:column;
+align-items:flex-start;
+justify-content:center;
+gap:7px;
+padding:8px 0}
+}
+

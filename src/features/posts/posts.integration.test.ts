@@ -76,10 +76,10 @@ describe("Posts Integration", () => {
       const pages = [];
       for (const page of [1, 2, 3])
         pages.push(await PostService.getHomePosts(adminContext, page));
-      expect(pages.map((result) => result.items.length)).toEqual([8, 8, 2]);
-      expect(pages.map((result) => result.totalPages)).toEqual([3, 3, 3]);
+      expect(pages.map((result) => result.items.length)).toEqual([16, 2, 2]);
+      expect(pages.map((result) => result.totalPages)).toEqual([2, 2, 2]);
       const items = pages.flatMap((result) => result.items);
-      expect(items.map((item) => item.id)).toEqual([
+      expect(items.slice(0, 18).map((item) => item.id)).toEqual([
         ...rows
           .slice(0, 9)
           .reverse()
@@ -93,7 +93,7 @@ describe("Posts Integration", () => {
         true,
       );
       expect(new Set(items.map((item) => item.id)).size).toBe(18);
-      expect((await PostService.getHomePosts(adminContext, 999)).page).toBe(3);
+      expect((await PostService.getHomePosts(adminContext, 999)).page).toBe(2);
       await adminContext.db
         .update(PostsTable)
         .set({ publicSnapshotJson: null, publicSlug: null })

@@ -17,7 +17,7 @@ import {
   PostCategoryNameSchema,
   PostTagNameSchema,
 } from "@/features/posts/schema/posts.schema";
-import { withTagFilter } from "@/features/posts/utils/post-public-search";
+import { withCategoryFilter } from "@/features/posts/utils/post-public-search";
 import { tagsQueryOptions } from "@/features/tags/queries";
 import { buildCanonicalUrl, canonicalLink } from "@/lib/seo";
 import { m } from "@/paraglide/messages";
@@ -82,7 +82,7 @@ function RouteComponent() {
   const search = Route.useSearch();
   const navigate = useNavigate({ from: Route.fullPath });
 
-  const { data: tags } = useSuspenseQuery(tagsQueryOptions);
+  const { data: categories } = useSuspenseQuery(categoriesQueryOptions);
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useSuspenseInfiniteQuery(
@@ -98,9 +98,16 @@ function RouteComponent() {
     return data.pages.flatMap((page) => page.items);
   }, [data]);
 
-  const handleTagClick = (clickedTag?: string) => {
+  const handleCategoryClick = (categoryName?: string) => {
     navigate({
-      search: withTagFilter(clickedTag),
+      search: { ...withCategoryFilter(categoryName), tagName: search.tagName },
+      replace: true,
+    });
+  };
+
+  const handleClearTag = () => {
+    navigate({
+      search: withCategoryFilter(search.categoryName),
       replace: true,
     });
   };
@@ -108,9 +115,11 @@ function RouteComponent() {
   return (
     <PostsPage
       posts={posts}
-      tags={tags}
+      categories={categories}
+      selectedCategory={search.categoryName}
       selectedTag={search.tagName}
-      onTagClick={handleTagClick}
+      onCategoryClick={handleCategoryClick}
+      onClearTag={handleClearTag}
       hasNextPage={hasNextPage}
       isFetchingNextPage={isFetchingNextPage}
       fetchNextPage={fetchNextPage}

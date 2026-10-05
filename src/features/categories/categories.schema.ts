@@ -40,6 +40,7 @@ export const GetCategoriesInputSchema = z.object({
   publicOnly: z.boolean().optional(),
 });
 
+export type CategoryWithCount = z.infer<typeof CategoryWithCountSchema>;
 export type CreateCategoryInput = z.infer<typeof CreateCategoryInputSchema>;
 export type UpdateCategoryInput = z.infer<typeof UpdateCategoryInputSchema>;
 export type DeleteCategoryInput = z.infer<typeof DeleteCategoryInputSchema>;
