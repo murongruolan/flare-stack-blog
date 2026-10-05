@@ -163,6 +163,12 @@ export function FriendLinkReview({
                       </ClientOnly>
                     </small>
                   </span>
+                  <span
+                    className="friend-queue-sort"
+                    title={m.friend_links_field_sort()}
+                  >
+                    {item.sortOrder}
+                  </span>
                 </button>
               ))
             )}

@@ -141,6 +141,20 @@
   height: 100%;
   object-fit: cover;
 }
+.friend-queue-sort {
+  flex: 0 0 auto;
+  margin-left: auto;
+  min-width: 30px;
+  padding: 3px 8px;
+  border: 1px solid rgba(120, 151, 164, 0.35);
+  border-radius: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: #9aa7aa;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
 .friend-queue-copy {
   display: flex;
   flex-direction: column;
