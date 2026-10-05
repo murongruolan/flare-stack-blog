@@ -49,8 +49,6 @@ export function Footer(_props: FooterProps) {
           </span>
           <span className="footer-brand-name">
             <span className="ueg">UEG</span>
-            <span className="en">UNITED EARTH GOVERNMENT</span>
-            <span className="cn">联合地球政府</span>
           </span>
         </div>
 

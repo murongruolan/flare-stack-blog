@@ -70,18 +70,6 @@
   letter-spacing: 0.11em;
   color: var(--ueg-bone);
 }
-.ueg-home-page .footer-brand-name .en {
-  font-size: var(--fs-7);
-  letter-spacing: 0.09em;
-  color: var(--ueg-steel);
-  margin-top: 3px;
-}
-.ueg-home-page .footer-brand-name .cn {
-  font-size: var(--fs-8);
-  letter-spacing: 0.12em;
-  color: var(--ueg-mist);
-  margin-top: 3px;
-}
 .ueg-home-page .footer-links {
   display: flex;
   flex-wrap: wrap;
@@ -759,9 +747,9 @@
 .ueg-homev2-page .v2-mission-label-en {
   margin-top: auto;
   font-family: var(--font-mono);
-  font-size: var(--fs-9);
+  font-size: var(--fs-13);
   letter-spacing: 0.12em;
-  color: var(--ueg-disabled);
+  color: var(--ueg-text-sub);
 }
 
 .ueg-homev2-page .v2-mission-clock {
