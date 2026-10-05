@@ -797,7 +797,7 @@
 /* 右侧：四指标同一容器，内部细分隔线 */
 .ueg-homev2-page .v2-mission-cards {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   border: 1px solid var(--ueg-border);
   background: rgba(8, 17, 24, 0.84);
   clip-path: polygon(16px 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%, 0 16px);
@@ -807,13 +807,17 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  padding: 20px;
-  border-left: 1px solid var(--ueg-border);
+  padding: 20px 24px;
   transition: background-color 0.25s;
 }
 
-.ueg-homev2-page .v2-mission-card:first-child {
-  border-left: 0;
+/* 十字分隔线：右列竖线、下行横线 */
+.ueg-homev2-page .v2-mission-card:nth-child(even) {
+  border-left: 1px solid var(--ueg-border);
+}
+
+.ueg-homev2-page .v2-mission-card:nth-child(n + 3) {
+  border-top: 1px solid var(--ueg-border);
 }
 
 .ueg-homev2-page .v2-mission-card:hover {
@@ -869,19 +873,13 @@
   .ueg-homev2-page .v2-mission-cards {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-  .ueg-homev2-page .v2-mission-card:nth-child(odd) {
-    border-left: 0;
-  }
-  .ueg-homev2-page .v2-mission-card:nth-child(n + 3) {
-    border-top: 1px solid var(--ueg-border);
-  }
 }
 
 @media (max-width: 560px) {
   .ueg-homev2-page .v2-mission-cards {
     grid-template-columns: minmax(0, 1fr);
   }
-  .ueg-homev2-page .v2-mission-card {
+  .ueg-homev2-page .v2-mission-card:nth-child(even) {
     border-left: 0;
   }
   .ueg-homev2-page .v2-mission-card:nth-child(n + 2) {
