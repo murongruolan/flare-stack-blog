@@ -96,7 +96,9 @@
   align-items: center;
   justify-content: center;
   min-width: 84px;
-  padding: 0 9px;
+  max-width: 100px;
+  padding: 0 8px;
+  overflow: hidden;
   border-left: 1px solid rgba(120, 151, 164, 0.18);
   color: var(--ueg-mist);
   position: relative;
