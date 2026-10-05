@@ -153,9 +153,10 @@
 
 .ueg-era-clock {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 3px;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 3px 8px;
   margin-right: 16px;
   font-family: var(--font-mono);
   font-size: var(--fs-12);
@@ -461,6 +462,12 @@
 }
 
 @media (max-width: 1279px) {
+  .ueg-era-clock {
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 3px;
+  }
+
   .public-navbar-inner {
     gap: 16px;
   }
