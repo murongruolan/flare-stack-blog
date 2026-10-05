@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { EngineGlobe } from "./engine-globe";
 import { EnginePanel } from "./engine-panel";
 import {
@@ -7,14 +7,15 @@ import {
   type EngineDataset,
   type EngineRecord,
 } from "../lib/parse-engines";
+import { ENGINE_DATA_URL } from "../lib/engine-assets";
 
-type Phase = "empty" | "parsing" | "ready" | "error";
+type Phase = "loading" | "ready" | "error";
 
 const ERROR_MESSAGES: Record<string, string> = {
   PARSE_FAILED: "数据解析失败：文件不是有效的 GeoJSON / JSON 文本。",
   NO_FEATURE_COLLECTION: "无法识别发动机数据：缺少 GeoJSON FeatureCollection。",
   NO_ENGINE_RECORDS: "无法识别发动机数据：没有找到有效的发动机点位。",
-  EMPTY_FILE: "文件内容为空。",
+  EMPTY_FILE: "数据文件内容为空。",
 };
 
 const ERROR_TITLE = "INVALID ENGINE DATA";
@@ -37,7 +38,7 @@ function StatBlock({
 }
 
 export function EngineBrowser() {
-  const [phase, setPhase] = useState<Phase>("empty");
+  const [phase, setPhase] = useState<Phase>("loading");
   const [dataset, setDataset] = useState<EngineDataset | null>(null);
   const [datasetKey, setDatasetKey] = useState(0);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -53,7 +54,7 @@ export function EngineBrowser() {
     lat: number;
     key: number;
   } | null>(null);
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const reloadRef = useRef<(() => void) | null>(null);
 
   const selected = dataset && selectedId ? dataset.byId.get(selectedId) ?? null : null;
 
@@ -81,43 +82,57 @@ export function EngineBrowser() {
     return hits;
   }, [dataset, query]);
 
-  const nextFrame = () =>
-    new Promise<void>((resolve) => {
-      setTimeout(resolve, 30);
-    });
-
-  const openPicker = () => fileInputRef.current?.click();
-
-  const handleFile = async (file: File) => {
-    setPhase("parsing");
+  // 从 R2 云端拉取发动机数据（经站点 /images/ 路由透出）
+  const loadFromCloud = () => {
+    setPhase("loading");
     setErrorMessage(null);
-    setParseStep("READING ENGINE DATA FILE ...");
-    await nextFrame();
-    try {
-      const text = await file.text();
-      setParseStep("PARSING ENGINE NETWORK ...");
-      await nextFrame();
-      const parsed = parseEngineFile(text, file.name);
-      setParseStep("BUILDING ENGINE INDEX ...");
-      await nextFrame();
-      setDataset(parsed);
-      setDatasetKey((key) => key + 1);
-      setContinent("");
-      setCountry("");
-      setStatus("");
-      setEngineType("");
-      setQuery("");
-      setSelectedId(null);
-      setPhase("ready");
-    } catch (error) {
-      if (error instanceof EngineDataError) {
-        setErrorMessage(ERROR_MESSAGES[error.message] ?? ERROR_MESSAGES.NO_ENGINE_RECORDS);
-      } else {
-        setErrorMessage("数据解析失败：读取文件时发生未知错误。");
+    setParseStep("FETCHING ENGINE NETWORK FROM CLOUD ...");
+
+    const run = async () => {
+      const nextFrame = () =>
+        new Promise<void>((resolve) => {
+          setTimeout(resolve, 30);
+        });
+      try {
+        const response = await fetch(ENGINE_DATA_URL);
+        if (!response.ok) {
+          throw new EngineDataError("FETCH_FAILED");
+        }
+        setParseStep("PARSING ENGINE NETWORK ...");
+        await nextFrame();
+        const text = await response.text();
+        const parsed = parseEngineFile(text, ENGINE_DATA_URL.split("/").pop() ?? "engines.geojson");
+        setParseStep("BUILDING ENGINE INDEX ...");
+        await nextFrame();
+        setDataset(parsed);
+        setDatasetKey((key) => key + 1);
+        setContinent("");
+        setCountry("");
+        setStatus("");
+        setEngineType("");
+        setQuery("");
+        setSelectedId(null);
+        setPhase("ready");
+      } catch (error) {
+        if (error instanceof EngineDataError) {
+          setErrorMessage(
+            ERROR_MESSAGES[error.message] ?? ERROR_MESSAGES.NO_ENGINE_RECORDS,
+          );
+        } else {
+          setErrorMessage("云端数据加载失败，请稍后重试或检查 R2 数据文件。");
+        }
+        setPhase("error");
       }
-      setPhase("error");
-    }
+    };
+    void run();
   };
+
+  // 挂载即自动加载云端数据
+  useEffect(() => {
+    reloadRef.current = loadFromCloud;
+    loadFromCloud();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const selectEngine = (engine: EngineRecord) => setSelectedId(engine.id);
 
@@ -134,6 +149,8 @@ export function EngineBrowser() {
     setEngineType("");
   };
 
+  const totalText = dataset ? dataset.engines.length.toLocaleString("en-US") : "--";
+
   return (
     <div className="ueg-engines-page">
       <section className="head engine-head">
@@ -143,13 +160,13 @@ export function EngineBrowser() {
             发动机浏览器 <span>ENGINE BROWSER</span>
           </h1>
           <p className="intro">
-            UEG 全球行星发动机网络监控 / 档案终端。开发阶段：数据文件仅在当前
-            浏览器内存中读取，不上传、不落库，刷新后需重新选择。
+            UEG 全球行星发动机网络监控 / 档案终端。数据由 R2 云端下发，
+            仅在当前浏览器内存中解析，不落库。
           </p>
         </div>
         {dataset && phase === "ready" ? (
           <div className="engine-head-stats">
-            <StatBlock label="ENGINES" value={dataset.engines.length.toLocaleString("en-US")} />
+            <StatBlock label="ENGINES" value={totalText} />
             <StatBlock label="COUNTRIES" value={String(dataset.countries.length)} />
             <StatBlock label="CONTINENTS" value={String(dataset.continents.length)} />
             <StatBlock
@@ -161,38 +178,7 @@ export function EngineBrowser() {
         ) : null}
       </section>
 
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept=".geojson,.json,.csv"
-        className="engine-file-input"
-        onChange={(event) => {
-          const file = event.target.files?.[0];
-          if (file) void handleFile(file);
-          event.target.value = "";
-        }}
-      />
-
-      {phase === "empty" ? (
-        <section className="engine-welcome">
-          <span className="engine-kicker">PUBLIC ARCHIVE / ENGINE DATABASE</span>
-          <h2 className="engine-welcome-en">UEG GLOBAL ENGINE NETWORK</h2>
-          <p className="engine-welcome-zh">全球行星发动机网络</p>
-          <div className="engine-welcome-state">NO DATA SOURCE LOADED</div>
-          <p className="engine-welcome-desc">
-            请选择本地生成器输出的发动机数据文件。页面将在浏览器内解析
-            GeoJSON，并把全部发动机节点渲染到地球模型上。
-          </p>
-          <button type="button" className="engine-primary-btn" onClick={openPicker}>
-            选择发动机数据文件
-          </button>
-          <p className="engine-welcome-hint">
-            支持 .geojson / .json / .csv · 纯前端读取 · 无后端请求 · 不写入任何存储
-          </p>
-        </section>
-      ) : null}
-
-      {phase === "parsing" ? (
+      {phase === "loading" ? (
         <section className="engine-loading">
           <div className="engine-loading-scan" aria-hidden="true" />
           <p className="engine-loading-title">ENGINE NETWORK INITIALIZING ...</p>
@@ -211,11 +197,14 @@ export function EngineBrowser() {
           <span className="engine-error-badge">{ERROR_TITLE}</span>
           <p className="engine-error-text">{errorMessage}</p>
           <p className="engine-error-hint">
-            支持 GeoJSON FeatureCollection（Point）/ JSON / CSV，例如
-            engines.geojson。
+            数据源：R2 云端（{ENGINE_DATA_URL}）。请确认文件已上传后重试。
           </p>
-          <button type="button" className="engine-primary-btn" onClick={openPicker}>
-            重新选择数据文件
+          <button
+            type="button"
+            className="engine-primary-btn"
+            onClick={() => reloadRef.current?.()}
+          >
+            重新加载云端数据
           </button>
         </section>
       ) : null}
@@ -223,8 +212,12 @@ export function EngineBrowser() {
       {phase === "ready" && dataset ? (
         <>
           <div className="engine-toolbar">
-            <button type="button" className="engine-file-btn" onClick={openPicker}>
-              数据文件：{dataset.fileName} <span aria-hidden="true">⇪</span>
+            <button
+              type="button"
+              className="engine-file-btn"
+              onClick={() => reloadRef.current?.()}
+            >
+              数据源：R2 CLOUD · 重新加载 <span aria-hidden="true">⟳</span>
             </button>
 
             <div className="engine-search">

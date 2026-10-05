@@ -134,6 +134,8 @@ export function EngineGlobe({
         getEngines: () => enginesRef.current,
       });
       map.addLayer(modelLayerRef.current.layer);
+      (window as unknown as Record<string, unknown>).__engineModelDebug =
+        () => modelLayerRef.current?.debug();
     });
 
     const onPointClick = (
