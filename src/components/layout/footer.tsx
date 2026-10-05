@@ -1,4 +1,4 @@
-import { Link, useLoaderData, useRouteContext } from "@tanstack/react-router";
+import { useLoaderData, useRouteContext } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Suspense, useEffect, useState } from "react";
 import type { NavOption } from "@/components/layout/layout-props";
@@ -72,9 +72,7 @@ export function Footer(_props: FooterProps) {
           <Suspense fallback={null}>
             <FooterFriendLinks />
           </Suspense>
-          <Link to="/friend-links" className="footer-links-more">
-            {m.ueg_more()}
-          </Link>
+
         </div>
 
         <p className="footer-motto">{m.ueg_footer_slogan()}</p>

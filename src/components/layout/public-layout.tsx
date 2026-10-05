@@ -28,7 +28,6 @@ export function PublicLayout({
   const isFocusedPage =
     hasRouteError ||
     isAuthPage ||
-    location.pathname === "/submit-friend-link" ||
     location.pathname === "/profile";
   // UEG 门户页的页头自带与导航栏的间距（移植自示例稿），
   // 布局层不再叠加 margin；其余博客风页面保留原有间距。

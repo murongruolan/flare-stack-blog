@@ -24,7 +24,6 @@ import { Route as PublicAuthRouteRouteImport } from './routes/_public/_auth/rout
 import { Route as PublicUserRouteRouteImport } from './routes/_public/_user/route'
 import { Route as PublicAboutRouteImport } from './routes/_public/about'
 import { Route as PublicEnginesRouteImport } from './routes/_public/engines'
-import { Route as PublicFriendLinksRouteImport } from './routes/_public/friend-links'
 import { Route as PublicNavigatorRouteImport } from './routes/_public/navigator'
 import { Route as PublicPolicyRouteImport } from './routes/_public/policy'
 import { Route as PublicPostsRouteImport } from './routes/_public/posts'
@@ -45,7 +44,6 @@ import { Route as PublicAuthRegisterRouteImport } from './routes/_public/_auth/r
 import { Route as PublicAuthResetLinkRouteImport } from './routes/_public/_auth/reset-link'
 import { Route as PublicAuthVerifyEmailRouteImport } from './routes/_public/_auth/verify-email'
 import { Route as PublicUserProfileRouteImport } from './routes/_public/_user/profile'
-import { Route as PublicUserSubmitFriendLinkRouteImport } from './routes/_public/_user/submit-friend-link'
 import { Route as PublicOrganizationIndexRouteImport } from './routes/_public/organization/index'
 import { Route as PublicOrganizationSlugRouteImport } from './routes/_public/organization/$slug'
 import { Route as PublicPostSlugRouteImport } from './routes/_public/post/$slug'
@@ -135,11 +133,6 @@ const PublicAboutRoute = PublicAboutRouteImport.update({
 const PublicEnginesRoute = PublicEnginesRouteImport.update({
   id: '/engines',
   path: '/engines',
-  getParentRoute: () => PublicRouteRoute,
-} as any)
-const PublicFriendLinksRoute = PublicFriendLinksRouteImport.update({
-  id: '/friend-links',
-  path: '/friend-links',
   getParentRoute: () => PublicRouteRoute,
 } as any)
 const PublicNavigatorRoute = PublicNavigatorRouteImport.update({
@@ -243,12 +236,6 @@ const PublicUserProfileRoute = PublicUserProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => PublicUserRouteRoute,
 } as any)
-const PublicUserSubmitFriendLinkRoute =
-  PublicUserSubmitFriendLinkRouteImport.update({
-    id: '/submit-friend-link',
-    path: '/submit-friend-link',
-    getParentRoute: () => PublicUserRouteRoute,
-  } as any)
 const PublicOrganizationIndexRoute = PublicOrganizationIndexRouteImport.update({
   id: '/organization/',
   path: '/organization/',
@@ -358,7 +345,6 @@ export interface FileRoutesByFullPath {
   '/$': typeof PublicSplatRoute
   '/about': typeof PublicAboutRoute
   '/engines': typeof PublicEnginesRoute
-  '/friend-links': typeof PublicFriendLinksRoute
   '/navigator': typeof PublicNavigatorRoute
   '/policy': typeof PublicPolicyRoute
   '/posts': typeof PublicPostsRoute
@@ -377,7 +363,6 @@ export interface FileRoutesByFullPath {
   '/reset-link': typeof PublicAuthResetLinkRoute
   '/verify-email': typeof PublicAuthVerifyEmailRoute
   '/profile': typeof PublicUserProfileRoute
-  '/submit-friend-link': typeof PublicUserSubmitFriendLinkRoute
   '/organization/$slug': typeof PublicOrganizationSlugRoute
   '/post/$slug': typeof PublicPostSlugRoute
   '/admin/settings/api-keys': typeof AdminSettingsApiKeysRoute
@@ -409,7 +394,6 @@ export interface FileRoutesByTo {
   '/$': typeof PublicSplatRoute
   '/about': typeof PublicAboutRoute
   '/engines': typeof PublicEnginesRoute
-  '/friend-links': typeof PublicFriendLinksRoute
   '/navigator': typeof PublicNavigatorRoute
   '/policy': typeof PublicPolicyRoute
   '/posts': typeof PublicPostsRoute
@@ -428,7 +412,6 @@ export interface FileRoutesByTo {
   '/reset-link': typeof PublicAuthResetLinkRoute
   '/verify-email': typeof PublicAuthVerifyEmailRoute
   '/profile': typeof PublicUserProfileRoute
-  '/submit-friend-link': typeof PublicUserSubmitFriendLinkRoute
   '/organization/$slug': typeof PublicOrganizationSlugRoute
   '/post/$slug': typeof PublicPostSlugRoute
   '/admin/settings/api-keys': typeof AdminSettingsApiKeysRoute
@@ -465,7 +448,6 @@ export interface FileRoutesById {
   '/_public/$': typeof PublicSplatRoute
   '/_public/about': typeof PublicAboutRoute
   '/_public/engines': typeof PublicEnginesRoute
-  '/_public/friend-links': typeof PublicFriendLinksRoute
   '/_public/navigator': typeof PublicNavigatorRoute
   '/_public/policy': typeof PublicPolicyRoute
   '/_public/posts': typeof PublicPostsRoute
@@ -485,7 +467,6 @@ export interface FileRoutesById {
   '/_public/_auth/reset-link': typeof PublicAuthResetLinkRoute
   '/_public/_auth/verify-email': typeof PublicAuthVerifyEmailRoute
   '/_public/_user/profile': typeof PublicUserProfileRoute
-  '/_public/_user/submit-friend-link': typeof PublicUserSubmitFriendLinkRoute
   '/_public/organization/$slug': typeof PublicOrganizationSlugRoute
   '/_public/post/$slug': typeof PublicPostSlugRoute
   '/admin/settings/api-keys': typeof AdminSettingsApiKeysRoute
@@ -522,7 +503,6 @@ export interface FileRouteTypes {
     | '/$'
     | '/about'
     | '/engines'
-    | '/friend-links'
     | '/navigator'
     | '/policy'
     | '/posts'
@@ -541,7 +521,6 @@ export interface FileRouteTypes {
     | '/reset-link'
     | '/verify-email'
     | '/profile'
-    | '/submit-friend-link'
     | '/organization/$slug'
     | '/post/$slug'
     | '/admin/settings/api-keys'
@@ -573,7 +552,6 @@ export interface FileRouteTypes {
     | '/$'
     | '/about'
     | '/engines'
-    | '/friend-links'
     | '/navigator'
     | '/policy'
     | '/posts'
@@ -592,7 +570,6 @@ export interface FileRouteTypes {
     | '/reset-link'
     | '/verify-email'
     | '/profile'
-    | '/submit-friend-link'
     | '/organization/$slug'
     | '/post/$slug'
     | '/admin/settings/api-keys'
@@ -628,7 +605,6 @@ export interface FileRouteTypes {
     | '/_public/$'
     | '/_public/about'
     | '/_public/engines'
-    | '/_public/friend-links'
     | '/_public/navigator'
     | '/_public/policy'
     | '/_public/posts'
@@ -648,7 +624,6 @@ export interface FileRouteTypes {
     | '/_public/_auth/reset-link'
     | '/_public/_auth/verify-email'
     | '/_public/_user/profile'
-    | '/_public/_user/submit-friend-link'
     | '/_public/organization/$slug'
     | '/_public/post/$slug'
     | '/admin/settings/api-keys'
@@ -792,13 +767,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicEnginesRouteImport
       parentRoute: typeof PublicRouteRoute
     }
-    '/_public/friend-links': {
-      id: '/_public/friend-links'
-      path: '/friend-links'
-      fullPath: '/friend-links'
-      preLoaderRoute: typeof PublicFriendLinksRouteImport
-      parentRoute: typeof PublicRouteRoute
-    }
     '/_public/navigator': {
       id: '/_public/navigator'
       path: '/navigator'
@@ -937,13 +905,6 @@ declare module '@tanstack/react-router' {
       path: '/profile'
       fullPath: '/profile'
       preLoaderRoute: typeof PublicUserProfileRouteImport
-      parentRoute: typeof PublicUserRouteRoute
-    }
-    '/_public/_user/submit-friend-link': {
-      id: '/_public/_user/submit-friend-link'
-      path: '/submit-friend-link'
-      fullPath: '/submit-friend-link'
-      preLoaderRoute: typeof PublicUserSubmitFriendLinkRouteImport
       parentRoute: typeof PublicUserRouteRoute
     }
     '/_public/organization/': {
@@ -1097,12 +1058,10 @@ const PublicAuthRouteRouteWithChildren = PublicAuthRouteRoute._addFileChildren(
 
 interface PublicUserRouteRouteChildren {
   PublicUserProfileRoute: typeof PublicUserProfileRoute
-  PublicUserSubmitFriendLinkRoute: typeof PublicUserSubmitFriendLinkRoute
 }
 
 const PublicUserRouteRouteChildren: PublicUserRouteRouteChildren = {
   PublicUserProfileRoute: PublicUserProfileRoute,
-  PublicUserSubmitFriendLinkRoute: PublicUserSubmitFriendLinkRoute,
 }
 
 const PublicUserRouteRouteWithChildren = PublicUserRouteRoute._addFileChildren(
@@ -1115,7 +1074,6 @@ interface PublicRouteRouteChildren {
   PublicSplatRoute: typeof PublicSplatRoute
   PublicAboutRoute: typeof PublicAboutRoute
   PublicEnginesRoute: typeof PublicEnginesRoute
-  PublicFriendLinksRoute: typeof PublicFriendLinksRoute
   PublicNavigatorRoute: typeof PublicNavigatorRoute
   PublicPolicyRoute: typeof PublicPolicyRoute
   PublicPostsRoute: typeof PublicPostsRoute
@@ -1134,7 +1092,6 @@ const PublicRouteRouteChildren: PublicRouteRouteChildren = {
   PublicSplatRoute: PublicSplatRoute,
   PublicAboutRoute: PublicAboutRoute,
   PublicEnginesRoute: PublicEnginesRoute,
-  PublicFriendLinksRoute: PublicFriendLinksRoute,
   PublicNavigatorRoute: PublicNavigatorRoute,
   PublicPolicyRoute: PublicPolicyRoute,
   PublicPostsRoute: PublicPostsRoute,

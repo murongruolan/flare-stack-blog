@@ -11,7 +11,6 @@ const STATIC_HREF = {
   "/navigator": "/navigator",
   "/underground": "/underground",
   "/engines": "/engines",
-  "/friend-links": "/friend-links",
 } as const;
 
 /**
