@@ -26,6 +26,7 @@ import type { EngineRecord } from "./parse-engines";
 export const MODEL_ZOOM_THRESHOLD = 5;
 const MAX_INSTANCES = 1200;
 const MODEL_HEIGHT_METERS = 11000; // 行星发动机设定高度 ~11km
+const MODEL_ALTITUDE_METERS = 120; // 贴地抬升：底面与地图平面共面会深度打架（z-fighting 抽搐）
 const EARTH_RADIUS = 6371008.8;
 
 export interface EngineModelLayer {
@@ -117,8 +118,15 @@ export function createEngineModelLayer(options: {
       const projData = args?.defaultProjectionData;
       if (!projData?.mainMatrix) return;
       projectionTransition = projData.projectionTransition ?? 0;
+      // 滞后带：transition 在 0.45~0.55 之间保持原空间，避免边界震荡反复重建
       const targetSpace: "mercator" | "globe" =
-        projectionTransition > 0.5 ? "globe" : "mercator";
+        matrixSpace === "mercator"
+          ? projectionTransition > 0.55
+            ? "globe"
+            : "mercator"
+          : projectionTransition < 0.45
+            ? "mercator"
+            : "globe";
       if (targetSpace !== matrixSpace) {
         matrixSpace = targetSpace;
         rebuildInstances();
@@ -149,12 +157,18 @@ export function createEngineModelLayer(options: {
           metalness: 0.55,
           roughness: 0.45,
           side: THREE.DoubleSide,
+          polygonOffset: true,
+          polygonOffsetFactor: -2,
+          polygonOffsetUnits: -2,
         });
       }
       return blackSubstitute;
     }
     const material = source.clone();
     material.side = THREE.DoubleSide;
+    material.polygonOffset = true;
+    material.polygonOffsetFactor = -2;
+    material.polygonOffsetUnits = -2;
     return material;
   }
 
@@ -224,7 +238,7 @@ export function createEngineModelLayer(options: {
       return new THREE.Matrix4()
         .makeRotationY((lng / 180) * Math.PI)
         .multiply(new THREE.Matrix4().makeRotationX((-lat / 180) * Math.PI))
-        .multiply(new THREE.Matrix4().makeTranslation(0, 0, 1))
+        .multiply(new THREE.Matrix4().makeTranslation(0, 0, 1 + MODEL_ALTITUDE_METERS / EARTH_RADIUS))
         .multiply(new THREE.Matrix4().makeRotationX(Math.PI / 2))
         .multiply(
           new THREE.Matrix4().makeScale(
@@ -234,7 +248,7 @@ export function createEngineModelLayer(options: {
           ),
         );
     }
-    const merc = MercatorCoordinate.fromLngLat([lng, lat], 0);
+    const merc = MercatorCoordinate.fromLngLat([lng, lat], MODEL_ALTITUDE_METERS);
     const scale = s * merc.meterInMercatorCoordinateUnits();
     return new THREE.Matrix4()
       .makeTranslation(merc.x, merc.y, merc.z)
