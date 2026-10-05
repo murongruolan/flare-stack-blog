@@ -15,6 +15,11 @@ setWorkerUrl(engineWorkerUrl);
 import { useEffect, useRef } from "react";
 import type { EngineRecord } from "../lib/parse-engines";
 import {
+  createEngineModelLayer,
+  MODEL_ZOOM_THRESHOLD,
+  type EngineModelLayer,
+} from "../lib/engine-model-layer";
+import {
   LAYERS,
   createEngineMapStyle,
   engineLayers,
@@ -63,6 +68,7 @@ export function EngineGlobe({
   const onSelectRef = useRef(onSelect);
   onSelectRef.current = onSelect;
   const zoomReadoutRef = useRef<HTMLSpanElement | null>(null);
+  const modelLayerRef = useRef<EngineModelLayer | null>(null);
   const enginesRef = useRef(engines);
   enginesRef.current = engines;
 
@@ -100,6 +106,9 @@ export function EngineGlobe({
     };
     map.on("zoom", syncZoomReadout);
     map.on("load", syncZoomReadout);
+    const syncModelVisibility = () => modelLayerRef.current?.syncVisibility();
+    map.on("zoom", syncModelVisibility);
+    map.on("load", syncModelVisibility);
 
     map.on("load", () => {
       map.addSource(ENGINES_SOURCE, {
@@ -107,7 +116,7 @@ export function EngineGlobe({
         data: toFeatureCollection(enginesRef.current),
         cluster: true,
         clusterRadius: 42,
-        clusterMaxZoom: 8,
+        clusterMaxZoom: 5,
         maxzoom: 10,
       });
       map.addSource(SELECTED_SOURCE, {
@@ -118,6 +127,13 @@ export function EngineGlobe({
         map.addLayer(layer);
       }
       readyRef.current = true;
+
+      // 3D 模型层：zoom ≥ 5 时替代圆点
+      modelLayerRef.current = createEngineModelLayer({
+        map,
+        getEngines: () => enginesRef.current,
+      });
+      map.addLayer(modelLayerRef.current.layer);
     });
 
     const onPointClick = (
@@ -163,6 +179,12 @@ export function EngineGlobe({
       map.getCanvas().style.cursor = event.features?.length ? "pointer" : "";
     };
 
+    map.on("moveend", () => modelLayerRef.current?.syncEngines());
+    map.on("click", (event) => {
+      if (map.getZoom() < MODEL_ZOOM_THRESHOLD) return;
+      const engine = modelLayerRef.current?.pickAt({ x: event.point.x, y: event.point.y });
+      if (engine) onSelectRef.current(engine);
+    });
     map.on("click", LAYERS.points, onPointClick);
     map.on("click", LAYERS.clusters, onClusterClick);
     map.on("click", LAYERS.clusterCount, onClusterClick);
@@ -195,6 +217,7 @@ export function EngineGlobe({
       source?.setData(toFeatureCollection(engines));
     };
     whenReady(map, readyRef, apply);
+    modelLayerRef.current?.syncEngines();
   }, [engines]);
 
   // 选中发动机 → 高亮图层。
