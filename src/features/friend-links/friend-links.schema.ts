@@ -66,11 +66,18 @@ export const createSubmitFriendLinkSchema = (m: Messages) =>
   });
 
 // === Admin create input (manual add) ===
+// sortOrder：展示排序，数字越小越靠前；手动添加默认 0，用户申请通过后也是 0
 
-export const CreateFriendLinkInputSchema = z.object(friendLinkFields);
+export const CreateFriendLinkInputSchema = z.object({
+  ...friendLinkFields,
+  sortOrder: z.number().int().min(0).default(0),
+});
 
 export const createCreateFriendLinkSchema = (m: Messages) =>
-  z.object(createFriendLinkFormFields(m));
+  z.object({
+    ...createFriendLinkFormFields(m),
+    sortOrder: z.number().int().min(0),
+  });
 
 // === Admin inputs ===
 export const GetAllFriendLinksInputSchema = z.object({
@@ -102,6 +109,7 @@ export const UpdateFriendLinkInputSchema = z
     siteUrl: friendLinkFields.siteUrl.optional(),
     description: friendLinkFields.description,
     logoUrl: friendLinkFields.logoUrl,
+    sortOrder: z.number().int().min(0).optional(),
   })
   .strict();
 

@@ -1,4 +1,4 @@
-import { and, count, desc, eq, sql } from "drizzle-orm";
+import { and, asc, count, desc, eq, sql } from "drizzle-orm";
 import type { FriendLinkStatus } from "@/lib/db/schema";
 import { FriendLinksTable, user } from "@/lib/db/schema";
 
@@ -49,6 +49,7 @@ export async function getAllFriendLinks(
       description: FriendLinksTable.description,
       logoUrl: FriendLinksTable.logoUrl,
       status: FriendLinksTable.status,
+      sortOrder: FriendLinksTable.sortOrder,
       rejectionReason: FriendLinksTable.rejectionReason,
       userId: FriendLinksTable.userId,
       createdAt: FriendLinksTable.createdAt,
@@ -62,7 +63,11 @@ export async function getAllFriendLinks(
     .from(FriendLinksTable)
     .leftJoin(user, eq(FriendLinksTable.userId, user.id))
     .where(conditions.length > 0 ? and(...conditions) : undefined)
-    .orderBy(desc(FriendLinksTable.createdAt), desc(FriendLinksTable.id));
+    .orderBy(
+      asc(FriendLinksTable.sortOrder),
+      desc(FriendLinksTable.createdAt),
+      desc(FriendLinksTable.id),
+    );
 
   const items =
     limit == null

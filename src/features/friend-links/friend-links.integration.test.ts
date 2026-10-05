@@ -211,6 +211,7 @@ describe("FriendLinkService", () => {
       const link = await FriendLinkService.createFriendLink(adminContext, {
         siteName: "Manual",
         siteUrl: "https://manual.example.com",
+        sortOrder: 0,
       });
       vi.mocked(adminContext.env.QUEUE.send).mockClear();
       await FriendLinkService.rejectFriendLink(adminContext, { id: link.id });
@@ -270,6 +271,7 @@ describe("FriendLinkService", () => {
       const result = await FriendLinkService.createFriendLink(adminContext, {
         siteName: "Admin Added",
         siteUrl: "https://admin-added.com",
+        sortOrder: 0,
       });
 
       expect(result.status).toBe("approved");
@@ -280,6 +282,7 @@ describe("FriendLinkService", () => {
       await FriendLinkService.createFriendLink(adminContext, {
         siteName: "Cache Test",
         siteUrl: "https://cache-test.com",
+        sortOrder: 0,
       });
 
       await waitForBackgroundTasks(adminContext.executionCtx);
@@ -411,6 +414,7 @@ describe("FriendLinkService", () => {
       const created = await FriendLinkService.createFriendLink(adminContext, {
         siteName: "Original Name",
         siteUrl: "https://original.com",
+        sortOrder: 0,
         description: "Original description",
       });
 
@@ -429,6 +433,7 @@ describe("FriendLinkService", () => {
       const created = await FriendLinkService.createFriendLink(adminContext, {
         siteName: "Test Site",
         siteUrl: "https://test.com",
+        sortOrder: 0,
         description: "Original",
       });
 
@@ -448,6 +453,7 @@ describe("FriendLinkService", () => {
       const created = await FriendLinkService.createFriendLink(adminContext, {
         siteName: "To Delete",
         siteUrl: "https://todelete.com",
+        sortOrder: 0,
       });
 
       const result = await FriendLinkService.deleteFriendLink(adminContext, {
@@ -476,6 +482,7 @@ describe("FriendLinkService", () => {
       await FriendLinkService.createFriendLink(adminContext, {
         siteName: "Approved",
         siteUrl: "https://approved.com",
+        sortOrder: 0,
       });
 
       // Create pending link (via user submission)
@@ -496,6 +503,7 @@ describe("FriendLinkService", () => {
         await FriendLinkService.createFriendLink(adminContext, {
           siteName: `Approved ${i + 1}`,
           siteUrl: `https://approved-${i + 1}.com`,
+          sortOrder: 0,
         });
       }
 
@@ -509,6 +517,7 @@ describe("FriendLinkService", () => {
       await FriendLinkService.createFriendLink(adminContext, {
         siteName: "Approved",
         siteUrl: "https://approved-count.com",
+        sortOrder: 0,
       });
       await FriendLinkService.submitFriendLink(userContext, {
         siteName: "Pending",
@@ -532,6 +541,7 @@ describe("FriendLinkService", () => {
       await FriendLinkService.createFriendLink(adminContext, {
         siteName: "Approved 1",
         siteUrl: "https://approved1.com",
+        sortOrder: 0,
       });
 
       const pending = await FriendLinkService.submitFriendLink(userContext, {

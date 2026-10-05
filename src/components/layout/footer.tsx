@@ -1,6 +1,8 @@
 import { Link, useLoaderData, useRouteContext } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { Suspense, useEffect, useState } from "react";
 import type { NavOption } from "@/components/layout/layout-props";
+import { approvedFriendLinksQuery } from "@/features/friend-links/queries";
 import { m } from "@/paraglide/messages";
 
 export interface FooterProps {
@@ -27,15 +29,29 @@ function UegClock() {
   );
 }
 
+/** 页脚友链：管理端友链数据，sortOrder 越小越靠左 */
+function FooterFriendLinks() {
+  const { data: links } = useSuspenseQuery(approvedFriendLinksQuery());
+  return (
+    <>
+      {links.map((link) => (
+        <a
+          key={link.id}
+          href={link.siteUrl}
+          target="_blank"
+          rel="noreferrer"
+          title={link.siteName}
+        >
+          {link.siteName}
+        </a>
+      ))}
+    </>
+  );
+}
+
 export function Footer(_props: FooterProps) {
   const { currentYear } = useLoaderData({ from: "__root__" });
   const { siteConfig } = useRouteContext({ from: "__root__" });
-  const affiliateLinks = [
-    { label: m.ueg_footer_link_1(), href: "/friend-links" },
-    { label: m.ueg_footer_link_2(), href: "/friend-links" },
-    { label: m.ueg_footer_link_3(), href: "/friend-links" },
-    { label: m.ueg_footer_link_4(), href: "/friend-links" },
-  ];
 
   return (
     <footer className="footer">
@@ -53,11 +69,12 @@ export function Footer(_props: FooterProps) {
         </div>
 
         <div className="footer-links">
-          {affiliateLinks.map((link) => (
-            <Link key={link.label} to="/friend-links">
-              {link.label}
-            </Link>
-          ))}
+          <Suspense fallback={null}>
+            <FooterFriendLinks />
+          </Suspense>
+          <Link to="/friend-links" className="footer-links-more">
+            {m.ueg_more()}
+          </Link>
         </div>
 
         <p className="footer-motto">{m.ueg_footer_slogan()}</p>

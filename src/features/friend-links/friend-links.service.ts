@@ -107,6 +107,7 @@ export async function createFriendLink(
     logoUrl: data.logoUrl,
     userId: null,
     status: "approved",
+    sortOrder: data.sortOrder ?? 0,
   });
 
   await invalidateCache(context);

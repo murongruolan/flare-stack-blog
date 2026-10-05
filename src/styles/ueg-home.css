@@ -39,9 +39,9 @@
 }
 .ueg-home-page .footer-main {
   display: grid;
-  grid-template-columns: 220px minmax(0, 1fr) 420px 220px;
+  grid-template-columns: max-content minmax(0, 1fr) 420px 220px;
   align-items: center;
-  gap: 18px;
+  gap: 12px 24px;
   min-height: 58px;
   padding: 20px 0;
 }
@@ -83,6 +83,9 @@
 }
 .ueg-home-page .footer-links a:hover {
   color: var(--ueg-steel);
+}
+.ueg-home-page .footer-links a.footer-links-more {
+  color: var(--ueg-amber);
 }
 .ueg-home-page .footer-motto {
   position: relative;
@@ -148,7 +151,7 @@
 
 @media (max-width: 1180px) {
   .ueg-home-page .footer-main {
-    grid-template-columns: 180px minmax(0, 1fr) 180px;
+    grid-template-columns: max-content minmax(0, 1fr) max-content;
   }
   .ueg-home-page .footer-motto {
     display: none;

@@ -1260,6 +1260,7 @@
   "settings_social_label_ph": "平台名称（如：即刻）",
   "settings_social_custom": "自定义",
   "settings_social_custom_icon_upload": "上传图标",
+  "friend_links_field_sort": "排序 (数字越小越靠前)",
   "settings_site_field_favicon_svg": "导航栏品牌区图标 (SVG)",
   "settings_site_field_favicon_ico": "兼容标签页图标 (ICO)",
   "settings_site_field_favicon_96": "页脚品牌区图标 (96×96)",

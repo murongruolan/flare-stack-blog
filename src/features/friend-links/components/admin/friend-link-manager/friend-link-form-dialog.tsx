@@ -16,6 +16,7 @@ const emptyValues: CreateFriendLinkInput = {
   siteUrl: "",
   description: "",
   logoUrl: "",
+  sortOrder: 0,
 };
 
 function valuesFrom(link: FriendLinkWithUser): CreateFriendLinkInput {
@@ -24,6 +25,7 @@ function valuesFrom(link: FriendLinkWithUser): CreateFriendLinkInput {
     siteUrl: link.siteUrl,
     description: link.description || "",
     logoUrl: link.logoUrl || "",
+    sortOrder: link.sortOrder ?? 0,
   };
 }
 
@@ -87,6 +89,7 @@ function FriendLinkFormDialogInternal({
               siteUrl: data.siteUrl,
               description: data.description || undefined,
               logoUrl: data.logoUrl || undefined,
+              sortOrder: data.sortOrder ?? 0,
             }),
           )}
         >
@@ -113,6 +116,15 @@ function FriendLinkFormDialogInternal({
             error={errors.logoUrl?.message}
             inputProps={register("logoUrl")}
             placeholder={m.friend_links_form_logo_ph()}
+          />
+          <Field
+            label={m.friend_links_field_sort()}
+            error={errors.sortOrder?.message}
+            inputProps={register("sortOrder", { valueAsNumber: true })}
+            placeholder="0"
+            type="number"
+            min={0}
+            step={1}
           />
           <div className="flex justify-end gap-2 pt-2">
             <button
@@ -153,17 +165,26 @@ function Field({
   error,
   placeholder,
   inputProps,
+  type,
+  min,
+  step,
 }: {
   label: string;
   error?: string;
   placeholder?: string;
   inputProps: InputHTMLAttributes<HTMLInputElement>;
+  type?: string;
+  min?: number;
+  step?: number;
 }) {
   return (
     <label className="grid gap-1.5 text-sm fuwari-text-50">
       {label}
       <input
         {...inputProps}
+        type={type}
+        min={min}
+        step={step}
         placeholder={placeholder}
         className="h-10 px-3 rounded-xl bg-(--fuwari-btn-regular-bg) text-sm fuwari-text-90 outline-none"
       />

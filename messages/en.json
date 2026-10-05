@@ -1268,6 +1268,7 @@
   "settings_social_label_ph": "Platform name",
   "settings_social_custom": "Custom",
   "settings_social_custom_icon_upload": "Upload Icon",
+  "friend_links_field_sort": "Sort order (lower = earlier)",
   "settings_site_field_favicon_svg": "Navbar Brand Icon (SVG)",
   "settings_site_field_favicon_ico": "Tab Icon (ICO)",
   "settings_site_field_favicon_96": "Footer Brand Icon (96×96)",
