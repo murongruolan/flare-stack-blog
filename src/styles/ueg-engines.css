@@ -533,6 +533,45 @@
   inset: 0;
 }
 
+/* 缩放比例 HUD（临时）：模型 LOD 阈值调试用，确定后移除 */
+.ueg-engines-page .engine-globe-wrap {
+  position: absolute;
+  inset: 0;
+}
+
+.ueg-engines-page .engine-zoom-hud {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 5;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 8px 16px;
+  border: 1px solid var(--ueg-border-2);
+  background: rgba(7, 16, 24, 0.78);
+  font-family: var(--font-mono);
+  pointer-events: none;
+}
+
+.ueg-engines-page .engine-zoom-label {
+  font-size: var(--fs-9);
+  letter-spacing: 0.14em;
+  color: var(--ueg-mist);
+}
+
+.ueg-engines-page .engine-zoom-value {
+  font-size: var(--fs-16);
+  color: var(--ueg-amber);
+  font-variant-numeric: tabular-nums;
+}
+
+.ueg-engines-page .engine-zoom-note {
+  font-size: var(--fs-8);
+  letter-spacing: 0.1em;
+  color: var(--ueg-disabled);
+}
+
 /* ---------- 信息面板（工业档案风格） ---------- */
 
 .ueg-engines-page .engine-panel {

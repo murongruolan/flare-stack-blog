@@ -62,6 +62,7 @@ export function EngineGlobe({
   const readyRef = useRef(false);
   const onSelectRef = useRef(onSelect);
   onSelectRef.current = onSelect;
+  const zoomReadoutRef = useRef<HTMLSpanElement | null>(null);
   const enginesRef = useRef(engines);
   enginesRef.current = engines;
 
@@ -90,6 +91,15 @@ export function EngineGlobe({
     map.on("style.load", () => {
       map.setProjection({ type: "globe" });
     });
+
+    // 临时：实时缩放比例读数（模型 LOD 阈值调试用）
+    const syncZoomReadout = () => {
+      if (zoomReadoutRef.current) {
+        zoomReadoutRef.current.textContent = map.getZoom().toFixed(2);
+      }
+    };
+    map.on("zoom", syncZoomReadout);
+    map.on("load", syncZoomReadout);
 
     map.on("load", () => {
       map.addSource(ENGINES_SOURCE, {
@@ -245,7 +255,18 @@ export function EngineGlobe({
     // datasetKey 变化（重新选文件）时才重新适配。
   }, [datasetKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  return <div ref={containerRef} className="engine-globe" />;
+  return (
+    <div className="engine-globe-wrap">
+      <div ref={containerRef} className="engine-globe" />
+      <div className="engine-zoom-hud" title="临时调试：确定模型 LOD 的缩放阈值后可移除">
+        <span className="engine-zoom-label">ZOOM</span>
+        <span ref={zoomReadoutRef} className="engine-zoom-value">
+          1.44
+        </span>
+        <span className="engine-zoom-note">TEMP · 模型 LOD 阈值待定</span>
+      </div>
+    </div>
+  );
 }
 
 function whenReady(

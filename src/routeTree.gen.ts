@@ -26,7 +26,6 @@ import { Route as PublicAboutRouteImport } from './routes/_public/about'
 import { Route as PublicEnginesRouteImport } from './routes/_public/engines'
 import { Route as PublicFriendLinksRouteImport } from './routes/_public/friend-links'
 import { Route as PublicNavigatorRouteImport } from './routes/_public/navigator'
-import { Route as PublicOrganizationV2RouteImport } from './routes/_public/organization-v2'
 import { Route as PublicPolicyRouteImport } from './routes/_public/policy'
 import { Route as PublicPostsRouteImport } from './routes/_public/posts'
 import { Route as PublicSearchRouteImport } from './routes/_public/search'
@@ -146,11 +145,6 @@ const PublicFriendLinksRoute = PublicFriendLinksRouteImport.update({
 const PublicNavigatorRoute = PublicNavigatorRouteImport.update({
   id: '/navigator',
   path: '/navigator',
-  getParentRoute: () => PublicRouteRoute,
-} as any)
-const PublicOrganizationV2Route = PublicOrganizationV2RouteImport.update({
-  id: '/organization-v2',
-  path: '/organization-v2',
   getParentRoute: () => PublicRouteRoute,
 } as any)
 const PublicPolicyRoute = PublicPolicyRouteImport.update({
@@ -366,7 +360,6 @@ export interface FileRoutesByFullPath {
   '/engines': typeof PublicEnginesRoute
   '/friend-links': typeof PublicFriendLinksRoute
   '/navigator': typeof PublicNavigatorRoute
-  '/organization-v2': typeof PublicOrganizationV2Route
   '/policy': typeof PublicPolicyRoute
   '/posts': typeof PublicPostsRoute
   '/search': typeof PublicSearchRoute
@@ -418,7 +411,6 @@ export interface FileRoutesByTo {
   '/engines': typeof PublicEnginesRoute
   '/friend-links': typeof PublicFriendLinksRoute
   '/navigator': typeof PublicNavigatorRoute
-  '/organization-v2': typeof PublicOrganizationV2Route
   '/policy': typeof PublicPolicyRoute
   '/posts': typeof PublicPostsRoute
   '/search': typeof PublicSearchRoute
@@ -475,7 +467,6 @@ export interface FileRoutesById {
   '/_public/engines': typeof PublicEnginesRoute
   '/_public/friend-links': typeof PublicFriendLinksRoute
   '/_public/navigator': typeof PublicNavigatorRoute
-  '/_public/organization-v2': typeof PublicOrganizationV2Route
   '/_public/policy': typeof PublicPolicyRoute
   '/_public/posts': typeof PublicPostsRoute
   '/_public/search': typeof PublicSearchRoute
@@ -533,7 +524,6 @@ export interface FileRouteTypes {
     | '/engines'
     | '/friend-links'
     | '/navigator'
-    | '/organization-v2'
     | '/policy'
     | '/posts'
     | '/search'
@@ -585,7 +575,6 @@ export interface FileRouteTypes {
     | '/engines'
     | '/friend-links'
     | '/navigator'
-    | '/organization-v2'
     | '/policy'
     | '/posts'
     | '/search'
@@ -641,7 +630,6 @@ export interface FileRouteTypes {
     | '/_public/engines'
     | '/_public/friend-links'
     | '/_public/navigator'
-    | '/_public/organization-v2'
     | '/_public/policy'
     | '/_public/posts'
     | '/_public/search'
@@ -816,13 +804,6 @@ declare module '@tanstack/react-router' {
       path: '/navigator'
       fullPath: '/navigator'
       preLoaderRoute: typeof PublicNavigatorRouteImport
-      parentRoute: typeof PublicRouteRoute
-    }
-    '/_public/organization-v2': {
-      id: '/_public/organization-v2'
-      path: '/organization-v2'
-      fullPath: '/organization-v2'
-      preLoaderRoute: typeof PublicOrganizationV2RouteImport
       parentRoute: typeof PublicRouteRoute
     }
     '/_public/policy': {
@@ -1136,7 +1117,6 @@ interface PublicRouteRouteChildren {
   PublicEnginesRoute: typeof PublicEnginesRoute
   PublicFriendLinksRoute: typeof PublicFriendLinksRoute
   PublicNavigatorRoute: typeof PublicNavigatorRoute
-  PublicOrganizationV2Route: typeof PublicOrganizationV2Route
   PublicPolicyRoute: typeof PublicPolicyRoute
   PublicPostsRoute: typeof PublicPostsRoute
   PublicSearchRoute: typeof PublicSearchRoute
@@ -1156,7 +1136,6 @@ const PublicRouteRouteChildren: PublicRouteRouteChildren = {
   PublicEnginesRoute: PublicEnginesRoute,
   PublicFriendLinksRoute: PublicFriendLinksRoute,
   PublicNavigatorRoute: PublicNavigatorRoute,
-  PublicOrganizationV2Route: PublicOrganizationV2Route,
   PublicPolicyRoute: PublicPolicyRoute,
   PublicPostsRoute: PublicPostsRoute,
   PublicSearchRoute: PublicSearchRoute,
