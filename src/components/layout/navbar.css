@@ -63,24 +63,32 @@
 }
 .ueg-brand-name {
   line-height: 1;
+  padding-left: 12px;
+  border-left: 1px solid var(--ueg-border-2);
+}
+.ueg-brand-name .brand-top {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
 }
 .ueg-brand-name .ueg {
-  font-size: var(--fs-22);
+  font-size: var(--fs-17);
   font-weight: 700;
-  letter-spacing: 0.11em;
+  letter-spacing: 0.08em;
+  color: var(--ueg-bone);
+}
+.ueg-brand-name .cn {
+  font-size: var(--fs-17);
+  font-weight: 700;
+  letter-spacing: 0.14em;
   color: var(--ueg-bone);
 }
 .ueg-brand-name .en {
+  display: block;
   margin-top: 4px;
   font-size: var(--fs-9);
   letter-spacing: 0.09em;
   color: var(--ueg-steel);
-}
-.ueg-brand-name .cn {
-  margin-top: 5px;
-  font-size: var(--fs-11);
-  letter-spacing: 0.12em;
-  color: var(--ueg-mist);
 }
 
 /* ---------- primary navigation ---------- */

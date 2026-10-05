@@ -136,9 +136,11 @@ export function Navbar({
               />
             </span>
             <span className="ueg-brand-name">
-              <span className="ueg">UEG</span>
+              <span className="brand-top">
+                <span className="ueg">UEG</span>
+                <span className="cn">联合政府</span>
+              </span>
               <span className="en">UNITED EARTH GOVERNMENT</span>
-              <span className="cn">联合地球政府</span>
             </span>
           </Link>
 
