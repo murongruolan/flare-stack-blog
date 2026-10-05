@@ -79,10 +79,10 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
           href: loaderData?.siteConfig?.icons.faviconIco,
         },
         {
+          // 与 Android / PWA 192×192 共用同一图标文件
           rel: "apple-touch-icon",
           type: "image/png",
-          href: loaderData?.siteConfig?.icons.appleTouchIcon,
-          sizes: "180x180",
+          href: loaderData?.siteConfig?.icons.webApp192,
         },
         {
           rel: "manifest",

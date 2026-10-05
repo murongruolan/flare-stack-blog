@@ -55,7 +55,8 @@
   height: 34px;
   flex: 0 0 34px;
 }
-.ueg-home-page .footer-logo svg {
+.ueg-home-page .footer-logo svg,
+.ueg-home-page .footer-logo img {
   display: block;
   width: 100%;
   height: 100%;

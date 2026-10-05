@@ -55,7 +55,8 @@
   height: 54px;
   flex: 0 0 54px;
 }
-.ueg-brand-logo svg {
+.ueg-brand-logo svg,
+.ueg-brand-logo img {
   display: block;
   width: 100%;
   height: 100%;

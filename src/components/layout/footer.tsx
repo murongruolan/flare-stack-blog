@@ -1,4 +1,4 @@
-import { Link, useLoaderData } from "@tanstack/react-router";
+import { Link, useLoaderData, useRouteContext } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import type { NavOption } from "@/components/layout/layout-props";
 import { m } from "@/paraglide/messages";
@@ -29,6 +29,7 @@ function UegClock() {
 
 export function Footer(_props: FooterProps) {
   const { currentYear } = useLoaderData({ from: "__root__" });
+  const { siteConfig } = useRouteContext({ from: "__root__" });
   const affiliateLinks = [
     { label: m.ueg_footer_link_1(), href: "/friend-links" },
     { label: m.ueg_footer_link_2(), href: "/friend-links" },
@@ -41,38 +42,10 @@ export function Footer(_props: FooterProps) {
       <div className="footer-main">
         <div className="footer-brand">
           <span className="footer-logo">
-            <svg viewBox="0 0 100 100" aria-hidden="true">
-              <circle
-                cx="50"
-                cy="50"
-                r="44"
-                fill="none"
-                stroke="#dce5e4"
-                strokeWidth="2"
-              />
-              <circle
-                cx="50"
-                cy="50"
-                r="39"
-                fill="none"
-                stroke="#7897a4"
-                strokeWidth="1"
-              />
-              <path
-                d="M28 56c13 11 31 14 46 1M27 43c15-10 32-11 46-1M31 35c13-7 27-6 38 0M32 65c12 7 24 8 36 2"
-                fill="none"
-                stroke="#b6cbd0"
-                strokeWidth="2"
-              />
-              <path d="M50 22v56M22 50h56" stroke="#7897a4" strokeWidth="1" />
-              <path
-                d="M38 44l12-9 12 9-4 16-8 6-8-6z"
-                fill="none"
-                stroke="#e2e0d6"
-                strokeWidth="1.6"
-              />
-              <circle cx="50" cy="49" r="3" fill="#c18a55" />
-            </svg>
+            <img
+              src={siteConfig.icons.favicon96 || "/favicon-96x96.png"}
+              alt=""
+            />
           </span>
           <span className="footer-brand-name">
             <span className="ueg">UEG</span>
