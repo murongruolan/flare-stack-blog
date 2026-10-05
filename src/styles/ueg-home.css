@@ -752,10 +752,16 @@
 }
 
 .ueg-homev2-page .v2-mission-label {
+  font-size: var(--fs-13);
+  letter-spacing: 0.08em;
+  color: var(--ueg-mist);
+}
+.ueg-homev2-page .v2-mission-label-en {
+  margin-top: auto;
   font-family: var(--font-mono);
   font-size: var(--fs-9);
   letter-spacing: 0.12em;
-  color: var(--ueg-mist);
+  color: var(--ueg-disabled);
 }
 
 .ueg-homev2-page .v2-mission-clock {
@@ -784,6 +790,17 @@
   color: var(--ueg-amber);
 }
 
+.ueg-homev2-page .v2-mission-value-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.ueg-homev2-page .v2-mission-value-row .v2-mission-bar {
+  flex: 1;
+}
+
 .ueg-homev2-page .v2-mission-value {
   font-family: var(--font-mono);
   font-size: var(--fs-20);
@@ -807,12 +824,6 @@
   background: linear-gradient(90deg, var(--ueg-steel), var(--ueg-amber));
 }
 
-.ueg-homev2-page .v2-mission-sub {
-  margin-top: auto;
-  font-size: var(--fs-9);
-  line-height: 1.5;
-  color: var(--ueg-text-sub);
-}
 
 @media (max-width: 1395px) {
   .ueg-homev2-page .v2-mission {

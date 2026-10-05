@@ -179,25 +179,27 @@ function pad2(value: number) {
 
 function MissionMetric({
   label,
+  labelEn,
   value,
-  sub,
   progress,
 }: {
   label: string;
+  labelEn: string;
   value: string;
-  sub: string;
   progress?: number;
 }) {
   return (
     <div className="v2-mission-cell">
       <span className="v2-mission-label">{label}</span>
-      <span className="v2-mission-value">{value}</span>
-      {progress !== undefined ? (
-        <span className="v2-mission-bar">
-          <span style={{ width: `${progress}%` }} />
-        </span>
-      ) : null}
-      <span className="v2-mission-sub">{sub}</span>
+      <span className="v2-mission-value-row">
+        <span className="v2-mission-value">{value}</span>
+        {progress !== undefined ? (
+          <span className="v2-mission-bar">
+            <span style={{ width: `${progress}%` }} />
+          </span>
+        ) : null}
+      </span>
+      <span className="v2-mission-label-en">{labelEn}</span>
     </div>
   );
 }
@@ -267,7 +269,7 @@ function MissionStrip() {
   return (
     <section className="v2-mission" aria-label="UEG 全球任务状态">
       <div className="v2-mission-cell">
-        <span className="v2-mission-label">CURRENT ERA TIME · 当前时间</span>
+        <span className="v2-mission-label">当前时间</span>
         <span
           className="v2-mission-clock"
           role="timer"
@@ -275,39 +277,28 @@ function MissionStrip() {
         >
           {renderGroups(eraGroups)}
         </span>
+        <span className="v2-mission-label-en">CURRENT ERA TIME</span>
       </div>
       <div className="v2-mission-cell">
-        <span className="v2-mission-label">
-          ARRIVAL COUNTDOWN · 到达新家园剩余时间
-        </span>
+        <span className="v2-mission-label">到达新家园剩余时间</span>
         <span className="v2-mission-clock is-countdown">
           {renderGroups(remainGroups)}
         </span>
-        <span className="v2-mission-sub">
-          比邻星 PROXIMA CENTAURI · {JOURNEY_DURATION_YEARS}-YEAR VOYAGE
-        </span>
+        <span className="v2-mission-label-en">ARRIVAL COUNTDOWN</span>
       </div>
       <MissionMetric
-        label="POPULATION · 全球人口"
+        label="全球人口"
+        labelEn="POPULATION"
         value="41.2 亿"
-        sub="全球登记居民 · 地下城 884 座"
       />
       <MissionMetric
-        label="CITY LOAD · 地下城综合负荷"
+        label="地下城综合负荷"
+        labelEn="CITY LOAD"
         value="78.4%"
-        sub="安全阈值 85% · 状态正常"
         progress={78.4}
       />
-      <MissionMetric
-        label="ENGINES · 运行发动机"
-        value="9,751"
-        sub="全网 10,000 台 · 巡检 249 台"
-      />
-      <MissionMetric
-        label="SPEED · 航行速度"
-        value="1,572 km/s"
-        sub="0.52% 光速 · 加速阶段"
-      />
+      <MissionMetric label="运行发动机" labelEn="ENGINES" value="9,751" />
+      <MissionMetric label="航行速度" labelEn="SPEED" value="1,572 km/s" />
     </section>
   );
 }
