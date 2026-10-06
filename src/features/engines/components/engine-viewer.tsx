@@ -155,8 +155,12 @@ function ModelViewport({
     resizeObserver.observe(container);
 
     let raf = 0;
+    const clock = new THREE.Clock();
+    // GLB 自带动画（如空间站的旋转）经 mixer 播放
+    let mixer: THREE.AnimationMixer | null = null;
     const tick = () => {
       controls.update();
+      mixer?.update(clock.getDelta());
       renderer.render(scene, camera);
       // 视角读数：离地高度（地面 y=0）+ 到目标点距离（min/maxDistance 限制的就是它）
       const readout = readoutRef.current;
@@ -216,6 +220,17 @@ function ModelViewport({
                 }
               });
               scene.add(root);
+
+              // 模型自带动画（Blender 导出的旋转等）：全部循环播放；
+              // 有动画时默认关掉相机自动旋转，避免自转+环绕叠加
+              if (gltf.animations?.length) {
+                mixer = new THREE.AnimationMixer(root);
+                for (const clip of gltf.animations) {
+                  mixer.clipAction(clip).play();
+                }
+                controls.autoRotate = false;
+                setAutoRotate(false);
+              }
 
               // 取景按包围球自适应：发动机直立窄高、卡片宽扁，
               // 固定机位会让宽扁模型贴脸。沿默认机位方向退到
@@ -366,6 +381,7 @@ function ModelViewport({
       disposed = true;
       cancelAnimationFrame(raf);
       resizeObserver.disconnect();
+      mixer?.stopAllAction();
       dracoLoader.dispose();
       for (const item of disposables) item.dispose();
       scene.traverse((child) => {
