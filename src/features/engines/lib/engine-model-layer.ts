@@ -25,7 +25,7 @@ import type { EngineRecord } from "./parse-engines";
  * - 不调用 triggerRepaint：模型相对地图静态，地图重绘时顺带渲染。
  */
 
-export const MODEL_ZOOM_THRESHOLD = 5;
+export const MODEL_ZOOM_THRESHOLD = 2;
 const MAX_INSTANCES = 1200;
 const MODEL_HEIGHT_METERS = 11000; // 行星发动机设定高度 ~11km
 const MODEL_ALTITUDE_METERS = 120; // 贴地抬升：底面与地图平面共面会深度打架（z-fighting 抽搐）
@@ -180,8 +180,10 @@ export function createEngineModelLayer(options: {
   map: MapLibreMap;
   getEngines: () => EngineRecord[];
   modelUrl?: string;
+  /** 聚合 GeoJSON 源 id：用于 querySourceFeatures 区分簇/散点。 */
+  sourceId: string;
 }): EngineModelLayer {
-  const { map, getEngines } = options;
+  const { map, getEngines, sourceId } = options;
   const modelUrl = options.modelUrl ?? ENGINE_MODEL_URL;
 
   const camera = new THREE.Camera();
@@ -219,6 +221,8 @@ export function createEngineModelLayer(options: {
   /** 实例矩阵当前按哪种投影空间构建。 */
   let matrixSpace: "mercator" | "globe" = "mercator";
   let instanceSets: Array<{ mesh: THREE.InstancedMesh }> = [];
+  /** 当前实际以模型呈现的发动机（未被聚合成簇的散点），供拾取用。 */
+  let displayedEngines: EngineRecord[] = [];
   /** GLB 引用了贴图但未打包贴图文件的材质名（渲染时用中性钢色占位）。 */
   const texturedMaterialNames = new Set<string>();
   const resolveMaterial = createGltfMaterialFixer(texturedMaterialNames);
@@ -408,47 +412,60 @@ export function createEngineModelLayer(options: {
     }
   }
 
-  /** 按当前 zoom 与模型就绪状态切换圆点/模型。 */
+  /**
+   * 按当前 zoom 与模型就绪状态切换圆点/模型。
+   * 阈值以上只隐藏散点层：聚合簇（圆圈+计数）任何 zoom 下都保持圆点，
+   * 模型只替换「展示出来的散点」，避免低 zoom 全球上万实例拖垮性能。
+   */
   function applyVisibility() {
-      const showModels = modelReady && map.getZoom() >= MODEL_ZOOM_THRESHOLD;
-      if (modelMode === showModels) return;
-      modelMode = showModels;
-      modelGroup.visible = showModels;
-      for (const id of [
-        "engines-points",
-        "engines-clusters",
-        "engines-cluster-count",
-      ]) {
-        try {
-          if (map.getLayer(id)) {
-            map.setLayoutProperty(
-              id,
-              "visibility",
-              showModels ? "none" : "visible",
-            );
-          }
-        } catch {
-          // 样式重建间隙图层可能暂时不存在
-        }
+    const showModels = modelReady && map.getZoom() >= MODEL_ZOOM_THRESHOLD;
+    if (modelMode === showModels) return;
+    modelMode = showModels;
+    modelGroup.visible = showModels;
+    try {
+      if (map.getLayer("engines-points")) {
+        map.setLayoutProperty(
+          "engines-points",
+          "visibility",
+          showModels ? "none" : "visible",
+        );
       }
-      if (showModels) rebuildInstances();
-      map.triggerRepaint();
+    } catch {
+      // 样式重建间隙图层可能暂时不存在
+    }
+    if (showModels) rebuildInstances();
+    map.triggerRepaint();
   }
 
-  /** 视野内发动机 → 实例矩阵重建。 */
-  function rebuildInstances() {
-    if (!modelReady) return;
+  /** 视野内发动机 → 实例矩阵重建。返回实例集合是否发生变化。 */
+  function rebuildInstances(): boolean {
+    if (!modelReady || !modelMode) return false;
     const bounds = map.getBounds();
     const pad = 0.3;
-    const visible = getEngines()
-      .filter(
-        (engine) =>
-          engine.lng >= bounds.getWest() - pad &&
-          engine.lng <= bounds.getEast() + pad &&
-          engine.lat >= bounds.getSouth() - pad &&
-          engine.lat <= bounds.getNorth() + pad,
-      )
+    const inView = getEngines().filter(
+      (engine) =>
+        engine.lng >= bounds.getWest() - pad &&
+        engine.lng <= bounds.getEast() + pad &&
+        engine.lat >= bounds.getSouth() - pad &&
+        engine.lat <= bounds.getNorth() + pad,
+    );
+
+    // 只渲染当前作为散点展示的发动机：querySourceFeatures 返回渲染中的
+    // 特征，聚合特征带 cluster=true，散点带原始 engineId——据此过滤掉
+    // 已被聚合成簇的发动机（它们仍以圆点呈现）。
+    const pointIds = new Set<string>();
+    for (const feature of map.querySourceFeatures(sourceId)) {
+      if (feature.properties?.cluster) continue;
+      const id = feature.properties?.engineId;
+      if (typeof id === "string") pointIds.add(id);
+    }
+    const visible = inView
+      .filter((engine) => pointIds.has(engine.id))
       .slice(0, MAX_INSTANCES);
+    displayedEngines = visible;
+    const instanceKey = visible.map((engine) => engine.id).join("|");
+    const changed = instanceKey !== lastInstanceKey;
+    lastInstanceKey = instanceKey;
 
     visible.forEach((engine, index) => {
       const matrix = instanceMatrix(engine.lng, engine.lat);
@@ -460,7 +477,27 @@ export function createEngineModelLayer(options: {
       mesh.count = visible.length;
       mesh.instanceMatrix.needsUpdate = true;
     }
+    return changed;
   }
+
+  // 聚合瓦片是异步加载的：moveend 触发重建时新瓦片往往还没到，
+  // querySourceFeatures 会漏点（表现为跳跃缩放后只渲染出个位数实例）。
+  // 两路补算：sourcedata 防抖（80ms 内的瓦片批量到达收敛成一次）+ 地图
+  // idle 兜底；集合签名没变就不触发重绘，避免「重绘 → idle → 重绘」空转。
+  let lastInstanceKey = "";
+  let resyncTimer: ReturnType<typeof setTimeout> | null = null;
+  map.on("sourcedata", (event) => {
+    if (event.sourceId !== sourceId || !modelMode) return;
+    if (resyncTimer) clearTimeout(resyncTimer);
+    resyncTimer = setTimeout(() => {
+      resyncTimer = null;
+      if (rebuildInstances()) map.triggerRepaint();
+    }, 80);
+  });
+  map.on("idle", () => {
+    if (!modelMode || !modelReady) return;
+    if (rebuildInstances()) map.triggerRepaint();
+  });
 
   return {
     layer,
@@ -483,7 +520,7 @@ export function createEngineModelLayer(options: {
       if (!modelMode || !modelReady) return null;
       let best: EngineRecord | null = null;
       let bestPx = tolerancePx * tolerancePx;
-      for (const engine of getEngines()) {
+      for (const engine of displayedEngines) {
         const p = map.project([engine.lng, engine.lat]);
         const dx = p.x - point.x;
         const dy = p.y - point.y;

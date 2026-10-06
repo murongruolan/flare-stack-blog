@@ -131,11 +131,12 @@ export function EngineGlobe({
       }
       readyRef.current = true;
 
-      // 3D 模型层：zoom ≥ 5 时替代圆点
+      // 3D 模型层：zoom ≥ 2 时替换散点为发动机模型；聚合簇保持圆点
       modelLayerRef.current = createEngineModelLayer({
         map,
         getEngines: () => enginesRef.current,
         modelUrl,
+        sourceId: ENGINES_SOURCE,
       });
       map.addLayer(modelLayerRef.current.layer);
       (window as unknown as Record<string, unknown>).__engineModelDebug =
