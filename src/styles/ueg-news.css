@@ -43,7 +43,7 @@
 .ueg-news-page .crumb,
 .ueg-policy-page .crumb {
   font-family: var(--font-mono);
-  font-size: var(--fs-9);
+  font-size: var(--fs-12);
   letter-spacing: 0.14em;
   color: var(--ueg-mist);
 }
@@ -57,9 +57,10 @@
 }
 .ueg-news-page .head h1 span,
 .ueg-policy-page .head h1 span {
-  margin-left: 12px;
+  display: block;
+  margin: 8px 0 0;
   font-family: var(--font-mono);
-  font-size: var(--fs-11);
+  font-size: var(--fs-15);
   font-weight: 400;
   letter-spacing: 0.14em;
   color: var(--ueg-mist);
@@ -660,11 +661,6 @@
   .ueg-news-page .head h1,
   .ueg-policy-page .head h1 {
     font-size: var(--fs-28);
-  }
-  .ueg-news-page .head h1 span,
-  .ueg-policy-page .head h1 span {
-    display: block;
-    margin: 6px 0 0;
   }
   .ueg-news-page .toolbar {
     overflow-x: auto;

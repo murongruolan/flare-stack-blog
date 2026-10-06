@@ -422,10 +422,6 @@
   .ueg-policy-page .head h1 {
     font-size: var(--fs-28);
   }
-  .ueg-policy-page .head h1 span {
-    display: block;
-    margin: 6px 0 0;
-  }
   .ueg-policy-page .head::after {
     display: none;
   }
