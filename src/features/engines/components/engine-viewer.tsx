@@ -31,6 +31,7 @@ export function EngineViewer({
 }) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const controlsRef = useRef<OrbitControls | null>(null);
+  const readoutRef = useRef<HTMLDivElement | null>(null);
   const [phase, setPhase] = useState<Phase>("loading");
   const [autoRotate, setAutoRotate] = useState(true);
 
@@ -101,6 +102,11 @@ export function EngineViewer({
     const tick = () => {
       controls.update();
       renderer.render(scene, camera);
+      // 视角读数：离地高度（地面 y=0）+ 到目标点距离（min/maxDistance 限制的就是它）
+      const readout = readoutRef.current;
+      if (readout) {
+        readout.textContent = `离地高度 ${camera.position.y.toFixed(2)} · 目标距离 ${camera.position.distanceTo(controls.target).toFixed(2)}`;
+      }
       raf = requestAnimationFrame(tick);
     };
     tick();
@@ -248,6 +254,9 @@ export function EngineViewer({
             </div>
             <div className="engine-view-hint" aria-hidden="true">
               左键旋转 · 滚轮缩放 · 右键平移
+            </div>
+            <div ref={readoutRef} className="engine-view-readout">
+              离地高度 2.70 · 目标距离 6.95
             </div>
           </>
         ) : null}

@@ -119,6 +119,18 @@
   pointer-events: none;
 }
 
+.ueg-engine-view .engine-view-readout {
+  position: absolute;
+  left: 14px;
+  bottom: 12px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-10);
+  letter-spacing: 0.1em;
+  color: var(--ueg-steel);
+  pointer-events: none;
+  font-variant-numeric: tabular-nums;
+}
+
 @media (max-width: 768px) {
   .ueg-engine-view .engine-view-wrap {
     height: 60vh;
