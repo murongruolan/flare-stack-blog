@@ -250,11 +250,9 @@ function ModelViewport({
                       const ry = engrave.region.y * image.height;
                       const rw = engrave.region.w * image.width;
                       const rh = engrave.region.h * image.height;
-                      // 原贴图的名字底板是半透明烟熏色（实测 rgba(100,114,125,.79)），
-                      // 不是实色：先清回透明再填同款半透明，保住透明卡体质感
+                      // 原版没有底板：名字直接印在全透明卡面上，
+                      // 清空区域（含原字与色条）后只画文字
                       ctx.clearRect(rx, ry, rw, rh);
-                      ctx.fillStyle = "rgba(100, 114, 125, 0.79)";
-                      ctx.fillRect(rx, ry, rw, rh);
                       // 字号随名字长度收缩，超长也压在原区域内
                       let size = Math.round(rh * 0.8);
                       const label = `|| ${text}`;
