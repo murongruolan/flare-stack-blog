@@ -57,8 +57,14 @@ export function EngineDataSourcesSection() {
     onError: (error) => {
       handleORPCError(error, {
         defined: {
-          MODEL_NOT_FOUND: () => toast.error(m.engine_sources_model_missing()),
-          DATA_NOT_FOUND: () => toast.error(m.engine_sources_data_missing()),
+          MODEL_NOT_FOUND: () =>
+            toast.error(
+              `${m.engine_sources_model_missing()}（${modelKey.trim()}）`,
+            ),
+          DATA_NOT_FOUND: () =>
+            toast.error(
+              `${m.engine_sources_data_missing()}（${dataKey.trim()}）`,
+            ),
         },
         fallback: () => toast.error(m.engine_sources_save_failed()),
       });
