@@ -7,7 +7,7 @@ import {
   type EngineDataset,
   type EngineRecord,
 } from "../lib/parse-engines";
-import { ENGINE_DATA_URL } from "../lib/engine-assets";
+import { ENGINE_DATA_URL, ENGINE_MODEL_URL } from "../lib/engine-assets";
 
 type Phase = "loading" | "ready" | "error";
 
@@ -37,7 +37,14 @@ function StatBlock({
   );
 }
 
-export function EngineBrowser() {
+export function EngineBrowser({
+  dataUrl = ENGINE_DATA_URL,
+  modelUrl = ENGINE_MODEL_URL,
+}: {
+  /** R2 数据文件 URL（后台「数据源」配置，SSR 注入；缺省用内置默认）。 */
+  dataUrl?: string;
+  modelUrl?: string;
+} = {}) {
   const [phase, setPhase] = useState<Phase>("loading");
   const [dataset, setDataset] = useState<EngineDataset | null>(null);
   const [datasetKey, setDatasetKey] = useState(0);
@@ -94,14 +101,17 @@ export function EngineBrowser() {
           setTimeout(resolve, 30);
         });
       try {
-        const response = await fetch(ENGINE_DATA_URL);
+        const response = await fetch(dataUrl);
         if (!response.ok) {
           throw new EngineDataError("FETCH_FAILED");
         }
         setParseStep("PARSING ENGINE NETWORK ...");
         await nextFrame();
         const text = await response.text();
-        const parsed = parseEngineFile(text, ENGINE_DATA_URL.split("/").pop() ?? "engines.geojson");
+        const parsed = parseEngineFile(
+          text,
+          dataUrl.split("/").pop()?.split("?")[0] ?? "engines.geojson",
+        );
         setParseStep("BUILDING ENGINE INDEX ...");
         await nextFrame();
         setDataset(parsed);
@@ -197,7 +207,7 @@ export function EngineBrowser() {
           <span className="engine-error-badge">{ERROR_TITLE}</span>
           <p className="engine-error-text">{errorMessage}</p>
           <p className="engine-error-hint">
-            数据源：R2 云端（{ENGINE_DATA_URL}）。请确认文件已上传后重试。
+            数据源：R2 云端（{dataUrl}）。请确认文件已上传后重试。
           </p>
           <button
             type="button"
@@ -330,6 +340,7 @@ export function EngineBrowser() {
                 selected={selected}
                 onSelect={selectEngine}
                 focusTarget={focusTarget}
+                modelUrl={modelUrl}
               />
             </div>
             {selected ? (

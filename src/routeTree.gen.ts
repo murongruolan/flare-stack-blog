@@ -53,6 +53,7 @@ import { Route as AdminMutedUsersIndexRouteImport } from './routes/admin/muted-u
 import { Route as AdminPostsIndexRouteImport } from './routes/admin/posts/index'
 import { Route as AdminSettingsIndexRouteImport } from './routes/admin/settings/index'
 import { Route as AdminSettingsApiKeysRouteImport } from './routes/admin/settings/api-keys'
+import { Route as AdminSettingsDataSourcesRouteImport } from './routes/admin/settings/data-sources'
 import { Route as AdminSettingsMaintenanceRouteImport } from './routes/admin/settings/maintenance'
 import { Route as AdminSettingsNotificationsRouteImport } from './routes/admin/settings/notifications'
 import { Route as AdminSettingsSiteRouteImport } from './routes/admin/settings/site'
@@ -281,6 +282,12 @@ const AdminSettingsApiKeysRoute = AdminSettingsApiKeysRouteImport.update({
   path: '/api-keys',
   getParentRoute: () => AdminSettingsRouteRoute,
 } as any)
+const AdminSettingsDataSourcesRoute =
+  AdminSettingsDataSourcesRouteImport.update({
+    id: '/data-sources',
+    path: '/data-sources',
+    getParentRoute: () => AdminSettingsRouteRoute,
+  } as any)
 const AdminSettingsMaintenanceRoute =
   AdminSettingsMaintenanceRouteImport.update({
     id: '/maintenance',
@@ -366,6 +373,7 @@ export interface FileRoutesByFullPath {
   '/organization/$slug': typeof PublicOrganizationSlugRoute
   '/post/$slug': typeof PublicPostSlugRoute
   '/admin/settings/api-keys': typeof AdminSettingsApiKeysRoute
+  '/admin/settings/data-sources': typeof AdminSettingsDataSourcesRoute
   '/admin/settings/maintenance': typeof AdminSettingsMaintenanceRoute
   '/admin/settings/notifications': typeof AdminSettingsNotificationsRoute
   '/admin/settings/site': typeof AdminSettingsSiteRoute
@@ -415,6 +423,7 @@ export interface FileRoutesByTo {
   '/organization/$slug': typeof PublicOrganizationSlugRoute
   '/post/$slug': typeof PublicPostSlugRoute
   '/admin/settings/api-keys': typeof AdminSettingsApiKeysRoute
+  '/admin/settings/data-sources': typeof AdminSettingsDataSourcesRoute
   '/admin/settings/maintenance': typeof AdminSettingsMaintenanceRoute
   '/admin/settings/notifications': typeof AdminSettingsNotificationsRoute
   '/admin/settings/site': typeof AdminSettingsSiteRoute
@@ -470,6 +479,7 @@ export interface FileRoutesById {
   '/_public/organization/$slug': typeof PublicOrganizationSlugRoute
   '/_public/post/$slug': typeof PublicPostSlugRoute
   '/admin/settings/api-keys': typeof AdminSettingsApiKeysRoute
+  '/admin/settings/data-sources': typeof AdminSettingsDataSourcesRoute
   '/admin/settings/maintenance': typeof AdminSettingsMaintenanceRoute
   '/admin/settings/notifications': typeof AdminSettingsNotificationsRoute
   '/admin/settings/site': typeof AdminSettingsSiteRoute
@@ -524,6 +534,7 @@ export interface FileRouteTypes {
     | '/organization/$slug'
     | '/post/$slug'
     | '/admin/settings/api-keys'
+    | '/admin/settings/data-sources'
     | '/admin/settings/maintenance'
     | '/admin/settings/notifications'
     | '/admin/settings/site'
@@ -573,6 +584,7 @@ export interface FileRouteTypes {
     | '/organization/$slug'
     | '/post/$slug'
     | '/admin/settings/api-keys'
+    | '/admin/settings/data-sources'
     | '/admin/settings/maintenance'
     | '/admin/settings/notifications'
     | '/admin/settings/site'
@@ -627,6 +639,7 @@ export interface FileRouteTypes {
     | '/_public/organization/$slug'
     | '/_public/post/$slug'
     | '/admin/settings/api-keys'
+    | '/admin/settings/data-sources'
     | '/admin/settings/maintenance'
     | '/admin/settings/notifications'
     | '/admin/settings/site'
@@ -970,6 +983,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSettingsApiKeysRouteImport
       parentRoute: typeof AdminSettingsRouteRoute
     }
+    '/admin/settings/data-sources': {
+      id: '/admin/settings/data-sources'
+      path: '/data-sources'
+      fullPath: '/admin/settings/data-sources'
+      preLoaderRoute: typeof AdminSettingsDataSourcesRouteImport
+      parentRoute: typeof AdminSettingsRouteRoute
+    }
     '/admin/settings/maintenance': {
       id: '/admin/settings/maintenance'
       path: '/maintenance'
@@ -1142,6 +1162,7 @@ const AdminPostsRouteRouteWithChildren = AdminPostsRouteRoute._addFileChildren(
 
 interface AdminSettingsRouteRouteChildren {
   AdminSettingsApiKeysRoute: typeof AdminSettingsApiKeysRoute
+  AdminSettingsDataSourcesRoute: typeof AdminSettingsDataSourcesRoute
   AdminSettingsMaintenanceRoute: typeof AdminSettingsMaintenanceRoute
   AdminSettingsNotificationsRoute: typeof AdminSettingsNotificationsRoute
   AdminSettingsSiteRoute: typeof AdminSettingsSiteRoute
@@ -1150,6 +1171,7 @@ interface AdminSettingsRouteRouteChildren {
 
 const AdminSettingsRouteRouteChildren: AdminSettingsRouteRouteChildren = {
   AdminSettingsApiKeysRoute: AdminSettingsApiKeysRoute,
+  AdminSettingsDataSourcesRoute: AdminSettingsDataSourcesRoute,
   AdminSettingsMaintenanceRoute: AdminSettingsMaintenanceRoute,
   AdminSettingsNotificationsRoute: AdminSettingsNotificationsRoute,
   AdminSettingsSiteRoute: AdminSettingsSiteRoute,

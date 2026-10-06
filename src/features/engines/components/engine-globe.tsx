@@ -36,6 +36,8 @@ interface EngineGlobeProps {
   onSelect: (engine: EngineRecord) => void;
   /** 搜索定位目标（经纬度），变化时飞行过去。 */
   focusTarget: { lng: number; lat: number; key: number } | null;
+  /** R2 模型文件 URL（后台「数据源」配置注入）。 */
+  modelUrl: string;
 }
 
 function toFeatureCollection(engines: EngineRecord[]) {
@@ -61,6 +63,7 @@ export function EngineGlobe({
   selected,
   onSelect,
   focusTarget,
+  modelUrl,
 }: EngineGlobeProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<MaplibreMap | null>(null);
@@ -132,6 +135,7 @@ export function EngineGlobe({
       modelLayerRef.current = createEngineModelLayer({
         map,
         getEngines: () => enginesRef.current,
+        modelUrl,
       });
       map.addLayer(modelLayerRef.current.layer);
       (window as unknown as Record<string, unknown>).__engineModelDebug =

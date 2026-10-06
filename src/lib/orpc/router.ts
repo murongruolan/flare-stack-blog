@@ -9,6 +9,7 @@ import commentsRouter from "@/features/comments/server/router";
 import configRouter from "@/features/config/server/router";
 import dashboardRouter from "@/features/dashboard/server/router";
 import emailRouter from "@/features/email/server/router";
+import enginesRouter from "@/features/engines/server/router";
 import friendLinksRouter from "@/features/friend-links/server/router";
 import mediaRouter from "@/features/media/server/router";
 import mutedUsersRouter from "@/features/muted-users/server/router";
@@ -27,6 +28,7 @@ export const router = {
   media: mediaRouter,
   mutedUsers: mutedUsersRouter,
   config: configRouter,
+  engines: enginesRouter,
   friendLinks: friendLinksRouter,
   email: emailRouter,
   search: searchRouter,

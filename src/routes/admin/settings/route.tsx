@@ -12,6 +12,7 @@ const TITLES: Record<SettingsPageId, () => string> = {
   notify: () => m.settings_nav_notify(),
   "api-keys": () => m.settings_nav_api_keys(),
   maintenance: () => m.settings_nav_maintenance(),
+  "data-sources": () => m.settings_nav_data_sources(),
 };
 
 export const Route = createFileRoute("/admin/settings")({

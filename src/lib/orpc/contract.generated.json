@@ -714,6 +714,36 @@
       }
     }
   },
+  "engines": {
+    "getDataSources": {
+      "~orpc": {
+        "errorMap": {},
+        "meta": {},
+        "route": {
+          "method": "GET",
+          "path": "/engines/data-sources",
+          "summary": "Get engine data source URLs",
+          "description": "Returns the admin-configured R2 keys with ready-to-use /images URLs. An empty configuration falls back to the built-in default keys.",
+          "tags": ["Engines"]
+        }
+      }
+    },
+    "admin": {
+      "update": {
+        "~orpc": {
+          "errorMap": {},
+          "meta": {},
+          "route": {
+            "method": "PUT",
+            "path": "/admin/engines/data-sources",
+            "summary": "Update engine data sources",
+            "description": "Validates each non-empty R2 key with a HEAD request before storing. The cache revision only increases when a key actually changes, so unchanged assets keep their browser and edge caches.",
+            "tags": ["Admin Engines"]
+          }
+        }
+      }
+    }
+  },
   "friendLinks": {
     "listApproved": {
       "~orpc": {

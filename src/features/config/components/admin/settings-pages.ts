@@ -3,6 +3,7 @@ export const SETTINGS_PAGE_TO = {
   notify: "/admin/settings/notifications",
   "api-keys": "/admin/settings/api-keys",
   maintenance: "/admin/settings/maintenance",
+  "data-sources": "/admin/settings/data-sources",
 } as const;
 
 export type SettingsPageId = keyof typeof SETTINGS_PAGE_TO;
@@ -12,6 +13,7 @@ export const SETTINGS_PAGE_IDS = [
   "notify",
   "api-keys",
   "maintenance",
+  "data-sources",
 ] as const satisfies ReadonlyArray<SettingsPageId>;
 
 export const LEGACY_SETTINGS_TAB_TO = {
@@ -20,6 +22,7 @@ export const LEGACY_SETTINGS_TAB_TO = {
   webhook: SETTINGS_PAGE_TO.notify,
   "api-keys": SETTINGS_PAGE_TO["api-keys"],
   maintenance: SETTINGS_PAGE_TO.maintenance,
+  "data-sources": SETTINGS_PAGE_TO["data-sources"],
 } as const;
 
 export const SETTINGS_FIELD_CLASS =
@@ -33,5 +36,6 @@ export function settingsSectionFromPath(
   if (path.endsWith("/settings/notifications")) return "notify";
   if (path.endsWith("/settings/api-keys")) return "api-keys";
   if (path.endsWith("/settings/maintenance")) return "maintenance";
+  if (path.endsWith("/settings/data-sources")) return "data-sources";
   return null;
 }

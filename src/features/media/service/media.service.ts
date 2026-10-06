@@ -290,11 +290,17 @@ export async function handleImageRequest(
       getContentTypeFromKey(key) ||
       "application/octet-stream";
 
+    // ?v=<version> 表示调用方用 URL 版本号管理内容更替（如发动机数据源），
+    // 内容对 URL 不可变，可以放心交给浏览器/边缘缓存一年。
+    const cacheControl = searchParams.has("v")
+      ? CACHE_CONTROL.immutable
+      : CACHE_CONTROL.public;
+
     const headers = new Headers();
     object.writeHttpMetadata(headers);
     headers.set("Content-Type", contentType);
     headers.set("ETag", object.httpEtag);
-    Object.entries(CACHE_CONTROL.public).forEach(([k, v]) => {
+    Object.entries(cacheControl).forEach(([k, v]) => {
       headers.set(k, v);
     });
 
