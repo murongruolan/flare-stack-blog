@@ -493,19 +493,6 @@
   border-color: var(--ueg-steel);
 }
 
-.ueg-engines-page .engine-reset {
-  padding: 6px 10px;
-  border: 0;
-  background: transparent;
-  color: var(--ueg-mist);
-  font-size: var(--fs-10);
-  cursor: pointer;
-}
-
-.ueg-engines-page .engine-reset:hover {
-  color: #e09f98;
-}
-
 /* ---------- 地图 + 信息面板 ---------- */
 
 .ueg-engines-page .engine-layout {

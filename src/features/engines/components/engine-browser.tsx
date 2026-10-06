@@ -61,7 +61,6 @@ export function EngineBrowser({
   const [parseStep, setParseStep] = useState("");
   const [continent, setContinent] = useState("");
   const [country, setCountry] = useState("");
-  const [status, setStatus] = useState("");
   const [engineType, setEngineType] = useState("");
   const [query, setQuery] = useState("");
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -80,10 +79,9 @@ export function EngineBrowser({
       (engine) =>
         (!continent || engine.continent === continent) &&
         (!country || engine.country === country) &&
-        (!status || engine.status === status) &&
         (!engineType || engine.engineType === engineType),
     );
-  }, [dataset, continent, country, status, engineType]);
+  }, [dataset, continent, country, engineType]);
 
   const searchResults = useMemo(() => {
     const needle = query.trim().toLowerCase();
@@ -127,7 +125,6 @@ export function EngineBrowser({
         setDatasetKey((key) => key + 1);
         setContinent("");
         setCountry("");
-        setStatus("");
         setEngineType("");
         setQuery("");
         setSelectedId(null);
@@ -183,13 +180,6 @@ export function EngineBrowser({
     setSelectedId(engine.id);
     setQuery("");
     setFocusTarget({ lng: engine.lng, lat: engine.lat, key: Date.now() });
-  };
-
-  const resetFilters = () => {
-    setContinent("");
-    setCountry("");
-    setStatus("");
-    setEngineType("");
   };
 
   const totalText = dataset ? dataset.engines.length.toLocaleString("en-US") : "--";
@@ -288,7 +278,7 @@ export function EngineBrowser({
               className="engine-file-btn"
               onClick={() => reloadRef.current?.()}
             >
-              数据源：R2 CLOUD · 重新加载 <span aria-hidden="true">⟳</span>
+              重新加载 <span aria-hidden="true">⟳</span>
             </button>
 
             <div className="engine-search">
@@ -354,22 +344,6 @@ export function EngineBrowser({
               ))}
             </select>
 
-            {dataset.statuses.length > 0 ? (
-              <select
-                className="engine-select"
-                value={status}
-                onChange={(event) => setStatus(event.target.value)}
-                aria-label="按状态筛选"
-              >
-                <option value="">全部状态</option>
-                {dataset.statuses.map((entry) => (
-                  <option key={entry.code} value={entry.code}>
-                    {entry.code}（{entry.count}）
-                  </option>
-                ))}
-              </select>
-            ) : null}
-
             {dataset.types.length > 0 ? (
               <select
                 className="engine-select"
@@ -384,12 +358,6 @@ export function EngineBrowser({
                   </option>
                 ))}
               </select>
-            ) : null}
-
-            {continent || country || status || engineType ? (
-              <button type="button" className="engine-reset" onClick={resetFilters}>
-                重置筛选 ×
-              </button>
             ) : null}
           </div>
 
