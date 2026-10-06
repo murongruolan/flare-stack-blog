@@ -39,6 +39,7 @@ export function EngineDataSourcesSection() {
   const [dataKey, setDataKey] = useState(data.configured ? data.dataKey : "");
   const [cardSingleKey, setCardSingleKey] = useState(data.cardSingleKey);
   const [cardDoubleKey, setCardDoubleKey] = useState(data.cardDoubleKey);
+  const [stationKey, setStationKey] = useState(data.stationKey);
   const [formatError, setFormatError] = useState<string | null>(null);
 
   // query 失效/重取后同步最新已保存值
@@ -47,11 +48,13 @@ export function EngineDataSourcesSection() {
     setDataKey(data.configured ? data.dataKey : "");
     setCardSingleKey(data.cardSingleKey);
     setCardDoubleKey(data.cardDoubleKey);
+    setStationKey(data.stationKey);
   }, [
     data.modelKey,
     data.dataKey,
     data.cardSingleKey,
     data.cardDoubleKey,
+    data.stationKey,
     data.configured,
   ]);
 
@@ -83,6 +86,10 @@ export function EngineDataSourcesSection() {
             toast.error(
               `${m.engine_sources_card_double_missing()}（${cardDoubleKey.trim()}）`,
             ),
+          STATION_NOT_FOUND: () =>
+            toast.error(
+              `${m.engine_sources_station_missing()}（${stationKey.trim()}）`,
+            ),
         },
         fallback: () => toast.error(m.engine_sources_save_failed()),
       });
@@ -94,11 +101,13 @@ export function EngineDataSourcesSection() {
     const nextData = dataKey.trim();
     const nextCardSingle = cardSingleKey.trim();
     const nextCardDouble = cardDoubleKey.trim();
+    const nextStation = stationKey.trim();
     const problem =
       validateKey(nextModel, MODEL_EXTENSION) ??
       validateKey(nextData, DATA_EXTENSION) ??
       validateKey(nextCardSingle, MODEL_EXTENSION) ??
-      validateKey(nextCardDouble, MODEL_EXTENSION);
+      validateKey(nextCardDouble, MODEL_EXTENSION) ??
+      validateKey(nextStation, MODEL_EXTENSION);
     setFormatError(problem);
     if (problem) return;
     saveMutation.mutate({
@@ -106,6 +115,7 @@ export function EngineDataSourcesSection() {
       engineDataKey: nextData,
       cardSingleKey: nextCardSingle,
       cardDoubleKey: nextCardDouble,
+      stationKey: nextStation,
     });
   };
 
@@ -191,6 +201,31 @@ export function EngineDataSourcesSection() {
         <span className="text-xs fuwari-text-50">
           {m.engine_sources_card_desc()}
         </span>
+      </div>
+
+      <div className="settings-section-heading">
+        <div>
+          <h2>{m.engine_sources_station_title()}</h2>
+        </div>
+      </div>
+
+      <div className="grid gap-4 py-2">
+        <label className="grid gap-1.5">
+          <span className="text-sm font-medium fuwari-text-90">
+            {m.engine_sources_station_label()}
+          </span>
+          <input
+            type="text"
+            value={stationKey}
+            onChange={(event) => setStationKey(event.target.value)}
+            placeholder="blog-media/models/space-station.glb"
+            spellCheck={false}
+            className={FIELD_CLASS}
+          />
+          <span className="text-xs fuwari-text-50">
+            {m.engine_sources_station_desc()}
+          </span>
+        </label>
       </div>
 
       {formatError ? (

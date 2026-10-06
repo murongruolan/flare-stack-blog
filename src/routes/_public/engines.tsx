@@ -14,6 +14,7 @@ export const Route = createFileRoute("/_public/engines")({
       modelUrl: dataSources.modelUrl,
       cardSingleUrl: dataSources.cardSingleUrl,
       cardDoubleUrl: dataSources.cardDoubleUrl,
+      stationUrl: dataSources.stationUrl,
     };
   },
   component: EnginesRouteComponent,
@@ -36,12 +37,14 @@ export const Route = createFileRoute("/_public/engines")({
 });
 
 function EnginesRouteComponent() {
-  const { modelUrl, cardSingleUrl, cardDoubleUrl } = Route.useLoaderData();
+  const { modelUrl, cardSingleUrl, cardDoubleUrl, stationUrl } =
+    Route.useLoaderData();
   return (
     <ModelObservatory
       engineModelUrl={modelUrl}
       cardSingleUrl={cardSingleUrl}
       cardDoubleUrl={cardDoubleUrl}
+      stationUrl={stationUrl}
     />
   );
 }

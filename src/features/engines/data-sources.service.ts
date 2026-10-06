@@ -45,16 +45,19 @@ export async function getEngineDataSources(context: {
   const dataKey = row?.engineDataKey || DEFAULT_ENGINE_DATA_KEY;
   const cardSingleKey = row?.cardSingleKey ?? "";
   const cardDoubleKey = row?.cardDoubleKey ?? "";
+  const stationKey = row?.stationKey ?? "";
   return EngineDataSourcesSchema.parse({
     modelKey,
     dataKey,
     cardSingleKey,
     cardDoubleKey,
+    stationKey,
     modelUrl: engineAssetUrl(modelKey),
     dataUrl: engineAssetUrl(dataKey),
     // 卡片无内置默认：未配置返回空串，前端显示占位
     cardSingleUrl: cardSingleKey ? engineAssetUrl(cardSingleKey) : "",
     cardDoubleUrl: cardDoubleKey ? engineAssetUrl(cardDoubleKey) : "",
+    stationUrl: stationKey ? engineAssetUrl(stationKey) : "",
     configured: Boolean(row?.engineModelKey || row?.engineDataKey),
   });
 }
@@ -63,7 +66,8 @@ export type SaveDataSourceError =
   | { reason: "MODEL_NOT_FOUND" }
   | { reason: "DATA_NOT_FOUND" }
   | { reason: "CARD_SINGLE_NOT_FOUND" }
-  | { reason: "CARD_DOUBLE_NOT_FOUND" };
+  | { reason: "CARD_DOUBLE_NOT_FOUND" }
+  | { reason: "STATION_NOT_FOUND" };
 
 export async function saveEngineDataSources(
   context: { db: DB; env: Env; headers: Headers },
@@ -74,6 +78,7 @@ export async function saveEngineDataSources(
     engineDataKey: dataKey,
     cardSingleKey,
     cardDoubleKey,
+    stationKey,
   } = input;
 
   // 保存前逐个校验对象存在，避免把打错的对象 key 提交给全站前端。
@@ -95,12 +100,19 @@ export async function saveEngineDataSources(
   ) {
     return err({ reason: "CARD_DOUBLE_NOT_FOUND" });
   }
+  if (
+    stationKey &&
+    !(await r2ObjectExists(context.env, stationKey, context.headers))
+  ) {
+    return err({ reason: "STATION_NOT_FOUND" });
+  }
 
   const row = await DataSourceRepo.upsertDataSourceSettings(context.db, {
     engineModelKey: modelKey,
     engineDataKey: dataKey,
     cardSingleKey,
     cardDoubleKey,
+    stationKey,
   });
 
   const resolved = {
@@ -108,10 +120,12 @@ export async function saveEngineDataSources(
     dataKey: row.engineDataKey || DEFAULT_ENGINE_DATA_KEY,
     cardSingleKey: row.cardSingleKey,
     cardDoubleKey: row.cardDoubleKey,
+    stationKey: row.stationKey,
     modelUrl: engineAssetUrl(row.engineModelKey || DEFAULT_ENGINE_MODEL_KEY),
     dataUrl: engineAssetUrl(row.engineDataKey || DEFAULT_ENGINE_DATA_KEY),
     cardSingleUrl: row.cardSingleKey ? engineAssetUrl(row.cardSingleKey) : "",
     cardDoubleUrl: row.cardDoubleKey ? engineAssetUrl(row.cardDoubleKey) : "",
+    stationUrl: row.stationKey ? engineAssetUrl(row.stationKey) : "",
     configured: Boolean(row.engineModelKey || row.engineDataKey),
   };
   return ok(EngineDataSourcesSchema.parse(resolved));

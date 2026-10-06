@@ -38,6 +38,7 @@ function ModelViewport({
   extraActions,
   engrave,
   onEngraverReady,
+  space = false,
 }: {
   modelUrl: string;
   fixMaterials?: boolean;
@@ -45,6 +46,8 @@ function ModelViewport({
   engrave?: EngraveConfig;
   /** 模型就绪且找到刻印贴图后回调，传入重绘函数（入参为名字，空串恢复）。 */
   onEngraverReady?: (redraw: ((name: string) => void) | null) => void;
+  /** 空间场景：星空背景，无地面网格、无雾。 */
+  space?: boolean;
 }) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const controlsRef = useRef<OrbitControls | null>(null);
@@ -69,13 +72,13 @@ function ModelViewport({
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setSize(container.clientWidth, container.clientHeight);
-    renderer.setClearColor(0x050c12, 1);
+    renderer.setClearColor(space ? 0x010409 : 0x050c12, 1);
     container.appendChild(renderer.domElement);
     disposables.push(renderer);
 
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x050c12);
-    scene.fog = new THREE.Fog(0x050c12, 16, 38);
+    scene.background = new THREE.Color(space ? 0x010409 : 0x050c12);
+    if (!space) scene.fog = new THREE.Fog(0x050c12, 16, 38);
 
     const camera = new THREE.PerspectiveCamera(
       45,
@@ -96,12 +99,41 @@ function ModelViewport({
     rim.position.set(-5, 3, -4);
     scene.add(rim);
 
-    // 地面网格衬托模型比例
-    const grid = new THREE.GridHelper(24, 60, 0x2a4654, 0x152631);
-    (grid.material as THREE.Material).transparent = true;
-    (grid.material as THREE.Material).opacity = 0.55;
-    scene.add(grid);
-    disposables.push(grid.geometry, grid.material as THREE.Material);
+    // 地面网格衬托模型比例（空间场景换成星空）
+    if (space) {
+      const starCount = 900;
+      const positions = new Float32Array(starCount * 3);
+      for (let i = 0; i < starCount; i++) {
+        // 均匀撒在半径 55~95 的球壳上，略偏上层避免底部过密
+        const theta = Math.random() * Math.PI * 2;
+        const phi = Math.acos(2 * Math.random() - 1);
+        const radius = 55 + Math.random() * 40;
+        positions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
+        positions[i * 3 + 1] = Math.abs(radius * Math.cos(phi)) * 0.8 - 12;
+        positions[i * 3 + 2] = radius * Math.sin(phi) * Math.sin(theta);
+      }
+      const starGeometry = new THREE.BufferGeometry();
+      starGeometry.setAttribute(
+        "position",
+        new THREE.BufferAttribute(positions, 3),
+      );
+      const starMaterial = new THREE.PointsMaterial({
+        color: 0xcfe0f0,
+        size: 0.35,
+        sizeAttenuation: true,
+        transparent: true,
+        opacity: 0.85,
+      });
+      const stars = new THREE.Points(starGeometry, starMaterial);
+      scene.add(stars);
+      disposables.push(starGeometry, starMaterial);
+    } else {
+      const grid = new THREE.GridHelper(24, 60, 0x2a4654, 0x152631);
+      (grid.material as THREE.Material).transparent = true;
+      (grid.material as THREE.Material).opacity = 0.55;
+      scene.add(grid);
+      disposables.push(grid.geometry, grid.material as THREE.Material);
+    }
 
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
@@ -201,9 +233,11 @@ function ModelViewport({
               // 固定 maxDistance=18 会让「缩到最小也展示不全」，雾也会
               // 把远端卡体淡出。发动机（radius≈4）维持原值。
               controls.maxDistance = Math.max(18, sphere.radius * 2.8);
-              const fog = scene.fog as THREE.Fog;
-              fog.near = Math.max(16, sphere.radius * 2.5);
-              fog.far = Math.max(38, sphere.radius * 7);
+              const fog = scene.fog as THREE.Fog | null;
+              if (fog) {
+                fog.near = Math.max(16, sphere.radius * 2.5);
+                fog.far = Math.max(38, sphere.radius * 7);
+              }
               camera.position
                 .copy(sphere.center)
                 .addScaledVector(homeDir, homeRef.current.distance);
@@ -430,10 +464,12 @@ export function ModelObservatory({
   engineModelUrl = ENGINE_MODEL_URL,
   cardSingleUrl = "",
   cardDoubleUrl = "",
+  stationUrl = "",
 }: {
   engineModelUrl?: string;
   cardSingleUrl?: string;
   cardDoubleUrl?: string;
+  stationUrl?: string;
 }) {
   const [cardMode, setCardMode] = useState<"double" | "single">(
     cardDoubleUrl ? "double" : "single",
@@ -539,6 +575,19 @@ export function ModelObservatory({
             模型待配置 · 请在管理后台「数据源」中填写数字生命卡路径
           </div>
         </>
+      )}
+
+      <div className="engine-view-blockhead">
+        <h2>
+          空间站预览 <span>SPACE STATION PREVIEW</span>
+        </h2>
+      </div>
+      {stationUrl ? (
+        <ModelViewport modelUrl={stationUrl} fixMaterials={false} space />
+      ) : (
+        <div className="engine-view-wrap engine-view-placeholder">
+          模型待配置 · 请在管理后台「数据源」中填写空间站模型路径
+        </div>
       )}
     </div>
   );

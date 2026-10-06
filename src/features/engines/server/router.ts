@@ -23,6 +23,10 @@ const dataSourceErrors = {
     status: 422,
     message: "The R2 object for the dual-person digital life card key does not exist.",
   },
+  STATION_NOT_FOUND: {
+    status: 422,
+    message: "The R2 object for the space station model key does not exist.",
+  },
 } as const;
 
 const getDataSources = publicProcedure
@@ -62,6 +66,9 @@ const updateDataSources = adminProcedure
       },
       CARD_DOUBLE_NOT_FOUND: () => {
         throw errors.CARD_DOUBLE_NOT_FOUND();
+      },
+      STATION_NOT_FOUND: () => {
+        throw errors.STATION_NOT_FOUND();
       },
     }),
   );
