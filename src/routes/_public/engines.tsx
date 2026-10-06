@@ -23,6 +23,15 @@ export const Route = createFileRoute("/_public/engines")({
         title: loaderData?.title,
       },
     ],
+    // 在线字体集（文派字库）：仅本路由加载，供数字生命卡刻印使用；
+    // 服务不可达时静默失败，刻印回退系统黑体栈
+    links: [
+      { rel: "preconnect", href: "https://cn.windfonts.com", crossOrigin: "anonymous" },
+      {
+        rel: "stylesheet",
+        href: "https://cn.windfonts.com/api/css?family=wenfeng-alhyznht&weight=regular&subset=full&version=full&fallback=wenfeng-albbpht&fallbackWeight=regular",
+      },
+    ],
   }),
 });
 

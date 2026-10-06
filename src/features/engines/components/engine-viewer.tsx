@@ -242,14 +242,18 @@ function ModelViewport({
                   // 调试句柄：与 __engineMap 同款，控制台/验证脚本可导出贴图内容
                   (window as unknown as Record<string, unknown>).__cardEngraveCanvas =
                     canvas;
-                  // 刻印字体：不加载 webfont，走系统默认黑体——
-                  // Windows 即微软雅黑 Bold，macOS 苹方，安卓思源黑体；
-                  // 如需全平台强制雅黑，可用 public/fonts/ 里的子集
-                  // woff2 传 R2 后经 FontFace 接回（脚本
-                  // scripts/build-engrave-font.ts 可再生成）。
-                  const fontFamily = '"Microsoft YaHei", "PingFang SC", sans-serif';
+                  // 刻印字体：优先用 /engines 路由 <link> 引入的在线字体集
+                  // （文派字库，CSS 里的真名从 document.fonts 按 slug 探测），
+                  // 探测不到/加载失败回退系统黑体栈——Windows 即微软雅黑 Bold。
+                  // canvas 不触发 unicode-range 分片下载，须 fonts.load 显式加载。
+                  const fallbackFont = '"Microsoft YaHei", "PingFang SC", sans-serif';
+                  let fontExpr = fallbackFont;
+                  let fontWeight = "700";
+                  let lastName = "";
+                  let loadedForLabel = "";
                   const redraw = (name: string) => {
                     const text = name.trim();
+                    lastName = name;
                     ctx.drawImage(image, 0, 0);
                     if (text) {
                       const rx = engrave.region.x * image.width;
@@ -264,18 +268,43 @@ function ModelViewport({
                       const label = `|| ${text}`;
                       ctx.fillStyle = "#d0e9ff";
                       ctx.textBaseline = "middle";
-                      ctx.font = `700 ${size}px ${fontFamily}`;
+                      ctx.font = `${fontWeight} ${size}px ${fontExpr}`;
                       while (
                         size > 12 &&
                         ctx.measureText(label).width > rw * 1.05
                       ) {
                         size -= 4;
-                        ctx.font = `700 ${size}px ${fontFamily}`;
+                        ctx.font = `${fontWeight} ${size}px ${fontExpr}`;
                       }
                       ctx.fillText(label, rx, ry + rh * 0.55);
+                      // 在线字体的分片按需加载：首次遇到新名字先画回退栈，
+                      // 覆盖该文本的分片到位后重画一次
+                      if (
+                        fontExpr !== fallbackFont &&
+                        loadedForLabel !== text
+                      ) {
+                        loadedForLabel = text;
+                        document.fonts
+                          .load(`400 48px ${fontExpr}`, text)
+                          .then(() => redraw(lastName))
+                          .catch(() => {});
+                      }
                     }
                     texture.needsUpdate = true;
                   };
+                  document.fonts.ready.then(() => {
+                    for (const face of document.fonts) {
+                      if (/alhyznht|阿里汉仪/i.test(face.family)) {
+                        // 该字体只提供 regular 字重，避免合成加粗走样
+                        fontExpr = `"${face.family}", ${fallbackFont}`;
+                        fontWeight = "400";
+                        break;
+                      }
+                    }
+                    if (fontExpr !== fallbackFont && lastName.trim()) {
+                      redraw(lastName);
+                    }
+                  });
                   onEngraverReady?.(redraw);
                 } else {
                   onEngraverReady?.(null);
