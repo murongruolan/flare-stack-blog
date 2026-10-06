@@ -14,6 +14,8 @@ export const DataSourceSettingsTable = sqliteTable(
     id: integer("id").primaryKey().notNull().default(1),
     engineModelKey: text("engine_model_key").notNull().default(""),
     engineDataKey: text("engine_data_key").notNull().default(""),
+    cardSingleKey: text("card_single_key").notNull().default(""),
+    cardDoubleKey: text("card_double_key").notNull().default(""),
     updatedAt,
   },
   (table) => [check("data_source_settings_singleton", sql`${table.id} = 1`)],

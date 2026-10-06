@@ -15,6 +15,14 @@ const dataSourceErrors = {
     status: 422,
     message: "The R2 object for the engine data key does not exist.",
   },
+  CARD_SINGLE_NOT_FOUND: {
+    status: 422,
+    message: "The R2 object for the single-person digital life card key does not exist.",
+  },
+  CARD_DOUBLE_NOT_FOUND: {
+    status: 422,
+    message: "The R2 object for the dual-person digital life card key does not exist.",
+  },
 } as const;
 
 const getDataSources = publicProcedure
@@ -48,6 +56,12 @@ const updateDataSources = adminProcedure
       },
       DATA_NOT_FOUND: () => {
         throw errors.DATA_NOT_FOUND();
+      },
+      CARD_SINGLE_NOT_FOUND: () => {
+        throw errors.CARD_SINGLE_NOT_FOUND();
+      },
+      CARD_DOUBLE_NOT_FOUND: () => {
+        throw errors.CARD_DOUBLE_NOT_FOUND();
       },
     }),
   );

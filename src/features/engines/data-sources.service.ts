@@ -43,25 +43,38 @@ export async function getEngineDataSources(context: {
   const row = await DataSourceRepo.findDataSourceSettings(context.db);
   const modelKey = row?.engineModelKey || DEFAULT_ENGINE_MODEL_KEY;
   const dataKey = row?.engineDataKey || DEFAULT_ENGINE_DATA_KEY;
+  const cardSingleKey = row?.cardSingleKey ?? "";
+  const cardDoubleKey = row?.cardDoubleKey ?? "";
   return EngineDataSourcesSchema.parse({
     modelKey,
     dataKey,
+    cardSingleKey,
+    cardDoubleKey,
     modelUrl: engineAssetUrl(modelKey),
     dataUrl: engineAssetUrl(dataKey),
+    // 卡片无内置默认：未配置返回空串，前端显示占位
+    cardSingleUrl: cardSingleKey ? engineAssetUrl(cardSingleKey) : "",
+    cardDoubleUrl: cardDoubleKey ? engineAssetUrl(cardDoubleKey) : "",
     configured: Boolean(row?.engineModelKey || row?.engineDataKey),
   });
 }
 
 export type SaveDataSourceError =
   | { reason: "MODEL_NOT_FOUND" }
-  | { reason: "DATA_NOT_FOUND" };
+  | { reason: "DATA_NOT_FOUND" }
+  | { reason: "CARD_SINGLE_NOT_FOUND" }
+  | { reason: "CARD_DOUBLE_NOT_FOUND" };
 
 export async function saveEngineDataSources(
   context: { db: DB; env: Env; headers: Headers },
   input: EngineDataSourcesInput,
 ): Promise<Result<EngineDataSources, SaveDataSourceError>> {
-  const modelKey = input.engineModelKey;
-  const dataKey = input.engineDataKey;
+  const {
+    engineModelKey: modelKey,
+    engineDataKey: dataKey,
+    cardSingleKey,
+    cardDoubleKey,
+  } = input;
 
   // 保存前逐个校验对象存在，避免把打错的对象 key 提交给全站前端。
   if (modelKey && !(await r2ObjectExists(context.env, modelKey, context.headers))) {
@@ -70,17 +83,35 @@ export async function saveEngineDataSources(
   if (dataKey && !(await r2ObjectExists(context.env, dataKey, context.headers))) {
     return err({ reason: "DATA_NOT_FOUND" });
   }
+  if (
+    cardSingleKey &&
+    !(await r2ObjectExists(context.env, cardSingleKey, context.headers))
+  ) {
+    return err({ reason: "CARD_SINGLE_NOT_FOUND" });
+  }
+  if (
+    cardDoubleKey &&
+    !(await r2ObjectExists(context.env, cardDoubleKey, context.headers))
+  ) {
+    return err({ reason: "CARD_DOUBLE_NOT_FOUND" });
+  }
 
   const row = await DataSourceRepo.upsertDataSourceSettings(context.db, {
     engineModelKey: modelKey,
     engineDataKey: dataKey,
+    cardSingleKey,
+    cardDoubleKey,
   });
 
   const resolved = {
     modelKey: row.engineModelKey || DEFAULT_ENGINE_MODEL_KEY,
     dataKey: row.engineDataKey || DEFAULT_ENGINE_DATA_KEY,
+    cardSingleKey: row.cardSingleKey,
+    cardDoubleKey: row.cardDoubleKey,
     modelUrl: engineAssetUrl(row.engineModelKey || DEFAULT_ENGINE_MODEL_KEY),
     dataUrl: engineAssetUrl(row.engineDataKey || DEFAULT_ENGINE_DATA_KEY),
+    cardSingleUrl: row.cardSingleKey ? engineAssetUrl(row.cardSingleKey) : "",
+    cardDoubleUrl: row.cardDoubleKey ? engineAssetUrl(row.cardDoubleKey) : "",
     configured: Boolean(row.engineModelKey || row.engineDataKey),
   };
   return ok(EngineDataSourcesSchema.parse(resolved));

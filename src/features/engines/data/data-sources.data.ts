@@ -12,6 +12,8 @@ export async function upsertDataSourceSettings(
   values: {
     engineModelKey: string;
     engineDataKey: string;
+    cardSingleKey: string;
+    cardDoubleKey: string;
   },
 ) {
   const [row] = await db

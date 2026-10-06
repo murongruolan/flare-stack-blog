@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
@@ -20,14 +20,18 @@ const CAMERA_HOME = new THREE.Vector3(4.4, 2.7, 5.1);
 const FOCUS_POINT = new THREE.Vector3(0, 1.0, 0);
 
 /**
- * 发动机观察（/engines）：独立 Three.js 场景展示行星发动机模型，
- * OrbitControls 自由旋转 / 缩放 / 平移。与地图实例层共用同一套
- * GLB 预处理与材质修复规则（黑镜面 → 暗钢占位）。
+ * 单个模型视口：独立 Three.js 场景 + OrbitControls 自由观察。
+ * fixMaterials=true 走地图实例层同款材质修复（黑镜面 → 暗钢占位，
+ * 供无贴图的发动机 GLB）；带贴图的模型（数字生命卡）传 false 原样渲染。
  */
-export function EngineViewer({
-  modelUrl = ENGINE_MODEL_URL,
+function ModelViewport({
+  modelUrl,
+  fixMaterials = true,
+  extraActions,
 }: {
-  modelUrl?: string;
+  modelUrl: string;
+  fixMaterials?: boolean;
+  extraActions?: ReactNode;
 }) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const controlsRef = useRef<OrbitControls | null>(null);
@@ -39,6 +43,7 @@ export function EngineViewer({
     const container = containerRef.current;
     if (!container) return;
 
+    setPhase("loading");
     let disposed = false;
     const disposables: Array<{ dispose: () => void }> = [];
 
@@ -111,7 +116,7 @@ export function EngineViewer({
     };
     tick();
 
-    // 模型加载：同一套 GLB 预处理 + 材质修复
+    // 模型加载：GLB 预处理（剥失效贴图引用，打包完好的模型为空操作）
     const dracoLoader = new DRACOLoader();
     dracoLoader.setDecoderPath(DRACO_DECODER_PATH);
     const gltfLoader = new GLTFLoader();
@@ -126,7 +131,9 @@ export function EngineViewer({
       .then(({ buffer, texturedNames }) => {
         if (disposed) return;
         // 贴图材质名在预处理后才知道，fixer 需在此创建
-        const fixMaterial = createGltfMaterialFixer(new Set(texturedNames));
+        const fixMaterial = fixMaterials
+          ? createGltfMaterialFixer(new Set(texturedNames))
+          : null;
         gltfLoader.parse(
           buffer,
           "",
@@ -151,9 +158,11 @@ export function EngineViewer({
               root.traverse((child) => {
                 const mesh = child as THREE.Mesh;
                 if (!(mesh as unknown as { isMesh?: boolean }).isMesh) return;
-                mesh.material = fixMaterial(
-                  mesh.material as THREE.MeshStandardMaterial,
-                );
+                if (fixMaterial) {
+                  mesh.material = fixMaterial(
+                    mesh.material as THREE.MeshStandardMaterial,
+                  );
+                }
               });
               scene.add(root);
 
@@ -190,7 +199,7 @@ export function EngineViewer({
       renderer.domElement.remove();
       controlsRef.current = null;
     };
-  }, [modelUrl]);
+  }, [modelUrl, fixMaterials]);
 
   const toggleRotate = () => {
     const controls = controlsRef.current;
@@ -208,59 +217,143 @@ export function EngineViewer({
   };
 
   return (
+    <div className="engine-view-wrap">
+      <div ref={containerRef} className="engine-view-canvas" />
+
+      {phase === "loading" ? (
+        <div className="engine-view-loading" role="status">
+          <span className="engine-view-loading-dot" aria-hidden="true" />
+          LOADING MODEL ...
+        </div>
+      ) : null}
+
+      {phase === "error" ? (
+        <div className="engine-view-error" role="alert">
+          模型加载失败，请刷新重试。
+        </div>
+      ) : null}
+
+      {phase === "ready" ? (
+        <>
+          <div className="engine-view-actions">
+            {extraActions}
+            <button
+              type="button"
+              className={cn("engine-view-btn", autoRotate && "active")}
+              onClick={toggleRotate}
+            >
+              自动旋转 {autoRotate ? "ON" : "OFF"}
+            </button>
+            <button
+              type="button"
+              className="engine-view-btn"
+              onClick={resetView}
+            >
+              复位视角
+            </button>
+          </div>
+          <div className="engine-view-hint" aria-hidden="true">
+            左键旋转 · 滚轮缩放 · 右键平移
+          </div>
+          <div ref={readoutRef} className="engine-view-readout">
+            离地高度 2.70 · 目标距离 6.95
+          </div>
+        </>
+      ) : null}
+    </div>
+  );
+}
+
+/**
+ * 模型观察（/engines）：第一区块行星发动机模型，第二区块数字生命卡
+ * （单人/双人共用一个视口，HUD 切换，默认双人）。
+ */
+export function ModelObservatory({
+  engineModelUrl = ENGINE_MODEL_URL,
+  cardSingleUrl = "",
+  cardDoubleUrl = "",
+}: {
+  engineModelUrl?: string;
+  cardSingleUrl?: string;
+  cardDoubleUrl?: string;
+}) {
+  const [cardMode, setCardMode] = useState<"double" | "single">(
+    cardDoubleUrl ? "double" : "single",
+  );
+  const hasCard = Boolean(cardSingleUrl || cardDoubleUrl);
+  const cardUrl =
+    (cardMode === "single" ? cardSingleUrl : cardDoubleUrl) ||
+    cardSingleUrl ||
+    cardDoubleUrl;
+
+  return (
     <div className="ueg-engines-page ueg-engine-view">
       <section className="head engine-head">
         <div className="engine-head-main">
-          <div className="crumb">UEG / GLOBAL ENGINE NETWORK / OBSERVATORY</div>
+          <div className="crumb">UEG / MODEL ARCHIVE / OBSERVATORY</div>
           <h1>
-            发动机观察 <span>ENGINE OBSERVATORY</span>
+            模型观察 <span>MODEL OBSERVATORY</span>
           </h1>
         </div>
       </section>
 
-      <div className="engine-view-wrap">
-        <div ref={containerRef} className="engine-view-canvas" />
-
-        {phase === "loading" ? (
-          <div className="engine-view-loading" role="status">
-            <span className="engine-view-loading-dot" aria-hidden="true" />
-            LOADING MODEL ...
-          </div>
-        ) : null}
-
-        {phase === "error" ? (
-          <div className="engine-view-error" role="alert">
-            模型加载失败，请刷新重试。
-          </div>
-        ) : null}
-
-        {phase === "ready" ? (
-          <>
-            <div className="engine-view-actions">
-              <button
-                type="button"
-                className={cn("engine-view-btn", autoRotate && "active")}
-                onClick={toggleRotate}
-              >
-                自动旋转 {autoRotate ? "ON" : "OFF"}
-              </button>
-              <button
-                type="button"
-                className="engine-view-btn"
-                onClick={resetView}
-              >
-                复位视角
-              </button>
-            </div>
-            <div className="engine-view-hint" aria-hidden="true">
-              左键旋转 · 滚轮缩放 · 右键平移
-            </div>
-            <div ref={readoutRef} className="engine-view-readout">
-              离地高度 2.70 · 目标距离 6.95
-            </div>
-          </>
-        ) : null}
+      <div className="engine-view-blockhead">
+        <h2>
+          行星发动机 <span>PLANETARY ENGINE</span>
+        </h2>
       </div>
+      <ModelViewport modelUrl={engineModelUrl} fixMaterials />
+
+      {hasCard ? (
+        <>
+          <div className="engine-view-blockhead">
+            <h2>
+              数字生命卡 <span>DIGITAL LIFE CARD</span>
+            </h2>
+          </div>
+          <ModelViewport
+            modelUrl={cardUrl}
+            fixMaterials={false}
+            extraActions={
+              <div className="engine-view-switch">
+                <button
+                  type="button"
+                  className={cn(
+                    "engine-view-btn",
+                    cardMode === "double" && "active",
+                  )}
+                  disabled={!cardDoubleUrl}
+                  onClick={() => setCardMode("double")}
+                >
+                  双人
+                </button>
+                <button
+                  type="button"
+                  className={cn(
+                    "engine-view-btn",
+                    cardMode === "single" && "active",
+                  )}
+                  disabled={!cardSingleUrl}
+                  onClick={() => setCardMode("single")}
+                >
+                  单人
+                </button>
+              </div>
+            }
+          />
+        </>
+      ) : (
+        <>
+          <div className="engine-view-blockhead">
+            <h2>
+              数字生命卡 <span>DIGITAL LIFE CARD</span>
+            </h2>
+          </div>
+          <div className="engine-view-wrap engine-view-placeholder">
+            模型待配置 · 请在管理后台「数据源」中填写数字生命卡路径
+          </div>
+        </>
+      )}
     </div>
   );
 }

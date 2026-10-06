@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { engineDataSourcesQuery } from "@/features/engines/queries";
-import { EngineViewer } from "@/features/engines/components/engine-viewer";
+import { ModelObservatory } from "@/features/engines/components/engine-viewer";
 import { m } from "@/paraglide/messages";
 
 export const Route = createFileRoute("/_public/engines")({
@@ -12,6 +12,8 @@ export const Route = createFileRoute("/_public/engines")({
     return {
       title: m.ueg_nav_engines(),
       modelUrl: dataSources.modelUrl,
+      cardSingleUrl: dataSources.cardSingleUrl,
+      cardDoubleUrl: dataSources.cardDoubleUrl,
     };
   },
   component: EnginesRouteComponent,
@@ -25,6 +27,12 @@ export const Route = createFileRoute("/_public/engines")({
 });
 
 function EnginesRouteComponent() {
-  const { modelUrl } = Route.useLoaderData();
-  return <EngineViewer modelUrl={modelUrl} />;
+  const { modelUrl, cardSingleUrl, cardDoubleUrl } = Route.useLoaderData();
+  return (
+    <ModelObservatory
+      engineModelUrl={modelUrl}
+      cardSingleUrl={cardSingleUrl}
+      cardDoubleUrl={cardDoubleUrl}
+    />
+  );
 }

@@ -37,13 +37,23 @@ export function EngineDataSourcesSection() {
 
   const [modelKey, setModelKey] = useState(data.configured ? data.modelKey : "");
   const [dataKey, setDataKey] = useState(data.configured ? data.dataKey : "");
+  const [cardSingleKey, setCardSingleKey] = useState(data.cardSingleKey);
+  const [cardDoubleKey, setCardDoubleKey] = useState(data.cardDoubleKey);
   const [formatError, setFormatError] = useState<string | null>(null);
 
   // query 失效/重取后同步最新已保存值
   useEffect(() => {
     setModelKey(data.configured ? data.modelKey : "");
     setDataKey(data.configured ? data.dataKey : "");
-  }, [data.modelKey, data.dataKey, data.configured]);
+    setCardSingleKey(data.cardSingleKey);
+    setCardDoubleKey(data.cardDoubleKey);
+  }, [
+    data.modelKey,
+    data.dataKey,
+    data.cardSingleKey,
+    data.cardDoubleKey,
+    data.configured,
+  ]);
 
   const saveMutation = useMutation({
     mutationFn: (input: EngineDataSourcesInput) =>
@@ -65,6 +75,14 @@ export function EngineDataSourcesSection() {
             toast.error(
               `${m.engine_sources_data_missing()}（${dataKey.trim()}）`,
             ),
+          CARD_SINGLE_NOT_FOUND: () =>
+            toast.error(
+              `${m.engine_sources_card_single_missing()}（${cardSingleKey.trim()}）`,
+            ),
+          CARD_DOUBLE_NOT_FOUND: () =>
+            toast.error(
+              `${m.engine_sources_card_double_missing()}（${cardDoubleKey.trim()}）`,
+            ),
         },
         fallback: () => toast.error(m.engine_sources_save_failed()),
       });
@@ -74,12 +92,21 @@ export function EngineDataSourcesSection() {
   const save = () => {
     const nextModel = modelKey.trim();
     const nextData = dataKey.trim();
+    const nextCardSingle = cardSingleKey.trim();
+    const nextCardDouble = cardDoubleKey.trim();
     const problem =
       validateKey(nextModel, MODEL_EXTENSION) ??
-      validateKey(nextData, DATA_EXTENSION);
+      validateKey(nextData, DATA_EXTENSION) ??
+      validateKey(nextCardSingle, MODEL_EXTENSION) ??
+      validateKey(nextCardDouble, MODEL_EXTENSION);
     setFormatError(problem);
     if (problem) return;
-    saveMutation.mutate({ engineModelKey: nextModel, engineDataKey: nextData });
+    saveMutation.mutate({
+      engineModelKey: nextModel,
+      engineDataKey: nextData,
+      cardSingleKey: nextCardSingle,
+      cardDoubleKey: nextCardDouble,
+    });
   };
 
   return (
@@ -125,6 +152,43 @@ export function EngineDataSourcesSection() {
             {m.engine_sources_data_desc()}
           </span>
         </label>
+
+        <div className="grid gap-1.5">
+          <span className="text-sm font-medium fuwari-text-90">
+            {m.engine_sources_card_group()}
+          </span>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <label className="grid gap-1.5">
+              <span className="text-xs fuwari-text-50">
+                {m.engine_sources_card_single_label()}
+              </span>
+              <input
+                type="text"
+                value={cardSingleKey}
+                onChange={(event) => setCardSingleKey(event.target.value)}
+                placeholder="blog-media/models/digital-life-card-single.glb"
+                spellCheck={false}
+                className={FIELD_CLASS}
+              />
+            </label>
+            <label className="grid gap-1.5">
+              <span className="text-xs fuwari-text-50">
+                {m.engine_sources_card_double_label()}
+              </span>
+              <input
+                type="text"
+                value={cardDoubleKey}
+                onChange={(event) => setCardDoubleKey(event.target.value)}
+                placeholder="blog-media/models/digital-life-card-double.glb"
+                spellCheck={false}
+                className={FIELD_CLASS}
+              />
+            </label>
+          </div>
+          <span className="text-xs fuwari-text-50">
+            {m.engine_sources_card_desc()}
+          </span>
+        </div>
       </div>
 
       {formatError ? (

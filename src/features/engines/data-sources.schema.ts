@@ -26,6 +26,9 @@ function r2KeyField(extension: RegExp) {
 export const EngineDataSourcesInputSchema = z.object({
   engineModelKey: r2KeyField(/\.glb$/i),
   engineDataKey: r2KeyField(/\.(geojson|json|csv)$/i),
+  // 数字生命卡（模型观察页第二区块）：带贴图的 GLB，留空表示未配置
+  cardSingleKey: r2KeyField(/\.glb$/i),
+  cardDoubleKey: r2KeyField(/\.glb$/i),
 });
 
 export type EngineDataSourcesInput = z.infer<typeof EngineDataSourcesInputSchema>;
@@ -34,9 +37,14 @@ export const EngineDataSourcesSchema = z.object({
   /** 实际生效的 R2 key（配置值或内置默认值）。 */
   modelKey: z.string(),
   dataKey: z.string(),
-  /** 带 /images 前缀的最终资源 URL，前端直接使用。 */
+  /** 数字生命卡 key：空字符串 = 未配置（前端显示占位）。 */
+  cardSingleKey: z.string(),
+  cardDoubleKey: z.string(),
+  /** 带 /images 前缀的最终资源 URL，前端直接使用；卡片未配置时为空串。 */
   modelUrl: z.string(),
   dataUrl: z.string(),
+  cardSingleUrl: z.string(),
+  cardDoubleUrl: z.string(),
   /** 是否至少配置过一项（false = 全部走内置默认）。 */
   configured: z.boolean(),
 });
