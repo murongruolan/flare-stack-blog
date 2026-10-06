@@ -8,6 +8,7 @@ import {
   type EngineRecord,
 } from "../lib/parse-engines";
 import { ENGINE_DATA_URL, ENGINE_MODEL_URL } from "../lib/engine-assets";
+import { cn } from "@/lib/utils";
 
 type Phase = "loading" | "ready" | "error";
 
@@ -40,11 +41,19 @@ function StatBlock({
 export function EngineBrowser({
   dataUrl = ENGINE_DATA_URL,
   modelUrl = ENGINE_MODEL_URL,
+  variant = "page",
+  startWhenVisible = false,
 }: {
   /** R2 数据文件 URL（后台「数据源」配置，SSR 注入；缺省用内置默认）。 */
   dataUrl?: string;
   modelUrl?: string;
+  /** page = /engines 独立页（含页头统计）；home = 首页嵌入板块（仅工具栏+地图）。 */
+  variant?: "page" | "home";
+  /** true 时进入视口才开始拉取数据（首页嵌入，避免一进首页就拉 3MB）。 */
+  startWhenVisible?: boolean;
 } = {}) {
+  const isEmbed = variant === "home";
+  const rootRef = useRef<HTMLDivElement | null>(null);
   const [phase, setPhase] = useState<Phase>("loading");
   const [dataset, setDataset] = useState<EngineDataset | null>(null);
   const [datasetKey, setDatasetKey] = useState(0);
@@ -137,10 +146,34 @@ export function EngineBrowser({
     void run();
   };
 
-  // 挂载即自动加载云端数据
+  // 自动加载：默认挂载即拉取；startWhenVisible 时进入视口才拉一次
+  // （首页嵌入模式，访客不滚到板块就不产生 3MB 数据请求）。
   useEffect(() => {
-    reloadRef.current = loadFromCloud;
-    loadFromCloud();
+    const start = () => {
+      reloadRef.current = loadFromCloud;
+      loadFromCloud();
+    };
+    if (!startWhenVisible) {
+      start();
+      return;
+    }
+    const root = rootRef.current;
+    if (!root || typeof IntersectionObserver === "undefined") {
+      start();
+      return;
+    }
+    let started = false;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (started || !entries.some((entry) => entry.isIntersecting)) return;
+        started = true;
+        start();
+        observer.disconnect();
+      },
+      { rootMargin: "240px 0px" },
+    );
+    observer.observe(root);
+    return () => observer.disconnect();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -162,44 +195,72 @@ export function EngineBrowser({
   const totalText = dataset ? dataset.engines.length.toLocaleString("en-US") : "--";
 
   return (
-    <div className="ueg-engines-page">
-      <section className="head engine-head">
-        <div className="engine-head-main">
-          <div className="crumb">UEG / GLOBAL ENGINE NETWORK / BROWSER</div>
-          <h1>
-            发动机浏览器 <span>ENGINE BROWSER</span>
-          </h1>
-          <p className="intro">
-            UEG 全球行星发动机网络监控 / 档案终端。数据由 R2 云端下发，
-            仅在当前浏览器内存中解析，不落库。
-          </p>
-        </div>
-        {dataset && phase === "ready" ? (
-          <div className="engine-head-stats">
-            <StatBlock label="ENGINES" value={totalText} />
-            <StatBlock label="COUNTRIES" value={String(dataset.countries.length)} />
-            <StatBlock label="CONTINENTS" value={String(dataset.continents.length)} />
-            <StatBlock
-              label="VISIBLE NODES"
-              value={filtered.length.toLocaleString("en-US")}
-              accent
-            />
+    <div
+      ref={rootRef}
+      className={cn("ueg-engines-page", isEmbed && "ueg-engines-embed")}
+    >
+      {!isEmbed ? (
+        <section className="head engine-head">
+          <div className="engine-head-main">
+            <div className="crumb">UEG / GLOBAL ENGINE NETWORK / BROWSER</div>
+            <h1>
+              发动机浏览器 <span>ENGINE BROWSER</span>
+            </h1>
+            <p className="intro">
+              UEG 全球行星发动机网络监控 / 档案终端。数据由 R2 云端下发，
+              仅在当前浏览器内存中解析，不落库。
+            </p>
           </div>
-        ) : null}
-      </section>
+          {dataset && phase === "ready" ? (
+            <div className="engine-head-stats">
+              <StatBlock label="ENGINES" value={totalText} />
+              <StatBlock label="COUNTRIES" value={String(dataset.countries.length)} />
+              <StatBlock label="CONTINENTS" value={String(dataset.continents.length)} />
+              <StatBlock
+                label="VISIBLE NODES"
+                value={filtered.length.toLocaleString("en-US")}
+                accent
+              />
+            </div>
+          ) : null}
+        </section>
+      ) : null}
 
       {phase === "loading" ? (
-        <section className="engine-loading">
-          <div className="engine-loading-scan" aria-hidden="true" />
-          <p className="engine-loading-title">ENGINE NETWORK INITIALIZING ...</p>
-          <p className="engine-loading-step">
-            <span className="engine-loading-prompt">&gt;</span> {parseStep}
-            <span className="engine-loading-caret" aria-hidden="true" />
-          </p>
-          <div className="engine-loading-bar">
-            <span />
-          </div>
-        </section>
+        isEmbed ? (
+          <section className="engine-loading is-embed" aria-live="polite">
+            <div className="engine-radar" aria-hidden="true">
+              <span className="engine-radar-ring" />
+              <span className="engine-radar-ring" />
+              <span className="engine-radar-ring" />
+              <span className="engine-radar-sweep" />
+              <span className="engine-radar-blip b1" />
+              <span className="engine-radar-blip b2" />
+              <span className="engine-radar-blip b3" />
+              <span className="engine-radar-core" />
+            </div>
+            <p className="engine-loading-title">PLANETARY ENGINE NETWORK</p>
+            <p className="engine-loading-step">
+              <span className="engine-loading-prompt">&gt;</span> {parseStep}
+              <span className="engine-loading-caret" aria-hidden="true" />
+            </p>
+            <div className="engine-loading-bar">
+              <span />
+            </div>
+          </section>
+        ) : (
+          <section className="engine-loading">
+            <div className="engine-loading-scan" aria-hidden="true" />
+            <p className="engine-loading-title">ENGINE NETWORK INITIALIZING ...</p>
+            <p className="engine-loading-step">
+              <span className="engine-loading-prompt">&gt;</span> {parseStep}
+              <span className="engine-loading-caret" aria-hidden="true" />
+            </p>
+            <div className="engine-loading-bar">
+              <span />
+            </div>
+          </section>
+        )
       ) : null}
 
       {phase === "error" ? (
@@ -348,10 +409,12 @@ export function EngineBrowser({
             ) : null}
           </div>
 
-          <p className="engine-statusline">
-            {dataset.engines.length.toLocaleString("en-US")} ENGINE NODES LOADED ·{" "}
-            {filtered.length.toLocaleString("en-US")} VISIBLE · READY
-          </p>
+          {!isEmbed ? (
+            <p className="engine-statusline">
+              {dataset.engines.length.toLocaleString("en-US")} ENGINE NODES LOADED ·{" "}
+              {filtered.length.toLocaleString("en-US")} VISIBLE · READY
+            </p>
+          ) : null}
         </>
       ) : null}
     </div>

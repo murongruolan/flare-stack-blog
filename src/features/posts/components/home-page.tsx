@@ -15,6 +15,7 @@ import {
 import { withCategoryFilter } from "@/features/posts/utils/post-public-search";
 import { cn } from "@/lib/utils";
 import { m } from "@/paraglide/messages";
+import { EngineNetworkSection } from "@/features/engines/components/engine-network-section";
 
 /**
  * 首页 V2（对比版）——按外部锐评重排：
@@ -52,6 +53,21 @@ function TagV2({ post }: { post: PostItem }) {
     >
       {name}
     </Link>
+  );
+}
+
+/**
+ * 通告卡整卡是一个 <Link>，内部标签不能再嵌 <a>（水合会失败），
+ * 因此这里渲染同款样式的纯 span 版本。
+ */
+function TagToken({ post }: { post: PostItem }) {
+  const name = post.category?.name;
+  if (!name) return null;
+  const emergency = isEmergencyCategory(name);
+  return (
+    <span className={cn("v2-tag", emergency && "v2-tag-emergency")}>
+      {name}
+    </span>
   );
 }
 
@@ -323,7 +339,7 @@ function NoticePanelV2({ notices }: { notices: Array<PostItem> }) {
               className="v2-notice"
             >
               <span className="v2-notice-meta">
-                <TagV2 post={post} />
+                <TagToken post={post} />
                 <time
                   className="v2-notice-date"
                   dateTime={post.publishedAt?.toISOString()}
@@ -413,7 +429,15 @@ function NewsCardV2({ post }: { post: PostItem }) {
 
 /* ---------- 页面组装 ---------- */
 
-export function HomePage({ posts }: { posts: Array<PostItem> }) {
+export function HomePage({
+  posts,
+  engineDataUrl,
+  engineModelUrl,
+}: {
+  posts: Array<PostItem>;
+  engineDataUrl: string;
+  engineModelUrl: string;
+}) {
   const { siteConfig } = useRouteContext({ from: "__root__" });
   const fallbackImage = getPublicImageSrc(
     siteConfig.theme.fuwari.homeBg,
@@ -474,6 +498,11 @@ export function HomePage({ posts }: { posts: Array<PostItem> }) {
           ))}
         </div>
       </section>
+
+      <EngineNetworkSection
+        dataUrl={engineDataUrl}
+        modelUrl={engineModelUrl}
+      />
     </div>
   );
 }

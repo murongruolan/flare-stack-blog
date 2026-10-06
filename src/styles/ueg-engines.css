@@ -749,3 +749,185 @@
     font-size: var(--fs-32);
   }
 }
+
+/* ============================================================
+   首页嵌入板块（.ueg-engines-embed）：仅工具栏 + 地图，
+   高度固定、间距对齐首页 16px 网格；加载动画为雷达扫描。
+   ============================================================ */
+
+.ueg-engines-embed .engine-toolbar {
+  margin-top: 16px;
+}
+
+.ueg-engines-embed .engine-layout {
+  margin-top: 16px;
+}
+
+.ueg-engines-embed .engine-map {
+  height: clamp(420px, 58vh, 600px);
+  min-height: 0;
+}
+
+/* 加载占位：与地图同框同高，雷达扫描动画 */
+
+.ueg-engines-embed .engine-loading.is-embed {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  height: clamp(420px, 58vh, 600px);
+  min-height: 0;
+  margin-top: 16px;
+  padding: 24px;
+  text-align: center;
+  background:
+    radial-gradient(circle at 50% 44%, rgba(32, 62, 78, 0.4), rgba(5, 12, 18, 0) 58%),
+    linear-gradient(rgba(64, 118, 140, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(64, 118, 140, 0.05) 1px, transparent 1px),
+    #050c12;
+  background-size: auto, 32px 32px, 32px 32px, auto;
+}
+
+.ueg-engines-embed .engine-radar {
+  position: relative;
+  width: 172px;
+  height: 172px;
+  margin-bottom: 24px;
+  border-radius: 50%;
+}
+
+.ueg-engines-embed .engine-radar::before,
+.ueg-engines-embed .engine-radar::after {
+  content: "";
+  position: absolute;
+  background: rgba(96, 168, 192, 0.18);
+}
+
+/* 十字准线 */
+.ueg-engines-embed .engine-radar::before {
+  left: 50%;
+  top: 4%;
+  bottom: 4%;
+  width: 1px;
+}
+
+.ueg-engines-embed .engine-radar::after {
+  top: 50%;
+  left: 4%;
+  right: 4%;
+  height: 1px;
+}
+
+.ueg-engines-embed .engine-radar-ring {
+  position: absolute;
+  border: 1px solid rgba(96, 168, 192, 0.28);
+  border-radius: 50%;
+}
+
+.ueg-engines-embed .engine-radar-ring:nth-child(1) {
+  inset: 0;
+}
+
+.ueg-engines-embed .engine-radar-ring:nth-child(2) {
+  inset: 17%;
+  border-color: rgba(96, 168, 192, 0.2);
+}
+
+.ueg-engines-embed .engine-radar-ring:nth-child(3) {
+  inset: 34%;
+  border-color: rgba(96, 168, 192, 0.14);
+}
+
+.ueg-engines-embed .engine-radar-sweep {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    rgba(126, 210, 236, 0.5) 0deg,
+    rgba(126, 210, 236, 0.16) 52deg,
+    rgba(126, 210, 236, 0) 76deg,
+    transparent 360deg
+  );
+  animation: engine-radar-spin 2.8s linear infinite;
+}
+
+.ueg-engines-embed .engine-radar-blip {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--ueg-steel);
+  box-shadow: 0 0 8px rgba(126, 210, 236, 0.9);
+  animation: engine-radar-blip 2.8s ease-out infinite;
+}
+
+.ueg-engines-embed .engine-radar-blip.b1 {
+  left: 24%;
+  top: 33%;
+}
+
+.ueg-engines-embed .engine-radar-blip.b2 {
+  left: 68%;
+  top: 58%;
+  animation-delay: 0.9s;
+}
+
+.ueg-engines-embed .engine-radar-blip.b3 {
+  left: 44%;
+  top: 74%;
+  animation-delay: 1.8s;
+}
+
+.ueg-engines-embed .engine-radar-core {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  border-radius: 50%;
+  background: var(--ueg-bone);
+  box-shadow: 0 0 12px rgba(214, 232, 240, 0.9);
+}
+
+@keyframes engine-radar-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes engine-radar-blip {
+  0%,
+  12% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  22% {
+    opacity: 1;
+    transform: scale(1.25);
+  }
+  58% {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ueg-engines-embed .engine-radar-sweep,
+  .ueg-engines-embed .engine-radar-blip {
+    animation: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .ueg-engines-embed .engine-map,
+  .ueg-engines-embed .engine-loading.is-embed {
+    height: 380px;
+  }
+}

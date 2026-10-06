@@ -3,6 +3,7 @@ import { createFileRoute, redirect } from "@tanstack/react-router";
 import { z } from "zod";
 import { getHomeBackgroundPreloadImages } from "@/components/layout/preload-images";
 import { siteDomainQuery } from "@/features/config/queries";
+import { engineDataSourcesQuery } from "@/features/engines/queries";
 import { HomePage } from "@/features/posts/components/home-page";
 import { HomePageSkeleton } from "@/features/posts/components/home-page-skeleton";
 import { homePostsQuery } from "@/features/posts/queries";
@@ -24,6 +25,8 @@ export const Route = createFileRoute("/_public/")({
       context.queryClient.ensureQueryData(homePostsQuery(deps.page)),
       context.queryClient.ensureQueryData(siteDomainQuery),
     ]);
+    // 数据源设置仅一行 D1 读取，随页面 SSR 预热，组件侧 useSuspenseQuery 不再发请求
+    await context.queryClient.ensureQueryData(engineDataSourcesQuery);
 
     if (posts.page !== deps.page) {
       throw redirect({
@@ -56,5 +59,12 @@ export const Route = createFileRoute("/_public/")({
 function HomeRoute() {
   const { page = 1 } = Route.useSearch();
   const { data } = useSuspenseQuery(homePostsQuery(page));
-  return <HomePage posts={data.items} />;
+  const { data: dataSources } = useSuspenseQuery(engineDataSourcesQuery);
+  return (
+    <HomePage
+      posts={data.items}
+      engineDataUrl={dataSources.dataUrl}
+      engineModelUrl={dataSources.modelUrl}
+    />
+  );
 }

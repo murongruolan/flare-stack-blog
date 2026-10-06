@@ -804,3 +804,21 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+/* ---------- 发动机网络板块副标题 ---------- */
+
+.ueg-homev2-page .v2-section-head .v2-section-en {
+  margin-left: 12px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-10);
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  color: var(--ueg-mist);
+}
+
+@media (max-width: 768px) {
+  .ueg-homev2-page .v2-section-head .v2-section-en {
+    display: none;
+  }
+}
