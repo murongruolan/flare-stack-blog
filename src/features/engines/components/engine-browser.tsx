@@ -135,7 +135,7 @@ export function EngineBrowser({
             ERROR_MESSAGES[error.message] ?? ERROR_MESSAGES.NO_ENGINE_RECORDS,
           );
         } else {
-          setErrorMessage("云端数据加载失败，请稍后重试或检查 R2 数据文件。");
+          setErrorMessage("云端数据加载失败，请稍后重试。");
         }
         setPhase("error");
       }
@@ -257,9 +257,6 @@ export function EngineBrowser({
         <section className="engine-error">
           <span className="engine-error-badge">{ERROR_TITLE}</span>
           <p className="engine-error-text">{errorMessage}</p>
-          <p className="engine-error-hint">
-            数据源：R2 云端（{dataUrl}）。请确认文件已上传后重试。
-          </p>
           <button
             type="button"
             className="engine-primary-btn"

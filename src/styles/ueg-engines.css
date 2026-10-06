@@ -332,13 +332,6 @@
   color: var(--ueg-text);
 }
 
-.ueg-engines-page .engine-error-hint {
-  margin: 8px 0 0;
-  font-family: var(--font-mono);
-  font-size: var(--fs-10);
-  color: var(--ueg-mist);
-}
-
 .ueg-engines-page .engine-error .engine-primary-btn {
   border-color: var(--ueg-red);
   color: #e6cfac;
