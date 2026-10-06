@@ -95,24 +95,13 @@ export function PolicyPage({
     [fetchNextPage, loadedPages, maxPage],
   );
 
-  const newest = filtered.reduce<Date | null>((latest, post) => {
-    if (!post.publishedAt) return latest;
-    const value = new Date(post.publishedAt);
-    if (Number.isNaN(value.getTime())) return latest;
-    return !latest || value > latest ? value : latest;
-  }, null);
-
   return (
     <div className="ueg-policy-page">
       <section className="head">
-        <div className="crumb">UEG / PUBLIC RECORD / POLICY &amp; REGULATIONS</div>
-        <h1>
-          政策法规 <span>POLICY &amp; REGULATIONS</span>
-        </h1>
+        <h1>政策法规</h1>
       </section>
 
       <div className="toolbar">
-        <span className="label">DOCUMENT TYPE</span>
         <button
           type="button"
           className={cn("filter", !selectedCategory && "active")}
@@ -133,11 +122,6 @@ export function PolicyPage({
             {category.name}
           </button>
         ))}
-        <div className="toolbar-spacer" />
-        <div className="result">
-          PUBLIC RECORD · {filtered.length} DOCUMENTS
-          {newest ? ` · UPDATED ${formatUegPostDate(newest)}` : ""}
-        </div>
       </div>
 
       <section className="content-grid">
@@ -260,11 +244,9 @@ export function PolicyPage({
         <aside className="sidebar">
           <div className="side-title">
             <h2>法规导航</h2>
-            <small>POLICY INDEX</small>
           </div>
 
           <div className="side-section">
-            <div className="side-kicker">DOCUMENT CATEGORIES</div>
             <div className="side-list">
               <button
                 type="button"
@@ -293,8 +275,6 @@ export function PolicyPage({
 
           {years.length > 0 ? (
             <div className="side-section">
-              <div className="side-kicker">ANNUAL INDEX</div>
-              <div className="side-main">政策文件年度索引</div>
               <div className="year-list">
                 {years.map((value) => (
                   <button
@@ -313,7 +293,6 @@ export function PolicyPage({
           ) : null}
 
           <div className="doc-panel">
-            <div className="doc-panel-title">PUBLIC DOCUMENT ACCESS</div>
             <div className="doc-panel-item">
               UEG 所有公开政策文件均由联合地球政府官方信息系统发布。
             </div>

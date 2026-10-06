@@ -6,7 +6,6 @@ import type { PostItem } from "@/features/posts/schema/posts.schema";
 import { formatUegPostDate } from "@/features/posts/utils/format-ueg-post-date";
 import {
   isEmergencyCategory,
-  postDocCode,
   postImage,
 } from "@/features/posts/utils/portal-media";
 import { PUBLIC_IMAGE_WIDTH } from "@/features/media/utils/media.utils";
@@ -82,24 +81,13 @@ export function PostsPage({
     [fetchNextPage, loadedPages, maxPage],
   );
 
-  const newest = posts.reduce<Date | null>((latest, post) => {
-    if (!post.publishedAt) return latest;
-    const value = new Date(post.publishedAt);
-    if (Number.isNaN(value.getTime())) return latest;
-    return !latest || value > latest ? value : latest;
-  }, null);
-
   return (
     <div className="ueg-news-page">
       <section className="head">
-        <div className="crumb">UEG / INFORMATION CENTER / NEWS</div>
-        <h1>
-          新闻动态 <span>NEWS &amp; INFORMATION</span>
-        </h1>
+        <h1>新闻动态</h1>
       </section>
 
       <div className="toolbar">
-        <span className="label">CATEGORY</span>
         <button
           type="button"
           className={cn("filter", !selectedCategory && "active")}
@@ -125,11 +113,6 @@ export function PostsPage({
             标签：{selectedTag} <b>×</b>
           </button>
         ) : null}
-        <span className="spacer" />
-        <span className="count">
-          TOTAL {posts.length} RECORDS
-          {newest ? ` · UPDATED ${formatUegPostDate(newest)}` : ""}
-        </span>
       </div>
 
       <section className="layout">
@@ -164,7 +147,6 @@ export function PostsPage({
                           {category ?? m.ueg_nav_news()}
                         </span>
                         <span>{formatUegPostDate(post.publishedAt)}</span>
-                        <span className="code">{postDocCode(post)}</span>
                       </div>
                       <h2 className="title">
                         <Link to="/post/$slug" params={{ slug: post.slug }}>

@@ -13,13 +13,13 @@
 
 /* ---------- page header ---------- */
 
-/* /posts 与 /policy 共用的页头（结构：.crumb + h1>span） */
+/* /posts 与 /policy 共用的页头（只保留中文大标题） */
 .ueg-news-page .head,
 .ueg-policy-page .head {
   position: relative;
   overflow: hidden;
   margin-top: 18px;
-  /* 简介文案已删，min-height 锁住原高度不收缩 */
+  /* 简介与装饰文案已删，min-height 锁住原高度不收缩 */
   min-height: 168px;
   padding: 29px 30px 27px;
   border: 1px solid var(--ueg-border);
@@ -40,30 +40,13 @@
 .ueg-policy-page .head > * {
   position: relative;
 }
-.ueg-news-page .crumb,
-.ueg-policy-page .crumb {
-  font-family: var(--font-mono);
-  font-size: var(--fs-12);
-  letter-spacing: 0.14em;
-  color: var(--ueg-mist);
-}
 .ueg-news-page .head h1,
 .ueg-policy-page .head h1 {
-  margin: 10px 0 0;
+  margin: 0;
   font-size: var(--fs-35);
   font-weight: 700;
   letter-spacing: 0.04em;
   color: var(--ueg-bone);
-}
-.ueg-news-page .head h1 span,
-.ueg-policy-page .head h1 span {
-  display: block;
-  margin: 8px 0 0;
-  font-family: var(--font-mono);
-  font-size: var(--fs-15);
-  font-weight: 400;
-  letter-spacing: 0.14em;
-  color: var(--ueg-mist);
 }
 /* ---------- category toolbar ---------- */
 
@@ -76,20 +59,12 @@
   border: 1px solid var(--ueg-border);
   background: rgba(10, 20, 28, 0.82);
 }
-.ueg-news-page .label {
-  margin-right: 5px;
-  font-family: var(--font-mono);
-  font-size: var(--fs-9);
-  letter-spacing: 0.12em;
-  color: var(--ueg-mist);
-  white-space: nowrap;
-}
 .ueg-news-page .filter {
   padding: 8px 12px;
   border: 1px solid var(--ueg-border-2);
   background: #0c1821;
   color: var(--ueg-text-sub);
-  font-size: var(--fs-11);
+  font-size: var(--fs-12);
   white-space: nowrap;
   transition: border-color 180ms, color 180ms, background-color 180ms;
 }
@@ -102,15 +77,6 @@
   background: rgba(193, 138, 85, 0.07);
   color: #e3caa2;
 }
-.ueg-news-page .spacer {
-  flex: 1;
-}
-.ueg-news-page .count {
-  font-family: var(--font-mono);
-  font-size: var(--fs-9);
-  color: var(--ueg-post-time);
-  white-space: nowrap;
-}
 .ueg-news-page .active-tag {
   display: inline-flex;
   align-items: center;
@@ -119,7 +85,7 @@
   border: 1px solid var(--ueg-amber);
   background: rgba(193, 138, 85, 0.06);
   color: #e3caa2;
-  font-size: var(--fs-11);
+  font-size: var(--fs-12);
   white-space: nowrap;
 }
 .ueg-news-page .active-tag b {
@@ -191,17 +157,16 @@
 .ueg-news-page .meta {
   display: flex;
   align-items: center;
-  gap: 9px;
-  font-family: var(--font-mono);
-  font-size: var(--fs-9);
-  color: var(--ueg-post-time);
+  gap: 10px;
+  font-size: var(--fs-11);
+  color: var(--ueg-text-sub);
 }
 .ueg-news-page .tag {
-  padding: 4px 7px;
+  padding: 4px 8px;
   border: 1px solid var(--ueg-mist);
   color: var(--ueg-steel);
   font-family: var(--font-sans);
-  font-size: var(--fs-9);
+  font-size: var(--fs-11);
 }
 .ueg-news-page .tag.alert {
   border-color: var(--ueg-red);
@@ -232,7 +197,7 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
   margin-top: 8px;
-  font-size: var(--fs-11);
+  font-size: var(--fs-12);
   line-height: 1.72;
   color: var(--ueg-text-sub);
 }
@@ -244,7 +209,7 @@
   padding: 7px 11px;
   border: 1px solid var(--ueg-border-2);
   color: var(--ueg-steel);
-  font-size: var(--fs-10);
+  font-size: var(--fs-11);
   transition: border-color 180ms, background-color 180ms;
 }
 .ueg-news-page .read b {
@@ -283,7 +248,7 @@
   border: 1px solid var(--ueg-border);
   background: #0c1821;
   color: var(--ueg-text-sub);
-  font-size: var(--fs-10);
+  font-size: var(--fs-12);
   transition: border-color 180ms, color 180ms, background-color 180ms;
 }
 .ueg-news-page .pagebtn:hover:not(:disabled) {
@@ -322,37 +287,6 @@
   font-size: var(--fs-13);
   font-weight: 700;
   color: var(--ueg-bone);
-}
-.ueg-news-page .sidehead small {
-  font-family: var(--font-mono);
-  font-size: var(--fs-8);
-  letter-spacing: 0.1em;
-  color: var(--ueg-post-time);
-}
-.ueg-news-page .sideblock {
-  padding: 14px 0;
-  border-bottom: 1px solid rgba(120, 151, 164, 0.13);
-}
-.ueg-news-page .sideblock:last-child {
-  border-bottom: 0;
-}
-.ueg-news-page .kicker {
-  font-family: var(--font-mono);
-  font-size: var(--fs-8);
-  letter-spacing: 0.12em;
-  color: var(--ueg-amber);
-}
-.ueg-news-page .main {
-  margin-top: 6px;
-  font-size: var(--fs-12);
-  line-height: 1.45;
-  color: var(--ueg-text);
-}
-.ueg-news-page .sub {
-  margin-top: 5px;
-  font-size: var(--fs-9);
-  line-height: 1.55;
-  color: var(--ueg-post-time);
 }
 
 /* ---------- application service cards ---------- */
@@ -400,26 +334,11 @@
   background-size: 18px 18px;
   opacity: 0.8;
 }
-.ueg-news-page .visual-code {
+.ueg-news-page .visual-line {
   position: absolute;
-  top: 10px;
-  left: 13px;
-  font-family: var(--font-mono);
-  font-size: var(--fs-8);
-  letter-spacing: 0.14em;
-  color: var(--ueg-amber);
+  height: 1px;
+  background: rgba(120, 151, 164, 0.28);
 }
-.ueg-news-page .visual-label {
-  position: absolute;
-  top: 10px;
-  right: 12px;
-  font-family: var(--font-mono);
-  font-size: var(--fs-7);
-  letter-spacing: 0.1em;
-  color: var(--ueg-mist);
-  opacity: 0.8;
-}
-
 /* navigator art */
 .ueg-news-page .apply-visual.navigator {
   background:
@@ -550,30 +469,15 @@
 .ueg-news-page .apply-content {
   padding: 14px 14px 15px;
 }
-.ueg-news-page .apply-kicker {
-  font-family: var(--font-mono);
-  font-size: var(--fs-8);
-  letter-spacing: 0.12em;
-  color: var(--ueg-amber);
-}
 .ueg-news-page .apply-title {
-  margin-top: 6px;
   font-size: var(--fs-16);
   line-height: 1.35;
   font-weight: 700;
   color: var(--ueg-bone);
 }
-.ueg-news-page .apply-en {
-  margin-top: 5px;
-  font-family: var(--font-mono);
-  font-size: var(--fs-8);
-  line-height: 1.5;
-  letter-spacing: 0.05em;
-  color: var(--ueg-mist);
-}
 .ueg-news-page .apply-desc {
   margin-top: 9px;
-  font-size: var(--fs-9);
+  font-size: var(--fs-11);
   line-height: 1.65;
   color: var(--ueg-text-sub);
 }
@@ -586,7 +490,7 @@
   border: 1px solid var(--ueg-amber);
   background: rgba(193, 138, 85, 0.04);
   color: #e1c8a2;
-  font-size: var(--fs-9);
+  font-size: var(--fs-11);
 }
 .ueg-news-page .apply-btn b {
   font-size: var(--fs-13);
@@ -668,10 +572,6 @@
     scrollbar-width: none;
   }
   .ueg-news-page .toolbar::-webkit-scrollbar {
-    display: none;
-  }
-  .ueg-news-page .spacer,
-  .ueg-news-page .count {
     display: none;
   }
   .ueg-news-page .sidebar {
