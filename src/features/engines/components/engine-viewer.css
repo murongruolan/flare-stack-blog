@@ -1,0 +1,130 @@
+/* ============================================================
+   发动机观察页（ueg-engine-view）：独立 Three.js 模型观察器
+   ============================================================ */
+
+.ueg-engine-view .engine-head {
+  margin-top: 18px;
+}
+
+.ueg-engine-view .engine-view-wrap {
+  position: relative;
+  overflow: hidden;
+  margin-top: 18px;
+  height: calc(100vh - 300px);
+  min-height: 540px;
+  border: 1px solid var(--ueg-border);
+  background: #050c12;
+  clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px);
+}
+
+.ueg-engine-view .engine-view-canvas {
+  position: absolute;
+  inset: 0;
+}
+
+.ueg-engine-view .engine-view-canvas canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+}
+
+/* 加载 / 错误提示 */
+
+.ueg-engine-view .engine-view-loading {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-11);
+  letter-spacing: 0.18em;
+  color: var(--ueg-mist);
+}
+
+.ueg-engine-view .engine-view-loading-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ueg-steel);
+  box-shadow: 0 0 10px rgba(126, 210, 236, 0.9);
+  animation: engine-view-pulse 1.1s ease-in-out infinite;
+}
+
+@keyframes engine-view-pulse {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: scale(0.7);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+}
+
+.ueg-engine-view .engine-view-error {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: var(--fs-12);
+  color: #e09f98;
+}
+
+/* HUD：操作按钮与提示 */
+
+.ueg-engine-view .engine-view-actions {
+  position: absolute;
+  right: 14px;
+  top: 14px;
+  display: flex;
+  gap: 8px;
+}
+
+.ueg-engine-view .engine-view-btn {
+  padding: 6px 12px;
+  border: 1px solid var(--ueg-border);
+  background: rgba(8, 17, 24, 0.82);
+  color: var(--ueg-mist);
+  font-family: var(--font-mono);
+  font-size: var(--fs-10);
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: border-color 160ms, color 160ms;
+}
+
+.ueg-engine-view .engine-view-btn:hover {
+  border-color: var(--ueg-steel);
+  color: var(--ueg-text);
+}
+
+.ueg-engine-view .engine-view-btn.active {
+  border-color: var(--ueg-amber);
+  color: #e3caa2;
+}
+
+.ueg-engine-view .engine-view-hint {
+  position: absolute;
+  right: 14px;
+  bottom: 12px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-9);
+  letter-spacing: 0.12em;
+  color: var(--ueg-mist);
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+@media (max-width: 768px) {
+  .ueg-engine-view .engine-view-wrap {
+    height: 60vh;
+    min-height: 380px;
+  }
+  .ueg-engine-view .engine-view-hint {
+    display: none;
+  }
+}

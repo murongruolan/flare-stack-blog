@@ -1,17 +1,17 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { EngineBrowser } from "@/features/engines/components/engine-browser";
 import { engineDataSourcesQuery } from "@/features/engines/queries";
+import { EngineViewer } from "@/features/engines/components/engine-viewer";
 import { m } from "@/paraglide/messages";
 
 export const Route = createFileRoute("/_public/engines")({
-  // 数据源 URL 由 loader 随 SSR 水合注入，无额外客户端请求
   loader: async ({ context }) => {
+    // 观察页只用到模型 URL；数据源设置 SSR 预热，无额外客户端请求
     const dataSources = await context.queryClient.ensureQueryData(
       engineDataSourcesQuery,
     );
     return {
       title: m.ueg_nav_engines(),
-      dataSources,
+      modelUrl: dataSources.modelUrl,
     };
   },
   component: EnginesRouteComponent,
@@ -25,11 +25,6 @@ export const Route = createFileRoute("/_public/engines")({
 });
 
 function EnginesRouteComponent() {
-  const { dataSources } = Route.useLoaderData();
-  return (
-    <EngineBrowser
-      dataUrl={dataSources.dataUrl}
-      modelUrl={dataSources.modelUrl}
-    />
-  );
+  const { modelUrl } = Route.useLoaderData();
+  return <EngineViewer modelUrl={modelUrl} />;
 }

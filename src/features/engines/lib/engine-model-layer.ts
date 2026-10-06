@@ -56,6 +56,126 @@ export interface EngineModelLayer {
   };
 }
 
+export type GltfMaterialFixer = (
+  source: THREE.MeshStandardMaterial,
+) => THREE.MeshStandardMaterial;
+
+/**
+ * 材质整理：双面 + 共享桶。
+ * 开发版 GLB 未打包贴图，其中 5 个材质是 baseColor=纯黑 + metalness=1
+ * 的"黑镜面"——任何光照下都渲染成纯黑（Blender 里有贴图所以正常），
+ * 在此替换为暗钢色占位；带自发光（火焰件）的材质保留原样。
+ * 模型观察页（/engines 独立渲染）与地图实例层共用同一套规则。
+ */
+export function createGltfMaterialFixer(
+  texturedMaterialNames: ReadonlySet<string>,
+): GltfMaterialFixer {
+  let blackSubstitute: THREE.MeshStandardMaterial | null = null;
+  let texturedSubstitute: THREE.MeshStandardMaterial | null = null;
+  return function resolveMaterial(
+    source: THREE.MeshStandardMaterial,
+  ): THREE.MeshStandardMaterial {
+    const luminance =
+      source.color.r * 0.2126 + source.color.g * 0.7152 + source.color.b * 0.0722;
+    const emissive =
+      source.emissive.getHex() !== 0 || source.emissiveIntensity > 0;
+    if (!emissive && luminance < 0.02 && source.metalness >= 0.5) {
+      if (!blackSubstitute) {
+        blackSubstitute = new THREE.MeshStandardMaterial({
+          color: new THREE.Color("#4a5a64"),
+          metalness: 0.55,
+          roughness: 0.45,
+          side: THREE.DoubleSide,
+          polygonOffset: true,
+          polygonOffsetFactor: -2,
+          polygonOffsetUnits: -2,
+        });
+      }
+      return blackSubstitute;
+    }
+    if (texturedMaterialNames.has(source.name)) {
+      if (!texturedSubstitute) {
+        texturedSubstitute = new THREE.MeshStandardMaterial({
+          color: new THREE.Color("#5a6a74"),
+          metalness: 0.5,
+          roughness: 0.5,
+          side: THREE.DoubleSide,
+          polygonOffset: true,
+          polygonOffsetFactor: -2,
+          polygonOffsetUnits: -2,
+        });
+      }
+      return texturedSubstitute;
+    }
+    const material = source.clone();
+    material.side = THREE.DoubleSide;
+    material.polygonOffset = true;
+    material.polygonOffsetFactor = -2;
+    material.polygonOffsetUnits = -2;
+    return material;
+  };
+}
+
+/**
+ * GLB 预处理：剥离引用了不存在贴图文件的 texture 属性。
+ * 开发版 GLB 只导出了材质、没打包贴图（images: 0），GLTFLoader 遇到
+ * 贴图加载失败会拒绝整个模型。返回处理后的 GLB 与贴图材质名集合，
+ * 供渲染端用中性钢色占位。
+ */
+export function stripDeadTextureReferences(buffer: ArrayBuffer): {
+  buffer: ArrayBuffer;
+  texturedNames: string[];
+} {
+  const header = new DataView(buffer);
+  const magic = header.getUint32(0, true);
+  if (magic !== 0x46546c67) return { buffer, texturedNames: [] }; // 不是 GLB
+  const jsonLength = header.getUint32(12, true);
+  const jsonBytes = new Uint8Array(buffer, 20, jsonLength);
+  // GLB 规范允许 JSON 块尾部用空格/零填充，裁掉后再解析
+  const jsonText = new TextDecoder().decode(jsonBytes).replace(/[/s ]+$/, "");
+  const gltf = JSON.parse(jsonText);
+  const texturedNames: string[] = [];
+  for (const material of gltf.materials ?? []) {
+    const pbr = material.pbrMetallicRoughness ?? {};
+    const hadTexture =
+      pbr.baseColorTexture ||
+      pbr.metallicRoughnessTexture ||
+      material.normalTexture ||
+      material.emissiveTexture;
+    if (!hadTexture) continue;
+    texturedNames.push(material.name ?? "unnamed");
+    delete pbr.baseColorTexture;
+    delete pbr.metallicRoughnessTexture;
+    delete material.normalTexture;
+    delete material.emissiveTexture;
+    delete material.occlusionTexture;
+  }
+  const outJsonText = JSON.stringify(gltf);
+  const jsonChunk = new TextEncoder().encode(outJsonText);
+  const paddedLength = Math.ceil(jsonChunk.length / 4) * 4;
+  const padded = new Uint8Array(paddedLength);
+  padded.set(jsonChunk);
+  padded.fill(0x20, jsonChunk.length); // 规范：JSON 块用空格填充
+  const binChunk = new Uint8Array(
+    buffer,
+    20 + jsonLength + 8,
+    buffer.byteLength - 20 - jsonLength - 8,
+  );
+  const total = 12 + 8 + paddedLength + 8 + binChunk.length;
+  const out = new Uint8Array(total);
+  const view = new DataView(out.buffer);
+  view.setUint32(0, 0x46546c67, true);
+  view.setUint32(4, 2, true);
+  view.setUint32(8, total, true);
+  view.setUint32(12, paddedLength, true);
+  view.setUint32(16, 0x4e4f534a, true); // 'JSON'
+  out.set(padded, 20);
+  view.setUint32(20 + paddedLength, binChunk.length, true);
+  view.setUint32(24 + paddedLength, 0x004e4942, true); // 'BIN'
+  out.set(binChunk, 28 + paddedLength);
+  return { buffer: out.buffer, texturedNames };
+}
+
 export function createEngineModelLayer(options: {
   map: MapLibreMap;
   getEngines: () => EngineRecord[];
@@ -101,8 +221,7 @@ export function createEngineModelLayer(options: {
   let instanceSets: Array<{ mesh: THREE.InstancedMesh }> = [];
   /** GLB 引用了贴图但未打包贴图文件的材质名（渲染时用中性钢色占位）。 */
   const texturedMaterialNames = new Set<string>();
-  let blackSubstitute: THREE.MeshStandardMaterial | null = null;
-  let texturedSubstitute: THREE.MeshStandardMaterial | null = null;
+  const resolveMaterial = createGltfMaterialFixer(texturedMaterialNames);
 
   const layer: CustomLayerInterface = {
     id: "engines-3d-models",
@@ -173,115 +292,6 @@ export function createEngineModelLayer(options: {
       renderer.render(scene, camera);
     },
   };
-
-  /**
-   * 材质整理：双面 + 共享桶。
-   * 开发版 GLB 未打包贴图，其中 5 个材质是 baseColor=纯黑 + metalness=1
-   * 的"黑镜面"——任何光照下都渲染成纯黑（Blender 里有贴图所以正常），
-   * 在此替换为暗钢色占位；带自发光（火焰件）的材质保留原样。
-   */
-  function resolveMaterial(
-    source: THREE.MeshStandardMaterial,
-  ): THREE.MeshStandardMaterial {
-    const luminance =
-      source.color.r * 0.2126 + source.color.g * 0.7152 + source.color.b * 0.0722;
-    const emissive =
-      source.emissive.getHex() !== 0 || source.emissiveIntensity > 0;
-    if (!emissive && luminance < 0.02 && source.metalness >= 0.5) {
-      if (!blackSubstitute) {
-        blackSubstitute = new THREE.MeshStandardMaterial({
-          color: new THREE.Color("#4a5a64"),
-          metalness: 0.55,
-          roughness: 0.45,
-          side: THREE.DoubleSide,
-          polygonOffset: true,
-          polygonOffsetFactor: -2,
-          polygonOffsetUnits: -2,
-        });
-      }
-      return blackSubstitute;
-    }
-    if (texturedMaterialNames.has(source.name)) {
-      if (!texturedSubstitute) {
-        texturedSubstitute = new THREE.MeshStandardMaterial({
-          color: new THREE.Color("#5a6a74"),
-          metalness: 0.5,
-          roughness: 0.5,
-          side: THREE.DoubleSide,
-          polygonOffset: true,
-          polygonOffsetFactor: -2,
-          polygonOffsetUnits: -2,
-        });
-      }
-      return texturedSubstitute;
-    }
-    const material = source.clone();
-    material.side = THREE.DoubleSide;
-    material.polygonOffset = true;
-    material.polygonOffsetFactor = -2;
-    material.polygonOffsetUnits = -2;
-    return material;
-  }
-
-  /**
-   * GLB 预处理：剥离引用了不存在贴图文件的 texture 属性。
-   * 开发版 GLB 只导出了材质、没打包贴图（images: 0），GLTFLoader 遇到
-   * 贴图加载失败会拒绝整个模型。返回处理后的 GLB 与贴图材质名集合，
-   * 供渲染端用中性钢色占位。
-   */
-  function stripDeadTextureReferences(buffer: ArrayBuffer): {
-    buffer: ArrayBuffer;
-    texturedNames: string[];
-  } {
-    const header = new DataView(buffer);
-    const magic = header.getUint32(0, true);
-    if (magic !== 0x46546c67) return { buffer, texturedNames: [] }; // 不是 GLB
-    const jsonLength = header.getUint32(12, true);
-    const jsonBytes = new Uint8Array(buffer, 20, jsonLength);
-    // GLB 规范允许 JSON 块尾部用空格/零填充，裁掉后再解析
-    const jsonText = new TextDecoder().decode(jsonBytes).replace(/[s ]+$/, "");
-    const gltf = JSON.parse(jsonText);
-    const texturedNames: string[] = [];
-    for (const material of gltf.materials ?? []) {
-      const pbr = material.pbrMetallicRoughness ?? {};
-      const hadTexture =
-        pbr.baseColorTexture ||
-        pbr.metallicRoughnessTexture ||
-        material.normalTexture ||
-        material.emissiveTexture;
-      if (!hadTexture) continue;
-      texturedNames.push(material.name ?? "unnamed");
-      delete pbr.baseColorTexture;
-      delete pbr.metallicRoughnessTexture;
-      delete material.normalTexture;
-      delete material.emissiveTexture;
-      delete material.occlusionTexture;
-    }
-    const outJsonText = JSON.stringify(gltf);
-    const jsonChunk = new TextEncoder().encode(outJsonText);
-    const paddedLength = Math.ceil(jsonChunk.length / 4) * 4;
-    const padded = new Uint8Array(paddedLength);
-    padded.set(jsonChunk);
-    padded.fill(0x20, jsonChunk.length); // 规范：JSON 块用空格填充
-    const binChunk = new Uint8Array(
-      buffer,
-      20 + jsonLength + 8,
-      buffer.byteLength - 20 - jsonLength - 8,
-    );
-    const total = 12 + 8 + paddedLength + 8 + binChunk.length;
-    const out = new Uint8Array(total);
-    const view = new DataView(out.buffer);
-    view.setUint32(0, 0x46546c67, true);
-    view.setUint32(4, 2, true);
-    view.setUint32(8, total, true);
-    view.setUint32(12, paddedLength, true);
-    view.setUint32(16, 0x4e4f534a, true); // 'JSON'
-    out.set(padded, 20);
-    view.setUint32(20 + paddedLength, binChunk.length, true);
-    view.setUint32(24 + paddedLength, 0x004e4942, true); // 'BIN'
-    out.set(binChunk, 28 + paddedLength);
-    return { buffer: out.buffer, texturedNames };
-  }
 
   /** GLB 场景 → 每材质一个 InstancedMesh（合并几何、底面贴地、高度归一）。 */
   function buildInstanceTemplates(root: THREE.Object3D) {
