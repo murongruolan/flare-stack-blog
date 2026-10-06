@@ -236,6 +236,9 @@ function ModelViewport({
                   canvas.height = image.height;
                   const ctx = canvas.getContext("2d")!;
                   ctx.drawImage(image, 0, 0);
+                  // 关键：把 texture 的图像源换成 canvas，needsUpdate 才会上传
+                  // 重绘后的内容（只改 canvas 不换 image，GPU 永远拿到原图）
+                  texture.image = canvas;
                   // 调试句柄：与 __engineMap 同款，控制台/验证脚本可导出贴图内容
                   (window as unknown as Record<string, unknown>).__cardEngraveCanvas =
                     canvas;
