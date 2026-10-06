@@ -183,6 +183,13 @@ function ModelViewport({
                 center: sphere.center.clone(),
                 distance: Math.max(sphere.radius * 2.2, 1),
               };
+              // 缩放上限与雾随模型尺寸放开：宽扁模型归一化后包围球大，
+              // 固定 maxDistance=18 会让「缩到最小也展示不全」，雾也会
+              // 把远端卡体淡出。发动机（radius≈4）维持原值。
+              controls.maxDistance = Math.max(18, sphere.radius * 2.8);
+              const fog = scene.fog as THREE.Fog;
+              fog.near = Math.max(16, sphere.radius * 2.5);
+              fog.far = Math.max(38, sphere.radius * 7);
               camera.position
                 .copy(sphere.center)
                 .addScaledVector(homeDir, homeRef.current.distance);
