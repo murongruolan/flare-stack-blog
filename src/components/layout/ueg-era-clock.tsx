@@ -58,15 +58,17 @@ function EraGroup({ digits, unit }: { digits: string; unit: string }) {
 }
 
 export function UegEraClock({ className }: { className?: string }) {
-  const [now, setNow] = useState(() => new Date());
+  // 服务端与客户端时间差会导致水合不匹配：首帧渲染占位符，挂载后走表
+  const [now, setNow] = useState<Date | null>(null);
 
   useEffect(() => {
+    setNow(new Date());
     const timer = window.setInterval(() => setNow(new Date()), 1000);
     return () => window.clearInterval(timer);
   }, []);
 
-  const era = new Date(now);
-  era.setFullYear(now.getFullYear() + ERA_YEAR_OFFSET);
+  const era = new Date(now ?? 0);
+  era.setFullYear((now?.getFullYear() ?? 0) + ERA_YEAR_OFFSET);
 
   const dateGroups = [
     { digits: pad(era.getFullYear(), 4), unit: "Y" },
