@@ -96,9 +96,6 @@ export function PostsPage({
         <h1>
           新闻动态 <span>NEWS &amp; INFORMATION</span>
         </h1>
-        <p className="intro">
-          联合地球政府官方信息发布平台。查看全球政务、科研、社会、航天任务及紧急状态等最新动态。
-        </p>
       </section>
 
       <div className="toolbar">

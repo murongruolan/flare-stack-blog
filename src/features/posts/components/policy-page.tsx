@@ -104,18 +104,11 @@ export function PolicyPage({
 
   return (
     <div className="ueg-policy-page">
-      <section className="page-head">
-        <div className="page-head-content">
-          <div className="crumb">
-            UEG / PUBLIC RECORD / POLICY &amp; REGULATIONS
-          </div>
-          <h1>
-            政策法规 <span>POLICY &amp; REGULATIONS</span>
-          </h1>
-          <p>
-            联合地球政府法律、行政法规、发展规划及公共政策官方公开平台。查询现行有效文件、历史文件与政府正式发布的政策文本。
-          </p>
-        </div>
+      <section className="head">
+        <div className="crumb">UEG / PUBLIC RECORD / POLICY &amp; REGULATIONS</div>
+        <h1>
+          政策法规 <span>POLICY &amp; REGULATIONS</span>
+        </h1>
       </section>
 
       <div className="toolbar">

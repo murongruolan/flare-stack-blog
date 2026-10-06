@@ -13,10 +13,14 @@
 
 /* ---------- page header ---------- */
 
-.ueg-news-page .head {
+/* /posts 与 /policy 共用的页头（结构：.crumb + h1>span） */
+.ueg-news-page .head,
+.ueg-policy-page .head {
   position: relative;
   overflow: hidden;
   margin-top: 18px;
+  /* 简介文案已删，min-height 锁住原高度不收缩 */
+  min-height: 168px;
   padding: 29px 30px 27px;
   border: 1px solid var(--ueg-border);
   clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px);
@@ -32,23 +36,27 @@
   opacity: 0.42;
   filter: saturate(0.55);
 }
-.ueg-news-page .head > * {
+.ueg-news-page .head > *,
+.ueg-policy-page .head > * {
   position: relative;
 }
-.ueg-news-page .crumb {
+.ueg-news-page .crumb,
+.ueg-policy-page .crumb {
   font-family: var(--font-mono);
   font-size: var(--fs-9);
   letter-spacing: 0.14em;
   color: var(--ueg-mist);
 }
-.ueg-news-page .head h1 {
+.ueg-news-page .head h1,
+.ueg-policy-page .head h1 {
   margin: 10px 0 0;
   font-size: var(--fs-35);
   font-weight: 700;
   letter-spacing: 0.04em;
   color: var(--ueg-bone);
 }
-.ueg-news-page .head h1 span {
+.ueg-news-page .head h1 span,
+.ueg-policy-page .head h1 span {
   margin-left: 12px;
   font-family: var(--font-mono);
   font-size: var(--fs-11);
@@ -56,14 +64,6 @@
   letter-spacing: 0.14em;
   color: var(--ueg-mist);
 }
-.ueg-news-page .intro {
-  max-width: 760px;
-  margin: 10px 0 0;
-  font-size: var(--fs-12);
-  line-height: 1.75;
-  color: var(--ueg-text-sub);
-}
-
 /* ---------- category toolbar ---------- */
 
 .ueg-news-page .toolbar {
@@ -652,13 +652,17 @@
 }
 
 @media (max-width: 720px) {
-  .ueg-news-page .head {
+  .ueg-news-page .head,
+  .ueg-policy-page .head {
     padding: 24px 18px;
+    min-height: 190px;
   }
-  .ueg-news-page .head h1 {
+  .ueg-news-page .head h1,
+  .ueg-policy-page .head h1 {
     font-size: var(--fs-28);
   }
-  .ueg-news-page .head h1 span {
+  .ueg-news-page .head h1 span,
+  .ueg-policy-page .head h1 span {
     display: block;
     margin: 6px 0 0;
   }
@@ -686,7 +690,8 @@
 }
 
 @media (max-width: 560px) {
-  .ueg-news-page .head {
+  .ueg-news-page .head,
+  .ueg-policy-page .head {
     margin-top: 12px;
   }
   .ueg-news-page .card {
