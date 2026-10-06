@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
@@ -14,6 +14,14 @@ import "./engine-viewer.css";
 
 type Phase = "loading" | "ready" | "error";
 
+/** 卡面刻印：把指定 Decal 贴图上的名字区域重绘为用户输入的文字。 */
+interface EngraveConfig {
+  /** 材质名后缀（如 face_hengyu 匹配 Decal_face_hengyu）。 */
+  materialSuffix: string;
+  /** 名字区域（相对贴图 0~1）。 */
+  region: { x: number; y: number; w: number; h: number };
+}
+
 const DRACO_DECODER_PATH = "/draco/";
 
 const CAMERA_HOME = new THREE.Vector3(4.4, 2.7, 5.1);
@@ -28,10 +36,15 @@ function ModelViewport({
   modelUrl,
   fixMaterials = true,
   extraActions,
+  engrave,
+  onEngraverReady,
 }: {
   modelUrl: string;
   fixMaterials?: boolean;
   extraActions?: ReactNode;
+  engrave?: EngraveConfig;
+  /** 模型就绪且找到刻印贴图后回调，传入重绘函数（入参为名字，空串恢复）。 */
+  onEngraverReady?: (redraw: ((name: string) => void) | null) => void;
 }) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const controlsRef = useRef<OrbitControls | null>(null);
@@ -49,6 +62,7 @@ function ModelViewport({
     if (!container) return;
 
     setPhase("loading");
+    onEngraverReady?.(null);
     let disposed = false;
     const disposables: Array<{ dispose: () => void }> = [];
 
@@ -196,6 +210,68 @@ function ModelViewport({
               controls.target.copy(sphere.center);
               controls.update();
 
+              // 卡面刻印：找到目标 Decal 贴图，画到 canvas 上供运行时重绘
+              if (engrave) {
+                let decalTexture: THREE.Texture | null = null;
+                root.traverse((child) => {
+                  const mesh = child as THREE.Mesh;
+                  if (!(mesh as unknown as { isMesh?: boolean }).isMesh) return;
+                  const materials = Array.isArray(mesh.material)
+                    ? mesh.material
+                    : [mesh.material];
+                  for (const material of materials as THREE.MeshStandardMaterial[]) {
+                    if (
+                      material.name?.endsWith(engrave.materialSuffix) &&
+                      material.map
+                    ) {
+                      decalTexture = material.map;
+                    }
+                  }
+                });
+                if (decalTexture) {
+                  const texture = decalTexture as THREE.Texture;
+                  const image = texture.image as ImageBitmap;
+                  const canvas = document.createElement("canvas");
+                  canvas.width = image.width;
+                  canvas.height = image.height;
+                  const ctx = canvas.getContext("2d")!;
+                  ctx.drawImage(image, 0, 0);
+                  // 调试句柄：与 __engineMap 同款，控制台/验证脚本可导出贴图内容
+                  (window as unknown as Record<string, unknown>).__cardEngraveCanvas =
+                    canvas;
+                  const redraw = (name: string) => {
+                    const text = name.trim();
+                    ctx.drawImage(image, 0, 0);
+                    if (text) {
+                      const rx = engrave.region.x * image.width;
+                      const ry = engrave.region.y * image.height;
+                      const rw = engrave.region.w * image.width;
+                      const rh = engrave.region.h * image.height;
+                      ctx.fillStyle = "#000";
+                      ctx.fillRect(rx, ry, rw, rh);
+                      // 字号随名字长度收缩，超长也压在原区域内
+                      let size = Math.round(rh * 0.8);
+                      const label = `|| ${text}`;
+                      ctx.fillStyle = "#d0e9ff";
+                      ctx.textBaseline = "middle";
+                      ctx.font = `700 ${size}px "PingFang SC", "Microsoft YaHei", sans-serif`;
+                      while (
+                        size > 12 &&
+                        ctx.measureText(label).width > rw * 1.05
+                      ) {
+                        size -= 4;
+                        ctx.font = `700 ${size}px "PingFang SC", "Microsoft YaHei", sans-serif`;
+                      }
+                      ctx.fillText(label, rx, ry + rh * 0.55);
+                    }
+                    texture.needsUpdate = true;
+                  };
+                  onEngraverReady?.(redraw);
+                } else {
+                  onEngraverReady?.(null);
+                }
+              }
+
               setPhase("ready");
             } catch {
               setPhase("error");
@@ -295,8 +371,18 @@ function ModelViewport({
 }
 
 /**
+ * 卡面刻印配置：双人卡 face_hengyu 贴图（2048×720）上「|| 图恒宇」
+ * 名字块的实测区域（像素 bbox / 贴图尺寸）。
+ */
+const CARD_ENGRAVE: EngraveConfig = {
+  materialSuffix: "face_hengyu",
+  region: { x: 0.077, y: 0.755, w: 0.272, h: 0.186 },
+};
+
+/**
  * 模型观察（/engines）：第一区块行星发动机模型，第二区块数字生命卡
- * （单人/双人共用一个视口，HUD 切换，默认双人）。
+ * （单人/双人共用一个视口，HUD 切换，默认双人；支持输入姓名实时
+ * 刻印到卡面贴图）。
  */
 export function ModelObservatory({
   engineModelUrl = ENGINE_MODEL_URL,
@@ -315,6 +401,23 @@ export function ModelObservatory({
     (cardMode === "single" ? cardSingleUrl : cardDoubleUrl) ||
     cardSingleUrl ||
     cardDoubleUrl;
+
+  const engraverRef = useRef<((name: string) => void) | null>(null);
+  const engraveNameRef = useRef("");
+  const [engraveName, setEngraveName] = useState("");
+  const handleEngraveName = (value: string) => {
+    engraveNameRef.current = value;
+    setEngraveName(value);
+    engraverRef.current?.(value);
+  };
+  // 稳定引用：模型（重）加载就绪后用当前名字重放一次
+  const handleEngraverReady = useCallback(
+    (redraw: ((name: string) => void) | null) => {
+      engraverRef.current = redraw;
+      redraw?.(engraveNameRef.current);
+    },
+    [],
+  );
 
   return (
     <div className="ueg-engines-page ueg-engine-view">
@@ -340,10 +443,21 @@ export function ModelObservatory({
             <h2>
               数字生命卡 <span>DIGITAL LIFE CARD</span>
             </h2>
+            <input
+              type="text"
+              className="engine-view-engrave"
+              value={engraveName}
+              maxLength={16}
+              placeholder="输入姓名，实时刻印到卡面"
+              spellCheck={false}
+              onChange={(event) => handleEngraveName(event.target.value)}
+            />
           </div>
           <ModelViewport
             modelUrl={cardUrl}
             fixMaterials={false}
+            engrave={CARD_ENGRAVE}
+            onEngraverReady={handleEngraverReady}
             extraActions={
               <div className="engine-view-switch">
                 <button

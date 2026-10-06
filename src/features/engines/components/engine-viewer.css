@@ -155,6 +155,36 @@
   margin-left: 10px;
 }
 
+/* 卡面刻印输入框：跟在区块标题右侧 */
+
+.ueg-engine-view .engine-view-engrave {
+  margin-left: auto;
+  width: 240px;
+  padding: 6px 12px;
+  border: 1px solid var(--ueg-border);
+  background: rgba(8, 17, 24, 0.82);
+  color: var(--ueg-text);
+  font-size: var(--fs-12);
+  letter-spacing: 0.04em;
+  outline: none;
+  transition: border-color 160ms;
+}
+
+.ueg-engine-view .engine-view-engrave::placeholder {
+  color: var(--ueg-disabled);
+  letter-spacing: 0.08em;
+}
+
+.ueg-engine-view .engine-view-engrave:focus {
+  border-color: var(--ueg-steel);
+}
+
+@media (max-width: 768px) {
+  .ueg-engine-view .engine-view-engrave {
+    width: 150px;
+  }
+}
+
 /* 单人/双人切换组 */
 
 .ueg-engine-view .engine-view-switch {
