@@ -25,7 +25,7 @@ import type { EngineRecord } from "./parse-engines";
  * - 不调用 triggerRepaint：模型相对地图静态，地图重绘时顺带渲染。
  */
 
-export const MODEL_ZOOM_THRESHOLD = 2;
+export const MODEL_ZOOM_THRESHOLD = 4;
 const MAX_INSTANCES = 1200;
 const MODEL_HEIGHT_METERS = 11000; // 行星发动机设定高度 ~11km
 const MODEL_ALTITUDE_METERS = 120; // 贴地抬升：底面与地图平面共面会深度打架（z-fighting 抽搐）
