@@ -36,6 +36,11 @@ function ModelViewport({
   const containerRef = useRef<HTMLDivElement | null>(null);
   const controlsRef = useRef<OrbitControls | null>(null);
   const readoutRef = useRef<HTMLDivElement | null>(null);
+  // 归一化后的取景参数（按模型包围球自适应），复位视角用
+  const homeRef = useRef<{ center: THREE.Vector3; distance: number }>({
+    center: FOCUS_POINT.clone(),
+    distance: CAMERA_HOME.length(),
+  });
   const [phase, setPhase] = useState<Phase>("loading");
   const [autoRotate, setAutoRotate] = useState(true);
 
@@ -166,8 +171,22 @@ function ModelViewport({
               });
               scene.add(root);
 
-              camera.position.copy(CAMERA_HOME);
-              controls.target.copy(FOCUS_POINT);
+              // 取景按包围球自适应：发动机直立窄高、卡片宽扁，
+              // 固定机位会让宽扁模型贴脸。沿默认机位方向退到
+              // 包围球的 2.2 倍半径处，目标点取包围球中心。
+              root.updateMatrixWorld(true);
+              const sphere = new THREE.Box3()
+                .setFromObject(root)
+                .getBoundingSphere(new THREE.Sphere());
+              const homeDir = CAMERA_HOME.clone().sub(FOCUS_POINT).normalize();
+              homeRef.current = {
+                center: sphere.center.clone(),
+                distance: Math.max(sphere.radius * 2.2, 1),
+              };
+              camera.position
+                .copy(sphere.center)
+                .addScaledVector(homeDir, homeRef.current.distance);
+              controls.target.copy(sphere.center);
               controls.update();
 
               setPhase("ready");
@@ -211,8 +230,12 @@ function ModelViewport({
   const resetView = () => {
     const controls = controlsRef.current;
     if (!controls) return;
-    controls.target.copy(FOCUS_POINT);
-    controls.object.position.copy(CAMERA_HOME);
+    const { center, distance } = homeRef.current;
+    controls.target.copy(center);
+    controls.object.position.copy(center).addScaledVector(
+      CAMERA_HOME.clone().sub(FOCUS_POINT).normalize(),
+      distance,
+    );
     controls.update();
   };
 

@@ -117,10 +117,12 @@ export function createGltfMaterialFixer(
 }
 
 /**
- * GLB 预处理：剥离引用了不存在贴图文件的 texture 属性。
- * 开发版 GLB 只导出了材质、没打包贴图（images: 0），GLTFLoader 遇到
- * 贴图加载失败会拒绝整个模型。返回处理后的 GLB 与贴图材质名集合，
- * 供渲染端用中性钢色占位。
+ * GLB 预处理：剥离引用了「不存在贴图文件」的 texture 属性。
+ * 死贴图 = image 既没嵌入 GLB 二进制块（bufferView）也不是 data URI，
+ * 只可能指向外部文件——GLTFLoader.parse 拿不到会拒绝整个模型。
+ * 贴图打包完好的模型（如数字生命卡）原样保留，一个引用都不动；
+ * 全部贴图都是死引用的材质（开发版发动机 GLB：只有材质没贴图）
+ * 剥掉引用并把材质名交给渲染端用中性钢色占位。
  */
 export function stripDeadTextureReferences(buffer: ArrayBuffer): {
   buffer: ArrayBuffer;
@@ -134,21 +136,40 @@ export function stripDeadTextureReferences(buffer: ArrayBuffer): {
   // GLB 规范允许 JSON 块尾部用空格/零填充，裁掉后再解析
   const jsonText = new TextDecoder().decode(jsonBytes).replace(/[/s ]+$/, "");
   const gltf = JSON.parse(jsonText);
+  const imageIsDead = (textureIndex?: number) => {
+    const texture = gltf.textures?.[textureIndex ?? -1];
+    const image = texture ? gltf.images?.[texture.source ?? -1] : undefined;
+    if (!image) return true;
+    return image.bufferView === undefined && !image.uri?.startsWith("data:");
+  };
   const texturedNames: string[] = [];
   for (const material of gltf.materials ?? []) {
     const pbr = material.pbrMetallicRoughness ?? {};
-    const hadTexture =
-      pbr.baseColorTexture ||
-      pbr.metallicRoughnessTexture ||
-      material.normalTexture ||
-      material.emissiveTexture;
-    if (!hadTexture) continue;
+    const slots: Array<[Record<string, unknown>, string]> = [
+      [pbr, "baseColorTexture"],
+      [pbr, "metallicRoughnessTexture"],
+      [material, "normalTexture"],
+      [material, "emissiveTexture"],
+      [material, "occlusionTexture"],
+    ];
+    const refs = slots
+      .map(([owner, key]) => owner[key] as { index: number } | undefined)
+      .filter(Boolean) as Array<{ index: number }>;
+    if (refs.length === 0) continue;
+    const hasAlive = refs.some((ref) => !imageIsDead(ref.index));
+    if (hasAlive) {
+      // 混合情况：只剥死引用，保住存活的贴图
+      for (const [owner, key] of slots) {
+        const ref = owner[key] as { index: number } | undefined;
+        if (ref && imageIsDead(ref.index)) delete owner[key];
+      }
+      continue;
+    }
+    // 全部死引用 → 剥光，渲染端按材质名替换暗钢占位
     texturedNames.push(material.name ?? "unnamed");
-    delete pbr.baseColorTexture;
-    delete pbr.metallicRoughnessTexture;
-    delete material.normalTexture;
-    delete material.emissiveTexture;
-    delete material.occlusionTexture;
+    for (const [owner, key] of slots) {
+      delete owner[key];
+    }
   }
   const outJsonText = JSON.stringify(gltf);
   const jsonChunk = new TextEncoder().encode(outJsonText);
