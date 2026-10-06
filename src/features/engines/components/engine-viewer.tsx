@@ -242,8 +242,12 @@ function ModelViewport({
                   // 调试句柄：与 __engineMap 同款，控制台/验证脚本可导出贴图内容
                   (window as unknown as Record<string, unknown>).__cardEngraveCanvas =
                     canvas;
+                  // 刻印字体：微软雅黑 Bold（webfont 子集加载成功后统一切换）
+                  let fontFamily = '"Microsoft YaHei", "PingFang SC", sans-serif';
+                  let lastName = "";
                   const redraw = (name: string) => {
                     const text = name.trim();
+                    lastName = name;
                     ctx.drawImage(image, 0, 0);
                     if (text) {
                       const rx = engrave.region.x * image.width;
@@ -258,18 +262,25 @@ function ModelViewport({
                       const label = `|| ${text}`;
                       ctx.fillStyle = "#d0e9ff";
                       ctx.textBaseline = "middle";
-                      ctx.font = `700 ${size}px "PingFang SC", "Microsoft YaHei", sans-serif`;
+                      ctx.font = `700 ${size}px ${fontFamily}`;
                       while (
                         size > 12 &&
                         ctx.measureText(label).width > rw * 1.05
                       ) {
                         size -= 4;
-                        ctx.font = `700 ${size}px "PingFang SC", "Microsoft YaHei", sans-serif`;
+                        ctx.font = `700 ${size}px ${fontFamily}`;
                       }
                       ctx.fillText(label, rx, ry + rh * 0.55);
                     }
                     texture.needsUpdate = true;
                   };
+                  // 字体就绪后用当前名字重画一次（首绘走系统回退栈）
+                  loadEngraveFont().then((family) => {
+                    fontFamily = family === "Microsoft YaHei"
+                      ? `"Microsoft YaHei", "PingFang SC", sans-serif`
+                      : `"${family}", "Microsoft YaHei", "PingFang SC", sans-serif`;
+                    if (lastName.trim()) redraw(lastName);
+                  });
                   onEngraverReady?.(redraw);
                 } else {
                   onEngraverReady?.(null);
@@ -382,6 +393,27 @@ const CARD_ENGRAVE: EngraveConfig = {
   materialSuffix: "face_hengyu",
   region: { x: 0.077, y: 0.755, w: 0.272, h: 0.186 },
 };
+
+const ENGRAVE_FONT_URL = "/fonts/msyh-bold-engrave.woff2";
+let engraveFontPromise: Promise<string> | null = null;
+
+/** 懒加载微软雅黑 Bold 子集字体（3500 常用字，~470KB，仅刻印时拉一次）。
+ *  失败回退系统字体栈（Windows 本就有雅黑）。 */
+function loadEngraveFont(): Promise<string> {
+  engraveFontPromise ??= new Promise((resolve) => {
+    const family = "msyh-engrave";
+    const face = new FontFace(family, `url(${ENGRAVE_FONT_URL})`, {
+      weight: "700",
+    });
+    face.load().then((loaded) => {
+      document.fonts.add(loaded);
+      resolve(family);
+    }).catch(() => {
+      resolve("Microsoft YaHei");
+    });
+  });
+  return engraveFontPromise;
+}
 
 /**
  * 模型观察（/engines）：第一区块行星发动机模型，第二区块数字生命卡
