@@ -114,7 +114,6 @@ export function EngineDataSourcesSection() {
       <div className="settings-section-heading">
         <div>
           <h2>{m.engine_sources_title()}</h2>
-          <p className="settings-muted">{m.engine_sources_hint()}</p>
         </div>
       </div>
 
@@ -152,43 +151,46 @@ export function EngineDataSourcesSection() {
             {m.engine_sources_data_desc()}
           </span>
         </label>
+      </div>
 
-        <div className="grid gap-1.5">
-          <span className="text-sm font-medium fuwari-text-90">
-            {m.engine_sources_card_group()}
-          </span>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <label className="grid gap-1.5">
-              <span className="text-xs fuwari-text-50">
-                {m.engine_sources_card_single_label()}
-              </span>
-              <input
-                type="text"
-                value={cardSingleKey}
-                onChange={(event) => setCardSingleKey(event.target.value)}
-                placeholder="blog-media/models/digital-life-card-single.glb"
-                spellCheck={false}
-                className={FIELD_CLASS}
-              />
-            </label>
-            <label className="grid gap-1.5">
-              <span className="text-xs fuwari-text-50">
-                {m.engine_sources_card_double_label()}
-              </span>
-              <input
-                type="text"
-                value={cardDoubleKey}
-                onChange={(event) => setCardDoubleKey(event.target.value)}
-                placeholder="blog-media/models/digital-life-card-double.glb"
-                spellCheck={false}
-                className={FIELD_CLASS}
-              />
-            </label>
-          </div>
-          <span className="text-xs fuwari-text-50">
-            {m.engine_sources_card_desc()}
-          </span>
+      <div className="settings-section-heading">
+        <div>
+          <h2>{m.engine_sources_card_title()}</h2>
         </div>
+      </div>
+
+      <div className="grid gap-4 py-2">
+        <div className="grid gap-4 sm:grid-cols-2">
+          <label className="grid gap-1.5">
+            <span className="text-xs fuwari-text-50">
+              {m.engine_sources_card_single_label()}
+            </span>
+            <input
+              type="text"
+              value={cardSingleKey}
+              onChange={(event) => setCardSingleKey(event.target.value)}
+              placeholder="blog-media/models/digital-life-card-single.glb"
+              spellCheck={false}
+              className={FIELD_CLASS}
+            />
+          </label>
+          <label className="grid gap-1.5">
+            <span className="text-xs fuwari-text-50">
+              {m.engine_sources_card_double_label()}
+            </span>
+            <input
+              type="text"
+              value={cardDoubleKey}
+              onChange={(event) => setCardDoubleKey(event.target.value)}
+              placeholder="blog-media/models/digital-life-card-double.glb"
+              spellCheck={false}
+              className={FIELD_CLASS}
+            />
+          </label>
+        </div>
+        <span className="text-xs fuwari-text-50">
+          {m.engine_sources_card_desc()}
+        </span>
       </div>
 
       {formatError ? (
