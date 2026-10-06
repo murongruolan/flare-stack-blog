@@ -1,3 +1,4 @@
+import { R2_DEV_CUSTOM_DOMAIN } from "@/lib/constants";
 import { err, ok, type Result } from "@/lib/errors";
 import * as DataSourceRepo from "./data/data-sources.data";
 import {
@@ -10,6 +11,22 @@ import {
   DEFAULT_ENGINE_MODEL_KEY,
   engineAssetUrl,
 } from "./lib/engine-assets";
+
+// 本地开发时 R2 模拟里没有线上新传的文件：HEAD 校验回退生产自定义域。
+const isDev = import.meta.env.DEV;
+
+async function r2ObjectExists(env: Env, key: string): Promise<boolean> {
+  if (await env.R2.head(key)) return true;
+  if (!isDev || key.includes("..")) return false;
+  try {
+    const upstream = await fetch(`${R2_DEV_CUSTOM_DOMAIN}/${key}`, {
+      method: "HEAD",
+    });
+    return upstream.ok;
+  } catch {
+    return false;
+  }
+}
 
 export async function getEngineDataSources(context: {
   db: DB;
@@ -37,11 +54,11 @@ export async function saveEngineDataSources(
   const modelKey = input.engineModelKey;
   const dataKey = input.engineDataKey;
 
-  // 保存前逐个 HEAD 校验，避免把打错的对象 key 提交给全站前端。
-  if (modelKey && !(await context.env.R2.head(modelKey))) {
+  // 保存前逐个校验对象存在，避免把打错的对象 key 提交给全站前端。
+  if (modelKey && !(await r2ObjectExists(context.env, modelKey))) {
     return err({ reason: "MODEL_NOT_FOUND" });
   }
-  if (dataKey && !(await context.env.R2.head(dataKey))) {
+  if (dataKey && !(await r2ObjectExists(context.env, dataKey))) {
     return err({ reason: "DATA_NOT_FOUND" });
   }
 

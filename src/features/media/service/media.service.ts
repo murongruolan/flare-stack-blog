@@ -17,7 +17,7 @@ import {
   isImmutableDataKey,
 } from "@/features/media/utils/media.utils";
 import * as PostMediaRepo from "@/features/posts/data/post-media.data";
-import { CACHE_CONTROL } from "@/lib/constants";
+import { CACHE_CONTROL, R2_DEV_CUSTOM_DOMAIN } from "@/lib/constants";
 import { err, ok } from "@/lib/errors";
 
 export async function upload(
@@ -280,8 +280,33 @@ export async function handleImageRequest(
   const url = new URL(request.url);
   const searchParams = url.searchParams;
 
+  const isLocalDev =
+    url.hostname === "localhost" || url.hostname === "127.0.0.1";
+
   const serveOriginal = async () => {
     const object = await env.R2.get(key);
+
+    // 本地开发：R2 模拟里没有的对象（如刚上传到线上 R2 的新数据文件）
+    // 直接透传生产自定义域，免去往本地桶重新播种；生产不走此分支。
+    if (!object && isLocalDev && !key.includes("..")) {
+      const upstream = await fetch(`${R2_DEV_CUSTOM_DOMAIN}/${key}`);
+      if (upstream.ok) {
+        const contentType =
+          upstream.headers.get("content-type") ||
+          getContentTypeFromKey(key) ||
+          "application/octet-stream";
+        const cacheControl = isImmutableDataKey(key)
+          ? CACHE_CONTROL.immutable
+          : CACHE_CONTROL.public;
+        const headers = new Headers();
+        headers.set("Content-Type", contentType);
+        Object.entries(cacheControl).forEach(([k, v]) => {
+          headers.set(k, v);
+        });
+        return new Response(upstream.body, { headers });
+      }
+    }
+
     if (!object) {
       return new Response("Image not found", { status: 404 });
     }
@@ -312,9 +337,6 @@ export async function handleImageRequest(
   const viaHeader = request.headers.get("via");
   const isLoop = viaHeader && /image-resizing/.test(viaHeader);
   const wantsOriginal = searchParams.get("original") === "true";
-
-  const isLocalDev =
-    url.hostname === "localhost" || url.hostname === "127.0.0.1";
 
   // Miniflare's local Image Resizing encodes AVIF extremely slowly (~30s for a
   // ~1MB hero image). Serve the R2 original in local dev; production still
