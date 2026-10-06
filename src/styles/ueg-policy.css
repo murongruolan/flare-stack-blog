@@ -20,6 +20,17 @@
     linear-gradient(90deg, rgba(7, 16, 24, 0.92), rgba(7, 16, 24, 0.74), rgba(7, 16, 24, 0.38)),
     radial-gradient(circle at 78% 46%, rgba(120, 151, 164, 0.09), transparent 28%);
 }
+.ueg-policy-page .head::after {
+  content: "POLICY DATABASE / PUBLIC RECORD";
+  position: absolute;
+  right: 25px;
+  top: 22px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-8);
+  letter-spacing: 0.14em;
+  color: var(--ueg-mist);
+  opacity: 0.65;
+}
 
 /* ---------- toolbar ---------- */
 
@@ -37,7 +48,7 @@
   border: 1px solid var(--ueg-border-2);
   background: #0c1821;
   color: var(--ueg-text-sub);
-  font-size: var(--fs-12);
+  font-size: var(--fs-11);
   white-space: nowrap;
   transition: border-color 0.18s ease, background 0.18s ease, color 0.18s ease;
 }
@@ -213,6 +224,12 @@
   font-weight: 700;
   color: var(--ueg-bone);
 }
+.ueg-policy-page .side-title small {
+  font-family: var(--font-mono);
+  font-size: var(--fs-8);
+  letter-spacing: 0.1em;
+  color: var(--ueg-post-time);
+}
 .ueg-policy-page .side-section {
   padding: 13px 0;
   border-bottom: 1px solid rgba(120, 151, 164, 0.13);
@@ -220,10 +237,17 @@
 .ueg-policy-page .side-section:last-child {
   border-bottom: 0;
 }
+.ueg-policy-page .side-kicker {
+  font-family: var(--font-mono);
+  font-size: var(--fs-8);
+  letter-spacing: 0.12em;
+  color: var(--ueg-amber);
+}
 .ueg-policy-page .side-list {
   display: flex;
   flex-direction: column;
   gap: 5px;
+  margin-top: 9px;
 }
 .ueg-policy-page .side-list button {
   width: 100%;
@@ -273,6 +297,12 @@
   padding: 12px;
   border: 1px solid rgba(120, 151, 164, 0.17);
   background: rgba(10, 20, 28, 0.46);
+}
+.ueg-policy-page .doc-panel-title {
+  font-family: var(--font-mono);
+  font-size: var(--fs-8);
+  letter-spacing: 0.1em;
+  color: var(--ueg-steel);
 }
 .ueg-policy-page .doc-panel-item {
   margin-top: 9px;
@@ -367,6 +397,9 @@
   }
   .ueg-policy-page .head h1 {
     font-size: var(--fs-28);
+  }
+  .ueg-policy-page .head::after {
+    display: none;
   }
   .ueg-policy-page .toolbar {
     overflow-x: auto;

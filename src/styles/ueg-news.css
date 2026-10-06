@@ -13,13 +13,13 @@
 
 /* ---------- page header ---------- */
 
-/* /posts 与 /policy 共用的页头（只保留中文大标题） */
+/* /posts 与 /policy 共用的页头（结构：.crumb + h1>span） */
 .ueg-news-page .head,
 .ueg-policy-page .head {
   position: relative;
   overflow: hidden;
   margin-top: 18px;
-  /* 简介与装饰文案已删，min-height 锁住原高度不收缩 */
+  /* 简介文案已删，min-height 锁住原高度不收缩 */
   min-height: 168px;
   padding: 29px 30px 27px;
   border: 1px solid var(--ueg-border);
@@ -40,13 +40,30 @@
 .ueg-policy-page .head > * {
   position: relative;
 }
+.ueg-news-page .crumb,
+.ueg-policy-page .crumb {
+  font-family: var(--font-mono);
+  font-size: var(--fs-12);
+  letter-spacing: 0.14em;
+  color: var(--ueg-mist);
+}
 .ueg-news-page .head h1,
 .ueg-policy-page .head h1 {
-  margin: 0;
+  margin: 10px 0 0;
   font-size: var(--fs-35);
   font-weight: 700;
   letter-spacing: 0.04em;
   color: var(--ueg-bone);
+}
+.ueg-news-page .head h1 span,
+.ueg-policy-page .head h1 span {
+  display: block;
+  margin: 8px 0 0;
+  font-family: var(--font-mono);
+  font-size: var(--fs-15);
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  color: var(--ueg-mist);
 }
 /* ---------- category toolbar ---------- */
 
@@ -64,7 +81,7 @@
   border: 1px solid var(--ueg-border-2);
   background: #0c1821;
   color: var(--ueg-text-sub);
-  font-size: var(--fs-12);
+  font-size: var(--fs-11);
   white-space: nowrap;
   transition: border-color 180ms, color 180ms, background-color 180ms;
 }
@@ -85,7 +102,7 @@
   border: 1px solid var(--ueg-amber);
   background: rgba(193, 138, 85, 0.06);
   color: #e3caa2;
-  font-size: var(--fs-12);
+  font-size: var(--fs-11);
   white-space: nowrap;
 }
 .ueg-news-page .active-tag b {
@@ -171,11 +188,6 @@
 .ueg-news-page .tag.alert {
   border-color: var(--ueg-red);
   color: #d89b95;
-}
-.ueg-news-page .code {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 .ueg-news-page .title {
   display: -webkit-box;
@@ -287,6 +299,12 @@
   font-size: var(--fs-13);
   font-weight: 700;
   color: var(--ueg-bone);
+}
+.ueg-news-page .sidehead small {
+  font-family: var(--font-mono);
+  font-size: var(--fs-8);
+  letter-spacing: 0.1em;
+  color: var(--ueg-post-time);
 }
 
 /* ---------- application service cards ---------- */
@@ -469,11 +487,26 @@
 .ueg-news-page .apply-content {
   padding: 14px 14px 15px;
 }
+.ueg-news-page .apply-kicker {
+  font-family: var(--font-mono);
+  font-size: var(--fs-8);
+  letter-spacing: 0.12em;
+  color: var(--ueg-amber);
+}
 .ueg-news-page .apply-title {
+  margin-top: 6px;
   font-size: var(--fs-16);
   line-height: 1.35;
   font-weight: 700;
   color: var(--ueg-bone);
+}
+.ueg-news-page .apply-en {
+  margin-top: 5px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-8);
+  line-height: 1.5;
+  letter-spacing: 0.05em;
+  color: var(--ueg-mist);
 }
 .ueg-news-page .apply-desc {
   margin-top: 9px;

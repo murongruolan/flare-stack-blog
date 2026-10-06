@@ -84,7 +84,10 @@ export function PostsPage({
   return (
     <div className="ueg-news-page">
       <section className="head">
-        <h1>新闻动态</h1>
+        <div className="crumb">UEG / INFORMATION CENTER / NEWS</div>
+        <h1>
+          新闻动态 <span>NEWS &amp; INFORMATION</span>
+        </h1>
       </section>
 
       <div className="toolbar">

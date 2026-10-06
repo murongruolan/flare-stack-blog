@@ -98,7 +98,10 @@ export function PolicyPage({
   return (
     <div className="ueg-policy-page">
       <section className="head">
-        <h1>政策法规</h1>
+        <div className="crumb">UEG / PUBLIC RECORD / POLICY &amp; REGULATIONS</div>
+        <h1>
+          政策法规 <span>POLICY &amp; REGULATIONS</span>
+        </h1>
       </section>
 
       <div className="toolbar">
@@ -244,9 +247,11 @@ export function PolicyPage({
         <aside className="sidebar">
           <div className="side-title">
             <h2>法规导航</h2>
+            <small>POLICY INDEX</small>
           </div>
 
           <div className="side-section">
+            <div className="side-kicker">DOCUMENT CATEGORIES</div>
             <div className="side-list">
               <button
                 type="button"
@@ -275,6 +280,7 @@ export function PolicyPage({
 
           {years.length > 0 ? (
             <div className="side-section">
+              <div className="side-kicker">ANNUAL INDEX</div>
               <div className="year-list">
                 {years.map((value) => (
                   <button
@@ -293,6 +299,7 @@ export function PolicyPage({
           ) : null}
 
           <div className="doc-panel">
+            <div className="doc-panel-title">PUBLIC DOCUMENT ACCESS</div>
             <div className="doc-panel-item">
               UEG 所有公开政策文件均由联合地球政府官方信息系统发布。
             </div>
