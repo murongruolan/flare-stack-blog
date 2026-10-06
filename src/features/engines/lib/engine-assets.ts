@@ -5,13 +5,10 @@ export const DEFAULT_ENGINE_DATA_KEY = "blog-media/engines/engines.geojson";
 export const DEFAULT_ENGINE_MODEL_KEY =
   "blog-media/engines/planetary-engine-draco.glb";
 
-/**
- * 资源 URL = key + ?v=revision。revision 只在管理员更换 key 时递增，
- * 因此 URL 变化即缓存失效；未变化时浏览器/边缘可永久缓存（immutable）。
- */
-export function engineAssetUrl(key: string, revision: number): string {
-  return `/images/${key}?v=${revision}`;
+/** 资源 URL：管理员配置的 key 原样使用，内容更替靠换文件名。 */
+export function engineAssetUrl(key: string): string {
+  return `/images/${key}`;
 }
 
-export const ENGINE_DATA_URL = engineAssetUrl(DEFAULT_ENGINE_DATA_KEY, 0);
-export const ENGINE_MODEL_URL = engineAssetUrl(DEFAULT_ENGINE_MODEL_KEY, 0);
+export const ENGINE_DATA_URL = engineAssetUrl(DEFAULT_ENGINE_DATA_KEY);
+export const ENGINE_MODEL_URL = engineAssetUrl(DEFAULT_ENGINE_MODEL_KEY);

@@ -14,6 +14,7 @@ import {
   getContentTypeFromKey,
   hasImageTransformParams,
   isGifKey,
+  isImmutableDataKey,
 } from "@/features/media/utils/media.utils";
 import * as PostMediaRepo from "@/features/posts/data/post-media.data";
 import { CACHE_CONTROL } from "@/lib/constants";
@@ -290,9 +291,9 @@ export async function handleImageRequest(
       getContentTypeFromKey(key) ||
       "application/octet-stream";
 
-    // ?v=<version> 表示调用方用 URL 版本号管理内容更替（如发动机数据源），
-    // 内容对 URL 不可变，可以放心交给浏览器/边缘缓存一年。
-    const cacheControl = searchParams.has("v")
+    // 数据/模型文件（.glb/.geojson 等）按不可变内容处理：内容更替
+    // 靠换新文件名，同一 key 的内容视为永不修改，缓存一年。
+    const cacheControl = isImmutableDataKey(key)
       ? CACHE_CONTROL.immutable
       : CACHE_CONTROL.public;
 

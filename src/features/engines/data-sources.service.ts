@@ -17,16 +17,13 @@ export async function getEngineDataSources(context: {
   const row = await DataSourceRepo.findDataSourceSettings(context.db);
   const modelKey = row?.engineModelKey || DEFAULT_ENGINE_MODEL_KEY;
   const dataKey = row?.engineDataKey || DEFAULT_ENGINE_DATA_KEY;
-  const revision = row?.revision ?? 0;
-  const resolved = {
+  return EngineDataSourcesSchema.parse({
     modelKey,
     dataKey,
-    modelUrl: engineAssetUrl(modelKey, revision),
-    dataUrl: engineAssetUrl(dataKey, revision),
-    revision,
+    modelUrl: engineAssetUrl(modelKey),
+    dataUrl: engineAssetUrl(dataKey),
     configured: Boolean(row?.engineModelKey || row?.engineDataKey),
-  };
-  return EngineDataSourcesSchema.parse(resolved);
+  });
 }
 
 export type SaveDataSourceError =
@@ -48,23 +45,16 @@ export async function saveEngineDataSources(
     return err({ reason: "DATA_NOT_FOUND" });
   }
 
-  const current = await DataSourceRepo.findDataSourceSettings(context.db);
-  const changed =
-    current?.engineModelKey !== modelKey || current?.engineDataKey !== dataKey;
-  const revision = changed ? (current?.revision ?? 0) + 1 : (current?.revision ?? 0);
-
   const row = await DataSourceRepo.upsertDataSourceSettings(context.db, {
     engineModelKey: modelKey,
     engineDataKey: dataKey,
-    revision,
   });
 
   const resolved = {
     modelKey: row.engineModelKey || DEFAULT_ENGINE_MODEL_KEY,
     dataKey: row.engineDataKey || DEFAULT_ENGINE_DATA_KEY,
-    modelUrl: engineAssetUrl(row.engineModelKey || DEFAULT_ENGINE_MODEL_KEY, row.revision),
-    dataUrl: engineAssetUrl(row.engineDataKey || DEFAULT_ENGINE_DATA_KEY, row.revision),
-    revision: row.revision,
+    modelUrl: engineAssetUrl(row.engineModelKey || DEFAULT_ENGINE_MODEL_KEY),
+    dataUrl: engineAssetUrl(row.engineDataKey || DEFAULT_ENGINE_DATA_KEY),
     configured: Boolean(row.engineModelKey || row.engineDataKey),
   };
   return ok(EngineDataSourcesSchema.parse(resolved));

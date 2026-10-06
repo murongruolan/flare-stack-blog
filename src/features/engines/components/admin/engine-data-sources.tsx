@@ -139,11 +139,11 @@ export function EngineDataSourcesSection() {
           )}
           {m.engine_sources_save()}
         </button>
-        <span className="text-xs fuwari-text-50">
-          {data.configured
-            ? m.engine_sources_revision_label({ revision: data.revision })
-            : m.engine_sources_default_note()}
-        </span>
+        {!data.configured && (
+          <span className="text-xs fuwari-text-50">
+            {m.engine_sources_default_note()}
+          </span>
+        )}
       </div>
 
       <p className="settings-muted">{m.engine_sources_cache_note()}</p>

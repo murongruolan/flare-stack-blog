@@ -14,6 +14,14 @@ export function getContentTypeFromKey(key: string): string | undefined {
   return contentTypes[extension || ""];
 }
 
+/**
+ * 内容不可变的数据/模型文件（发动机数据源等）：同名文件视为永不修改，
+ * 内容更替靠换新文件名，可以放心交给浏览器/边缘缓存一年。
+ */
+export function isImmutableDataKey(key: string): boolean {
+  return /\.(glb|gltf|geojson|json|csv)$/i.test(key);
+}
+
 export function generateKey(fileName: string): string {
   const uuid = crypto.randomUUID();
   const extension = fileName.split(".").pop()?.toLowerCase() || "bin";

@@ -12,7 +12,6 @@ export async function upsertDataSourceSettings(
   values: {
     engineModelKey: string;
     engineDataKey: string;
-    revision: number;
   },
 ) {
   const [row] = await db
