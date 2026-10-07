@@ -250,7 +250,7 @@ font-size: var(--fs-10)}
 .ueg-org-page .tnode-en {
 margin-top:3px;
 color:var(--primary2);
-font:var(--fs-9) var(--font-mono);
+font:var(--fs-11) var(--font-mono);
 letter-spacing:.05em;
 line-height:1.5}
 .ueg-org-page .gen-1 .cell:after {
@@ -360,7 +360,7 @@ height:45px;
 background:var(--accent)}
 .ueg-org-page .card-code {
 color:var(--primary2);
-font:var(--fs-8) var(--font-mono);
+font:var(--fs-11) var(--font-mono);
 letter-spacing:.08em}
 .ueg-org-page .org-card h3 {
 margin:8px 0 0;
@@ -370,7 +370,7 @@ line-height:1.35}
 .ueg-org-page .org-card .en {
 margin-top:5px;
 color:var(--primary2);
-font:var(--fs-9) var(--font-mono);
+font:var(--fs-11) var(--font-mono);
 letter-spacing:.05em;
 line-height:1.45}
 .ueg-org-page .org-card p {

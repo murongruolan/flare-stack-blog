@@ -316,7 +316,8 @@ SEO/协议路由：`rss[.]xml.ts`、`atom[.]xml.ts`、`feed[.]json.ts`、`sitema
     - gen-2：常委会（GOV/02）左翼、**安理会（SEC/01）正中在大会正下方**、最高法院（JUS/01）右翼，横轨三连
     - gen-3：秘书处（EXE/01）垂直连常委会、军事委员会（SEC/02）垂直连安理会
     - gen-4：科学院（SCI/01）/航天局（ASA/01）/伦理委员会（COM/01）/经社理事会（SEC/11），**秘书处正对科学院**、下行一线分四条
-  - 卡片三行制：编号（fs-15 mono 琥珀）/中文名（fs-15）/英文名（**fs-9** mono，曾经改 15 被用户要求退回）。**min-height:90px、内容垂直居中**。
+  - 卡片三行制：编号（fs-15 mono 琥珀）/中文名（fs-15）/英文名（**fs-11** mono）。**min-height:90px、内容垂直居中**。
+    - 英文名沿革：d46dc031 起是 fs-9 → c82c995b 期间曾被改成 fs-15 → 9137aef4 退回 fs-9 → 2026-10 用户要求提到 **fs-11**。fs-11 下 gen-2 三条英文名（STANDING COMMITTEE OF THE ASSEMBLY / UNITED EARTH SECURITY COUNCIL / SUPREME COURT OF THE EARTH）**都折成两行**，卡片实高 108px；这反而让 gen-2 从 fs-9 时的 **高低不齐（102/90）变成整排等高（108）**，同时让 `安理会→军委会` 的竖线不再悬空（原来卡底比行底高 12px，线接不上）。gen-3/gen-4 仍是单行、实高 91px。**ops: 改这个字号会连带改变每行实高与连线接合，改完必须重新量一次卡片高度与竖线接点。**
   - 实现：各行铺**共享百分比网格**（gen-2/3 为 repeat(6,1fr)，**gen-4 必须是 repeat(36,1fr)**），连接线纯 CSS（::before/::after 从网格几何生成）。820px 断点退化单列、隐线。
   - **gen-4 为什么是 36 列而不是 18**（2026-10 修）：四张卡的中心必须落在 6/14/22/30 of 36 = 16.667% / 38.889% / 61.111% / 83.333%，这样才同时满足三件事——(a) 关于 50% 中轴左右对称（18 列下是 13.889%…80.556%，整体偏左 2.78%，用户看出「偏左」）；(b) 与 `.gen-4:before` 横轨的 `left/right:16.666%` 两端**严丝合缝**（18 列时横轨右端会越过经社理事会伸出 2.78%，用户看出「往右多伸出来」）；(c) 秘书处（16.667%）正对科学院、竖线连成一条（18 列下科学院在 13.889%，与横轨左端错开，用户看出「线没连上」）。**18 列无法表达所需的半列偏移，别再改回 18。**
   - `shortCode()`：UEG-GOV-001 → `GOV / 01`。
@@ -352,6 +353,7 @@ SEO/协议路由：`rss[.]xml.ts`、`atom[.]xml.ts`、`feed[.]json.ts`、`sitema
 - UEG 配色变量（--accent/--primary2/--title/--muted/--border2 等）在各 ueg-*.css 与 styles.css 定义。
 - 各页 H1 尺寸是逐页设计过的（45/40/35/34/32/28…），用户未要求合并档位，别"顺手统一"。
 - **区块标题的英文标签统一 `--fs-11`**（`.ueg-org-page .section-head .en`、`.ueg-about-page .section-head .en`、`.ueg-homev2-page .v2-section-en`）。原始设计稿 `preview-*.html` 里是 **8px**，用户明确说太小（"外国佬也看不清楚"），2026-10 三处一起提到 11px——**别照设计稿改回 8px/10px**。
+- **机构卡片/节点的编号与英文名也统一 `--fs-11`**（`.ueg-org-page .card-code` 原 fs-8、`.ueg-org-page .org-card .en` 原 fs-9、`.ueg-org-page .tnode-en` 原 fs-9）。用户 2026-10 一次性要求三处都提到 11px，理由同上是"太小看不清"。
 
 ---
 
@@ -420,7 +422,8 @@ SEO/协议路由：`rss[.]xml.ts`、`atom[.]xml.ts`、`feed[.]json.ts`、`sitema
 | 难民署（HUM/01）、全球粮食计划署（HUM/02）未上架构图 | 等用户口述隶属关系 |
 | 架构图其余机构英文名是否统一 `UEG XXX` 短格式 | 已提议，用户未答复（现有：SECRETARIAT/ACADEMY OF SCIENCES/SPACE AGENCY 已改短） |
 | 架构图与页头之间 18px 间距 | `.org-tree` 自带 `margin-top:18px`（tab 时期留下的），预览 html 里是紧贴；用户未表态，保留未动 |
-| `.tnode-code` 字号 fs-15 对"编号"可能偏大 | 用户已接受现状；若嫌大可单独回调（en 已是 fs-9） |
+| `.tnode-code` 字号 fs-15 对"编号"可能偏大 | 用户已接受现状；若嫌大可单独回调（en 已是 fs-11） |
+| **≤820px 架构图没有退化成单列（既存 bug）** | 媒体查询把 `.gen` 设成 `1fr` 了，但漏了重置 `.gen-2 .cell:nth-child(1..3)` / `.gen-3 .cell:nth-child(1..2)` 的显式 `grid-column:1/3、3/5、5/7`（只重置了 `.gen-4 .cell`），于是窄屏下卡片被塞进 0px/隐式轨道，文字逐字竖排、SEC/11 被切掉。修法是补一条 `.gen-2 .cell, .gen-3 .cell { grid-column:auto }`。**用户尚未表态** |
 | 首页通告栏按分类名匹配 | 后台改「政府公告」「紧急通告」名字会弄空通告栏；长期可升级为第三种归属（notice 流） |
 | 首页 MissionStrip 六段数值为前端常量 | 接后端时替换 |
 | windfonts 在线字体 CDN 502 | 探测不到会静默走系统栈，无功能影响 |
