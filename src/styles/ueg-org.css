@@ -630,34 +630,20 @@ gap:7px;
 padding:8px 0}
 }
 
+/* ≤820px：不把架构图压成单列——压平就丢掉了树形/连线语义。改为保住完整几何，
+   交给外层横向滚动让用户平移查看（用户 2026-10 的要求）。
+   `min-width` 取值依据：gen-4 一行 36 列、每张卡占 6 列 = 容器宽的 1/6，而卡片固定
+   200px。容器不足 1200px 时格宽 < 200px，flex 会把卡片**压窄**（1000px 时只剩
+   167px，英文名被迫折行）。故取 1200px = 与桌面版一模一样的一张图，只多了横向滚动。 */
 @media(max-width:820px) {
 .ueg-org-page .org-tree {
-padding:18px 12px}
+padding:18px 12px;
+overflow-x:auto;
+overscroll-behavior-x:contain}
 .ueg-org-page .gen {
-grid-template-columns:1fr;
-gap:14px;
-margin-top:14px}
-.ueg-org-page .gen-2:before,
-.ueg-org-page .gen-4:before,
-.ueg-org-page .cell:before,
-.ueg-org-page .cell:after {
+min-width:1200px}
+/* 角落水印是 absolute 定位在滚动容器里的，平移后会跟着内容跑并露出半截
+   （居中时正好被切一半）。窄屏直接收掉，section-head 已经标了同样的字。 */
+.ueg-org-page .org-tree:before {
 display:none}
-/* :nth-child(n) keeps the (0,4,0) specificity of the span rules above so this
-   reset actually wins — a plain `.cell` selector loses to :nth-child(1..4). */
-.ueg-org-page .gen-2 .cell:nth-child(n),
-.ueg-org-page .gen-3 .cell:nth-child(n),
-.ueg-org-page .gen-4 .cell:nth-child(n) {
-grid-column:auto}
-.ueg-org-page .cell-empty {
-display:none}
-.ueg-org-page .tnode,
-.ueg-org-page .tnode-root {
-width:100%}
-.ueg-org-page .tnode-code,
-.ueg-org-page .tnode-title {
-font-size: var(--fs-13)}
-.ueg-org-page .tnode-note {
-font-size: var(--fs-9)}
-.ueg-org-page .tnode-en {
-font-size: var(--fs-10)}
 }

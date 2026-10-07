@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   getOrganization,
   ORGANIZATION_CATEGORIES,
@@ -162,6 +162,23 @@ function OrganizationCard({ slug }: { slug: string }) {
  */
 export function OrganizationPage() {
   const [type, setType] = useState<string | null>(null);
+  const treeRef = useRef<HTMLDivElement | null>(null);
+
+  // ≤820px the chart keeps its full desktop geometry and scrolls horizontally
+  // (see ueg-org.css). Start centred so the root node — the chart's anchor —
+  // is on screen instead of the left edge being cut off. No-op above 820px,
+  // where there is nothing to scroll.
+  useEffect(() => {
+    const el = treeRef.current;
+    if (!el) return;
+    const center = () => {
+      const overflow = el.scrollWidth - el.clientWidth;
+      if (overflow > 1) el.scrollLeft = overflow / 2;
+    };
+    center();
+    window.addEventListener("resize", center);
+    return () => window.removeEventListener("resize", center);
+  }, []);
 
   const types = useMemo(
     () => TYPE_ORDER.filter((name) => ORGANIZATION_CATEGORIES.includes(name)),
@@ -183,7 +200,7 @@ export function OrganizationPage() {
           <span className="en">GOVERNMENT STRUCTURE</span>
         </div>
 
-        <div className="org-tree">
+        <div className="org-tree" ref={treeRef}>
           <div className="gen gen-1">
             <div className="cell">
               {root ? (
