@@ -281,7 +281,7 @@ font-size: var(--fs-15)}
 .ueg-org-page .branch-desc {
 margin-top:8px;
 color:var(--muted);
-font-size: var(--fs-9);
+font-size: var(--fs-11);
 line-height:1.6}
 .ueg-org-page .branch-link {
 display:inline-flex;
@@ -289,7 +289,7 @@ margin-top:9px;
 align-items:center;
 gap:8px;
 color:#e1c8a2;
-font-size: var(--fs-9)}
+font-size: var(--fs-11)}
 .ueg-org-page .branch-link b {
 color:var(--accent);
 font-size: var(--fs-13);
@@ -310,11 +310,11 @@ letter-spacing:.1em}
 .ueg-org-page .system-chip .t {
 margin-top:5px;
 color:var(--text);
-font-size: var(--fs-10)}
+font-size: var(--fs-12)}
 .ueg-org-page .system-chip .s {
 margin-top:3px;
-color:var(--muted2);
-font:var(--fs-7) var(--font-mono)}
+color:var(--muted);
+font:var(--fs-10) var(--font-mono)}
 .ueg-org-page .toolbar {
 margin-top:16px;
 padding:13px 14px;
@@ -323,11 +323,6 @@ align-items:center;
 gap:9px;
 border:1px solid var(--border);
 background:rgba(10,20,28,.82)}
-.ueg-org-page .toolbar .label {
-margin-right:6px;
-color:var(--primary2);
-font:var(--fs-9) var(--font-mono);
-letter-spacing:.12em}
 .ueg-org-page .filter {
 padding:8px 12px;
 border:1px solid var(--border2);
@@ -339,11 +334,6 @@ cursor:pointer}
 border-color:var(--accent);
 background:rgba(193,138,85,.07);
 color:#e1c8a2}
-.ueg-org-page .toolbar-spacer {
-flex:1}
-.ueg-org-page .result {
-font:var(--fs-9) var(--font-mono);
-color:var(--muted2)}
 .ueg-org-page .directory {
 display:grid;
 grid-template-columns:minmax(0,1fr) 340px;
@@ -385,14 +375,14 @@ font-size: var(--fs-17);
 line-height:1.35}
 .ueg-org-page .org-card .en {
 margin-top:5px;
-color:#748990;
-font:var(--fs-8) var(--font-mono);
+color:var(--primary2);
+font:var(--fs-9) var(--font-mono);
 letter-spacing:.05em;
 line-height:1.45}
 .ueg-org-page .org-card p {
 margin-top:10px;
 color:var(--muted);
-font-size: var(--fs-9);
+font-size: var(--fs-12);
 line-height:1.65}
 .ueg-org-page .card-meta {
 margin-top:12px;
@@ -402,8 +392,8 @@ gap:6px}
 .ueg-org-page .meta-tag {
 padding:4px 6px;
 border:1px solid var(--border2);
-color:var(--primary2);
-font:var(--fs-7) var(--font-mono)}
+color:var(--primary);
+font:var(--fs-10) var(--font-mono)}
 .ueg-org-page .meta-tag.accent {
 border-color:rgba(193,138,85,.55);
 color:#dec4a0}
@@ -411,10 +401,10 @@ color:#dec4a0}
 margin-top:13px;
 display:flex;
 align-items:center;
-justify-content:space-between}
+justify-content:flex-end}
 .ueg-org-page .view {
 color:#d5c19f;
-font-size: var(--fs-9)}
+font-size: var(--fs-11)}
 .ueg-org-page .view b {
 color:var(--accent);
 font-size: var(--fs-13);
@@ -437,8 +427,8 @@ margin:0;
 color:var(--title);
 font-size: var(--fs-13)}
 .ueg-org-page .side-title small {
-color:var(--muted2);
-font:var(--fs-8) var(--font-mono)}
+color:var(--muted);
+font:var(--fs-9) var(--font-mono)}
 .ueg-org-page .side-block {
 padding:13px 0;
 border-bottom:1px solid rgba(120,151,164,.13)}
@@ -455,7 +445,7 @@ font-size: var(--fs-12)}
 .ueg-org-page .side-copy {
 margin-top:6px;
 color:var(--muted);
-font-size: var(--fs-9);
+font-size: var(--fs-11);
 line-height:1.65}
 .ueg-org-page .mini-list {
 margin-top:9px;
@@ -466,7 +456,7 @@ gap:5px}
 padding:7px 8px;
 border:1px solid transparent;
 color:var(--muted);
-font-size: var(--fs-10)}
+font-size: var(--fs-12)}
 .ueg-org-page .mini-list a:hover {
 border-color:var(--border);
 background:rgba(120,151,164,.04);
@@ -482,7 +472,7 @@ align-items:center;
 gap:8px;
 margin-top:8px;
 color:var(--muted);
-font-size: var(--fs-9)}
+font-size: var(--fs-11)}
 .ueg-org-page .network-row:first-child {
 margin-top:0}
 .ueg-org-page .network-dot {
@@ -512,21 +502,13 @@ font-size: var(--fs-14)}
 .ueg-org-page .facility .en {
 margin-top:4px;
 color:var(--primary2);
-font:var(--fs-7) var(--font-mono);
+font:var(--fs-9) var(--font-mono);
 letter-spacing:.04em}
 .ueg-org-page .facility p {
 margin-top:8px;
 color:var(--muted);
-font-size: var(--fs-9);
+font-size: var(--fs-12);
 line-height:1.6}
-.ueg-org-page .facility:after {
-content:"FACILITY";
-position:absolute;
-right:11px;
-top:11px;
-color:#50636c;
-font:var(--fs-7) var(--font-mono);
-letter-spacing:.12em}
 .ueg-org-page .footer {
 margin-top:18px;
 border-top:1px solid var(--border2);

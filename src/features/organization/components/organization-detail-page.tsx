@@ -119,14 +119,6 @@ export function OrganizationDetailPage({ slug }: { slug: string }) {
                 <div className="k">总部 / 所在地</div>
                 <div className="v">{org.hq}</div>
               </div>
-              <div className="fact">
-                <div className="k">公开状态</div>
-                <div className="v">● PUBLIC RECORD</div>
-              </div>
-              <div className="fact">
-                <div className="k">当前纪元</div>
-                <div className="v">2089</div>
-              </div>
             </div>
           </section>
 

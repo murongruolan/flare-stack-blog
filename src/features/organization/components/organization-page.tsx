@@ -110,7 +110,6 @@ function OrganizationCard({ slug }: { slug: string }) {
         <span className="meta-tag">{org.hq.split(" · ")[0]}</span>
       </div>
       <div className="card-bottom">
-        <span className="view">公开档案</span>
         <Link
           to="/organization/$slug"
           params={{ slug }}
@@ -217,7 +216,6 @@ export function OrganizationPage() {
       </section>
 
       <div className="toolbar">
-        <span className="label">ORGANIZATION TYPE</span>
         <button
           type="button"
           className={cn("filter", !type && "active")}
@@ -235,10 +233,6 @@ export function OrganizationPage() {
             {name}
           </button>
         ))}
-        <div className="toolbar-spacer" />
-        <div className="result">
-          DIRECTORY · {visible.length} INSTITUTIONS · 2089
-        </div>
       </div>
 
       <section className="directory">
