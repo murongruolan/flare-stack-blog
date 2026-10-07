@@ -135,9 +135,9 @@ export const ORGANIZATIONS: Record<string, Organization> = {
     units: [
       { title: "国际合作与救援司", desc: "全球应急救灾与国际协调" },
       { title: "地下城事务部", desc: "地下城规划、准入与行政管理" },
+      { title: "经济规划部", desc: "全球经济与资源配置规划" },
       { title: "政治安全事务司", desc: "政治安全事务协调" },
-      { title: "裁军司", desc: "全球裁军事务协调" },
-      { title: "维和行动部", desc: "全球维和行动管理" },
+      { title: "时区部", desc: "全球时区与时间基准管理" },
     ],
     history: [
       { year: "2044", title: "行政体系建立", desc: "UEG秘书处承担全球行政执行职能。" },
@@ -162,7 +162,8 @@ export const ORGANIZATIONS: Record<string, Organization> = {
     ],
     units: [
       { title: "全球安全军", desc: "UEG全球军事力量" },
-      { title: "太空电梯维和部队", desc: "关键轨道设施安全力量" },
+      { title: "维和部队", desc: "全球维和与稳定行动力量" },
+      { title: "地表守备部队", desc: "关键地表设施守备力量" },
     ],
     history: [
       { year: "体系建立", title: "全球安全军形成", desc: "完成多区域安全力量统一协调。" },
@@ -186,8 +187,8 @@ export const ORGANIZATIONS: Record<string, Organization> = {
       "处理涉及全球公共利益的重大争议",
     ],
     units: [
-      { title: "最高审判庭", desc: "重大案件审理" },
-      { title: "法典解释庭", desc: "核心法案解释与司法指导" },
+      { title: "区域巡回法庭", desc: "跨区域案件巡回审理" },
+      { title: "军事法庭", desc: "军事与安全相关案件审理" },
     ],
     history: [
       { year: "UEG成立后", title: "司法体系统一", desc: "建立统一的跨区域司法机制。" },

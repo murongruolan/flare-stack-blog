@@ -20,25 +20,6 @@ const TYPE_ORDER = [
   "民生与人道",
 ];
 
-const STRUCTURE_BRANCHES = [
-  { slug: "ueg-gov-002", code: "GOV / 02" },
-  { slug: "ueg-sec-001", code: "SEC / 01" },
-  { slug: "ueg-exe-001", code: "EXE / 01" },
-];
-
-/** 与大会三条线并列的独立机关；note 取档案的机构性质。 */
-const STRUCTURE_INDEPENDENTS = [
-  { slug: "ueg-jus-001", key: "JUDICIARY" },
-  { slug: "ueg-sci-001", key: "SCIENCE" },
-  { slug: "ueg-sci-014", key: "DIGITAL LIFE" },
-  { slug: "ueg-asa-001", key: "AEROSPACE" },
-  { slug: "ueg-com-001", key: "ETHICS" },
-  { slug: "ueg-com-002", key: "NAVIGATION" },
-  { slug: "ueg-sec-011", key: "ECOSOC" },
-  { slug: "ueg-hum-001", key: "REFUGEES" },
-  { slug: "ueg-hum-002", key: "FOOD PROGRAMME" },
-];
-
 const NETWORK_NODES = [
   { label: "NEW YORK · UEG总部", slug: "ueg-gov-001" },
   { label: "BEIJING · 数字生命研究体系", slug: "ueg-sci-014" },
@@ -98,6 +79,157 @@ const FACILITIES = [
   },
 ];
 
+// ==================== 组织架构树（依据设定集） ====================
+
+type TreeNode =
+  | {
+      kind: "org";
+      slug: string;
+      note?: string;
+      children?: TreeNode[];
+    }
+  | { kind: "leaf"; label: string }
+  | { kind: "group"; label: string; en: string; items: TreeNode[] };
+
+/** 会同设定集确定的层级：大会 → 三线 → 司局/科研/委员会。 */
+const STRUCTURE_TREE: TreeNode[] = [
+  {
+    kind: "org",
+    slug: "ueg-gov-002",
+    note: "常设行政决策",
+    children: [
+      {
+        kind: "org",
+        slug: "ueg-exe-001",
+        note: "最高行政执行",
+        children: [
+          {
+            kind: "group",
+            label: "行政司局",
+            en: "BUREAUS",
+            items: [
+              { kind: "leaf", label: "国际合作与救援司" },
+              { kind: "leaf", label: "地下城事务部" },
+              { kind: "leaf", label: "经济规划部" },
+              { kind: "leaf", label: "政治安全事务司" },
+              { kind: "leaf", label: "时区部" },
+            ],
+          },
+          {
+            kind: "group",
+            label: "直属科研机构",
+            en: "RESEARCH BODIES",
+            items: [
+              {
+                kind: "org",
+                slug: "ueg-sci-001",
+                children: [{ kind: "org", slug: "ueg-sci-014" }],
+              },
+              {
+                kind: "org",
+                slug: "ueg-asa-001",
+                children: [
+                  { kind: "leaf", label: "月球基地" },
+                  { kind: "leaf", label: "加蓬联合实验基地" },
+                  { kind: "leaf", label: "UEG 飞行控制中心" },
+                  { kind: "leaf", label: "领航员空间站" },
+                ],
+              },
+            ],
+          },
+          {
+            kind: "group",
+            label: "专门委员会",
+            en: "COMMITTEES",
+            items: [
+              { kind: "org", slug: "ueg-com-001" },
+              { kind: "org", slug: "ueg-com-002" },
+              { kind: "org", slug: "ueg-sec-011" },
+            ],
+          },
+        ],
+      },
+    ],
+  },
+  {
+    kind: "org",
+    slug: "ueg-sec-001",
+    note: "安全军事决策",
+    children: [
+      {
+        kind: "org",
+        slug: "ueg-sec-002",
+        children: [
+          { kind: "leaf", label: "全球安全军" },
+          { kind: "leaf", label: "维和部队" },
+          { kind: "leaf", label: "地表守备部队" },
+        ],
+      },
+    ],
+  },
+  {
+    kind: "org",
+    slug: "ueg-jus-001",
+    note: "司法独立",
+    children: [
+      { kind: "leaf", label: "区域巡回法庭" },
+      { kind: "leaf", label: "军事法庭" },
+    ],
+  },
+];
+
+/** UEG-GOV-001 → GOV / 01 */
+function shortCode(code: string): string {
+  const match = code.match(/^UEG-([A-Z]+)-(\d+)$/);
+  if (!match) return code;
+  return `${match[1]} / ${Number(match[2]).toString().padStart(2, "0")}`;
+}
+
+function TreeNodeView({ node }: { node: TreeNode }) {
+  if (node.kind === "leaf") {
+    return <div className="tleaf">{node.label}</div>;
+  }
+  if (node.kind === "group") {
+    return (
+      <div className="tgroup">
+        <div className="tgroup-label">
+          {node.label} <span>{node.en}</span>
+        </div>
+        <div className="tchildren">
+          {node.items.map((item, index) => (
+            <TreeNodeView key={index} node={item} />
+          ))}
+        </div>
+      </div>
+    );
+  }
+  const org = getOrganization(node.slug);
+  if (!org) return null;
+  return (
+    <div className="torg">
+      <Link
+        className="tnode"
+        to="/organization/$slug"
+        params={{ slug: org.slug }}
+      >
+        <span className="tnode-code">{shortCode(org.code)}</span>
+        <span className="tnode-title">{org.title}</span>
+        {node.note ? (
+          <span className="tnode-note">{node.note}</span>
+        ) : null}
+        <span className="tnode-en">{org.en}</span>
+      </Link>
+      {node.children ? (
+        <div className="tchildren">
+          {node.children.map((item, index) => (
+            <TreeNodeView key={index} node={item} />
+          ))}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 function OrganizationCard({ slug }: { slug: string }) {
   const org = getOrganization(slug);
   if (!org) return null;
@@ -129,10 +261,12 @@ function OrganizationCard({ slug }: { slug: string }) {
 }
 
 /**
- * 机构介绍 — the organizational directory. Structure, cards, facilities and
- * sidebar all read from the authored organization archive.
+ * 机构介绍 — the organizational directory. A tab bar switches between the
+ * card directory (default) and the full structure tree; both read from the
+ * authored organization archive.
  */
 export function OrganizationPage() {
+  const [tab, setTab] = useState<"directory" | "structure">("directory");
   const [type, setType] = useState<string | null>(null);
 
   const types = useMemo(
@@ -145,6 +279,7 @@ export function OrganizationPage() {
   );
 
   const executive = getOrganization("ueg-exe-001");
+  const root = getOrganization("ueg-gov-001");
 
   return (
     <div className="ueg-org-page">
@@ -160,133 +295,126 @@ export function OrganizationPage() {
         </div>
       </section>
 
-      <section className="section">
-        <div className="section-head">
-          <h2>UEG 政府组织结构</h2>
-          <span className="en">GOVERNMENT STRUCTURE</span>
-        </div>
-
-        <div className="structure">
-          <div className="org-root">
-            <div className="org-node">
-              <div className="code">GOV / 01</div>
-              <h3>{getOrganization("ueg-gov-001")?.title}</h3>
-              <div className="sub">{getOrganization("ueg-gov-001")?.en}</div>
-            </div>
-          </div>
-
-          <div className="org-stem" />
-
-          <div className="org-branches">
-            {STRUCTURE_BRANCHES.map((branch) => {
-              const org = getOrganization(branch.slug);
-              if (!org) return null;
-              return (
-                <div key={branch.slug} className="branch">
-                  <div className="org-node">
-                    <div className="code">{branch.code}</div>
-                    <h3>{org.title}</h3>
-                    <div className="sub">{org.en}</div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          <div className="sub-divider">INDEPENDENT &amp; SPECIALIZED BODIES</div>
-          <div className="subsystems">
-            {STRUCTURE_INDEPENDENTS.map((chip) => {
-              const org = getOrganization(chip.slug);
-              if (!org) return null;
-              return (
-                <Link
-                  key={chip.slug}
-                  className="system-chip"
-                  to="/organization/$slug"
-                  params={{ slug: chip.slug }}
-                >
-                  <div className="k">{chip.key}</div>
-                  <div className="t">{org.title}</div>
-                  <div className="s">{org.nature}</div>
-                </Link>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      <div className="toolbar">
+      <div className="org-tabs" role="tablist" aria-label="机构内容切换">
         <button
           type="button"
-          className={cn("filter", !type && "active")}
-          onClick={() => setType(null)}
+          role="tab"
+          aria-selected={tab === "directory"}
+          className={cn("org-tab", tab === "directory" && "active")}
+          onClick={() => setTab("directory")}
         >
-          全部
+          机构目录 <span>DIRECTORY</span>
         </button>
-        {types.map((name) => (
-          <button
-            key={name}
-            type="button"
-            className={cn("filter", type === name && "active")}
-            onClick={() => setType(name)}
-          >
-            {name}
-          </button>
-        ))}
+        <button
+          type="button"
+          role="tab"
+          aria-selected={tab === "structure"}
+          className={cn("org-tab", tab === "structure" && "active")}
+          onClick={() => setTab("structure")}
+        >
+          政府组织结构 <span>GOVERNMENT STRUCTURE</span>
+        </button>
       </div>
 
-      <section className="directory">
-        <div>
-          <div className="cards">
-            {visible.map((org) => (
-              <OrganizationCard key={org.slug} slug={org.slug} />
+      {tab === "structure" ? (
+        <section className="section">
+          <div className="org-tree">
+            {root ? (
+              <div className="torg">
+                <Link
+                  className="tnode"
+                  to="/organization/$slug"
+                  params={{ slug: root.slug }}
+                >
+                  <span className="tnode-code">{shortCode(root.code)}</span>
+                  <span className="tnode-title">{root.title}</span>
+                  <span className="tnode-en">{root.en}</span>
+                </Link>
+                <div className="tchildren">
+                  {STRUCTURE_TREE.map((node, index) => (
+                    <TreeNodeView key={index} node={node} />
+                  ))}
+                </div>
+              </div>
+            ) : null}
+          </div>
+        </section>
+      ) : (
+        <>
+          <div className="toolbar">
+            <button
+              type="button"
+              className={cn("filter", !type && "active")}
+              onClick={() => setType(null)}
+            >
+              全部
+            </button>
+            {types.map((name) => (
+              <button
+                key={name}
+                type="button"
+                className={cn("filter", type === name && "active")}
+                onClick={() => setType(name)}
+              >
+                {name}
+              </button>
             ))}
           </div>
-        </div>
 
-        <aside className="sidebar">
-          <div className="side-title">
-            <h2>机构导航</h2>
-            <small>DIRECTORY INDEX</small>
-          </div>
-
-          <div className="side-block">
-            <div className="side-kicker">EXECUTIVE BUREAUS</div>
-            <div className="side-title2">司局直达</div>
-            <div className="mini-list">
-              {executive?.units.map((unit) => (
-                <Link
-                  key={unit.title}
-                  to="/organization/$slug"
-                  params={{ slug: "ueg-exe-001" }}
-                  hash={organizationUnitAnchor(unit.title)}
-                >
-                  {unit.title}
-                </Link>
-              ))}
+          <section className="directory">
+            <div>
+              <div className="cards">
+                {visible.map((org) => (
+                  <OrganizationCard key={org.slug} slug={org.slug} />
+                ))}
+              </div>
             </div>
-          </div>
 
-          <div className="side-block">
-            <div className="side-kicker">NETWORK</div>
-            <div className="side-title2">主要节点</div>
-            <div className="network-box">
-              {NETWORK_NODES.map((node) => (
-                <Link
-                  key={node.label}
-                  className="network-row"
-                  to="/organization/$slug"
-                  params={{ slug: node.slug }}
-                  hash={node.hash}
-                >
-                  <span className="network-dot" />
-                  {node.label}
-                </Link>
-              ))}
-            </div>
-          </div>
-        </aside>
-      </section>
+            <aside className="sidebar">
+              <div className="side-title">
+                <h2>机构导航</h2>
+                <small>DIRECTORY INDEX</small>
+              </div>
+
+              <div className="side-block">
+                <div className="side-kicker">EXECUTIVE BUREAUS</div>
+                <div className="side-title2">司局直达</div>
+                <div className="mini-list">
+                  {executive?.units.map((unit) => (
+                    <Link
+                      key={unit.title}
+                      to="/organization/$slug"
+                      params={{ slug: "ueg-exe-001" }}
+                      hash={organizationUnitAnchor(unit.title)}
+                    >
+                      {unit.title}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              <div className="side-block">
+                <div className="side-kicker">NETWORK</div>
+                <div className="side-title2">主要节点</div>
+                <div className="network-box">
+                  {NETWORK_NODES.map((node) => (
+                    <Link
+                      key={node.label}
+                      className="network-row"
+                      to="/organization/$slug"
+                      params={{ slug: node.slug }}
+                      hash={node.hash}
+                    >
+                      <span className="network-dot" />
+                      {node.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </aside>
+          </section>
+        </>
+      )}
 
       <section className="facility-section">
         <div className="section-head">
