@@ -177,18 +177,6 @@ export function OrganizationPage() {
 
   return (
     <div className="ueg-org-page">
-      <section className="page-head">
-        <div className="page-head-content">
-          <div className="crumb">UEG / PUBLIC ARCHIVE / ORGANIZATIONAL DIRECTORY</div>
-          <h1>
-            机构介绍 <span>ORGANIZATIONAL DIRECTORY</span>
-          </h1>
-          <p>
-            联合地球政府主要机关、直属机构、专门委员会与全球执行设施公开档案。探索 UEG 的治理体系、行政网络与人类未来工程体系。
-          </p>
-        </div>
-      </section>
-
       <section className="section">
         <div className="section-head">
           <h2>UEG 政府组织结构</h2>

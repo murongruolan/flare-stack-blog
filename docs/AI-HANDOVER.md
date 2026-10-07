@@ -309,7 +309,7 @@ SEO/协议路由：`rss[.]xml.ts`、`atom[.]xml.ts`、`feed[.]json.ts`、`sitema
 
 ### 8.5 机构介绍（/organization）
 
-- **页面结构**（`organization-page.tsx`）：自上而下 = 页头 → 「UEG 政府组织结构 / GOVERNMENT STRUCTURE」区块（`.section-head` + `.org-tree` 架构图）→ 筛选栏 `.toolbar` → 卡片目录 `.directory` + 侧栏（司局直达/主要节点）→ 「一线执行设施」`.facility-section`。**架构图与目录同页直出，没有 tab**——历史上 dcfd61d0 曾拆成「机构目录 / 政府组织结构」两个 tab，用户要求挪回同页（参照 `preview-organization.html` 的架构图周围版式），已撤销。机构详情页 `organization-detail-page.tsx` + `$slug.tsx`。
+- **页面结构**（`organization-page.tsx`）：自上而下 = 「UEG 政府组织结构 / GOVERNMENT STRUCTURE」区块（`.section-head` + `.org-tree` 架构图）→ 筛选栏 `.toolbar` → 卡片目录 `.directory` + 侧栏（司局直达/主要节点）→ 「一线执行设施」`.facility-section`。**架构图与目录同页直出，没有 tab**——历史上 dcfd61d0 曾拆成「机构目录 / 政府组织结构」两个 tab，用户要求挪回同页（参照 `preview-organization.html` 的架构图周围版式），已撤销。**页头横幅 `.page-head` 已整体删除**（用户认为多余）：`ueg-org.css` 里 `.ueg-org-page .page-head*` 与 `.ueg-org-page .crumb` 规则一并删净，顶部间距改由 `.section{margin-top:18px}` 提供，与「内页无横幅」的约定一致。注意 `about` 页仍用 `.page-head`（走 `ueg-about.css`），机构详情页仍用 `.crumb`（走 `ueg-org-detail.css`），二者均未受影响。机构详情页 `organization-detail-page.tsx` + `$slug.tsx`。
 - **架构图（多轮返工后的最终形态，commit d46dc031 + 后续微调）**：
   - `CHART_ROWS` 世代行数组（organization-page.tsx 顶部）定义层级：
     - gen-1：大会（GOV/01，居中，根卡）
