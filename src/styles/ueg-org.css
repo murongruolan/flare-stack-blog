@@ -290,7 +290,7 @@ align-items:center;
 justify-content:center;
 text-align:center;
 width:200px;
-min-height:104px;
+min-height:90px;
 padding:12px 14px;
 border:1px solid var(--border2);
 background:linear-gradient(180deg,rgba(22,39,49,.95),rgba(12,24,32,.92));
