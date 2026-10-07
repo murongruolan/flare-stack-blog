@@ -79,41 +79,26 @@ const FACILITIES = [
   },
 ];
 
-// ==================== 组织架构树（依据设定集） ====================
+/**
+ * 架构图世代行（依据设定集）。每行铺在共享网格上：
+ * 第二/三行三等分（常委会左、安理会正中、法院右），第四行四等分，
+ * 秘书处与科学院同列——中线由 CSS 按百分比生成。
+ */
+type ChartNode = { slug: string; note?: string };
 
-type TreeNode = {
-  slug: string;
-  note?: string;
-  children?: TreeNode[];
-};
-
-/** 会同设定集确定的世代：大会 → 三线 → 执行/司法 → 四机构。 */
-const STRUCTURE_TREE: TreeNode[] = [
-  {
-    slug: "ueg-gov-002",
-    note: "常设行政决策",
-    children: [
-      {
-        slug: "ueg-exe-001",
-        note: "最高行政执行",
-        children: [
-          { slug: "ueg-sci-001" },
-          { slug: "ueg-asa-001" },
-          { slug: "ueg-com-001" },
-          { slug: "ueg-sec-011" },
-        ],
-      },
-    ],
-  },
-  {
-    slug: "ueg-sec-001",
-    note: "安全军事决策",
-    children: [{ slug: "ueg-sec-002" }],
-  },
-  {
-    slug: "ueg-jus-001",
-    note: "司法独立",
-  },
+const CHART_ROWS: Array<Array<ChartNode>> = [
+  [
+    { slug: "ueg-gov-002", note: "常设行政决策" },
+    { slug: "ueg-sec-001", note: "安全军事决策" },
+    { slug: "ueg-jus-001", note: "司法独立" },
+  ],
+  [{ slug: "ueg-exe-001", note: "最高行政执行" }, { slug: "ueg-sec-002" }],
+  [
+    { slug: "ueg-sci-001" },
+    { slug: "ueg-asa-001" },
+    { slug: "ueg-com-001" },
+    { slug: "ueg-sec-011" },
+  ],
 ];
 
 /** UEG-GOV-001 → GOV / 01 */
@@ -123,29 +108,20 @@ function shortCode(code: string): string {
   return `${match[1]} / ${Number(match[2]).toString().padStart(2, "0")}`;
 }
 
-function TreeNodeView({ node }: { node: TreeNode }) {
-  const org = getOrganization(node.slug);
+function OrgNode({ slug, note }: ChartNode) {
+  const org = getOrganization(slug);
   if (!org) return null;
   return (
-    <div className="torg">
-      <Link
-        className="tnode"
-        to="/organization/$slug"
-        params={{ slug: org.slug }}
-      >
-        <span className="tnode-code">{shortCode(org.code)}</span>
-        <span className="tnode-title">{org.title}</span>
-        {node.note ? <span className="tnode-note">{node.note}</span> : null}
-        <span className="tnode-en">{org.en}</span>
-      </Link>
-      {node.children?.length ? (
-        <div className="children">
-          {node.children.map((item) => (
-            <TreeNodeView key={item.slug} node={item} />
-          ))}
-        </div>
-      ) : null}
-    </div>
+    <Link
+      className="tnode"
+      to="/organization/$slug"
+      params={{ slug: org.slug }}
+    >
+      <span className="tnode-code">{shortCode(org.code)}</span>
+      <span className="tnode-title">{org.title}</span>
+      {note ? <span className="tnode-note">{note}</span> : null}
+      <span className="tnode-en">{org.en}</span>
+    </Link>
   );
 }
 
@@ -238,24 +214,46 @@ export function OrganizationPage() {
       {tab === "structure" ? (
         <section className="section">
           <div className="org-tree">
-            {root ? (
-              <div className="torg">
-                <Link
-                  className="tnode tnode-root"
-                  to="/organization/$slug"
-                  params={{ slug: root.slug }}
-                >
-                  <span className="tnode-code">{shortCode(root.code)}</span>
-                  <span className="tnode-title">{root.title}</span>
-                  <span className="tnode-en">{root.en}</span>
-                </Link>
-                <div className="children">
-                  {STRUCTURE_TREE.map((node) => (
-                    <TreeNodeView key={node.slug} node={node} />
-                  ))}
-                </div>
+            <div className="gen gen-1">
+              <div className="cell">
+                {root ? (
+                  <Link
+                    className="tnode tnode-root"
+                    to="/organization/$slug"
+                    params={{ slug: root.slug }}
+                  >
+                    <span className="tnode-code">{shortCode(root.code)}</span>
+                    <span className="tnode-title">{root.title}</span>
+                    <span className="tnode-en">{root.en}</span>
+                  </Link>
+                ) : null}
               </div>
-            ) : null}
+            </div>
+
+            <div className="gen gen-2">
+              {CHART_ROWS[0].map((node) => (
+                <div className="cell" key={node.slug}>
+                  <OrgNode {...node} />
+                </div>
+              ))}
+            </div>
+
+            <div className="gen gen-3">
+              {CHART_ROWS[1].map((node) => (
+                <div className="cell" key={node.slug}>
+                  <OrgNode {...node} />
+                </div>
+              ))}
+              <div className="cell cell-empty" />
+            </div>
+
+            <div className="gen gen-4">
+              {CHART_ROWS[2].map((node) => (
+                <div className="cell" key={node.slug}>
+                  <OrgNode {...node} />
+                </div>
+              ))}
+            </div>
           </div>
         </section>
             ) : (
