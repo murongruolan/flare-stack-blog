@@ -21,16 +21,30 @@ const TYPE_ORDER = [
 ];
 
 const STRUCTURE_BRANCHES = [
-  { slug: "ueg-gov-002", code: "GOV / 02" },
-  { slug: "ueg-sec-001", code: "SEC / 01" },
-  { slug: "ueg-exe-001", code: "EXEC / 01" },
+  {
+    slug: "ueg-gov-002",
+    code: "GOV / 02",
+    subs: [] as Array<{ slug: string; label: string }>,
+  },
+  {
+    slug: "ueg-sec-001",
+    code: "SEC / 01",
+    subs: [{ slug: "ueg-sec-002", label: "地球军事委员会" }],
+  },
+  { slug: "ueg-exe-001", code: "EXE / 01", subs: [] },
 ];
 
-const STRUCTURE_CHIPS = [
-  { slug: "ueg-jus-001", key: "JUDICIARY", note: "最高司法机关" },
-  { slug: "ueg-sci-001", key: "SCIENCE", note: "全球科研总管" },
-  { slug: "ueg-asa-001", key: "AEROSPACE", note: "航天与空间项目主管机构" },
-  { slug: "ueg-sec-002", key: "SECURITY", note: "全球安全军统帅机构" },
+/** 与大会三条线并列的独立机关；note 取档案的机构性质。 */
+const STRUCTURE_INDEPENDENTS = [
+  { slug: "ueg-jus-001", key: "JUDICIARY" },
+  { slug: "ueg-sci-001", key: "SCIENCE" },
+  { slug: "ueg-sci-014", key: "DIGITAL LIFE" },
+  { slug: "ueg-asa-001", key: "AEROSPACE" },
+  { slug: "ueg-com-001", key: "ETHICS" },
+  { slug: "ueg-com-002", key: "NAVIGATION" },
+  { slug: "ueg-sec-011", key: "ECOSOC" },
+  { slug: "ueg-hum-001", key: "REFUGEES" },
+  { slug: "ueg-hum-002", key: "FOOD PROGRAMME" },
 ];
 
 const NETWORK_NODES = [
@@ -163,7 +177,7 @@ export function OrganizationPage() {
         <div className="structure">
           <div className="org-root">
             <div className="org-node">
-              <div className="code">UEG / CENTRAL AUTHORITY</div>
+              <div className="code">GOV / 01</div>
               <h3>{getOrganization("ueg-gov-001")?.title}</h3>
               <div className="sub">{getOrganization("ueg-gov-001")?.en}</div>
             </div>
@@ -181,6 +195,16 @@ export function OrganizationPage() {
                     <div className="code">{branch.code}</div>
                     <h3>{org.title}</h3>
                     <div className="branch-desc">{org.summary}</div>
+                    {branch.subs.map((sub) => (
+                      <Link
+                        key={sub.slug}
+                        className="branch-sub"
+                        to="/organization/$slug"
+                        params={{ slug: sub.slug }}
+                      >
+                        └ {sub.label}
+                      </Link>
+                    ))}
                     <Link
                       className="branch-link"
                       to="/organization/$slug"
@@ -194,8 +218,9 @@ export function OrganizationPage() {
             })}
           </div>
 
+          <div className="sub-divider">INDEPENDENT &amp; SPECIALIZED BODIES</div>
           <div className="subsystems">
-            {STRUCTURE_CHIPS.map((chip) => {
+            {STRUCTURE_INDEPENDENTS.map((chip) => {
               const org = getOrganization(chip.slug);
               if (!org) return null;
               return (
@@ -207,7 +232,7 @@ export function OrganizationPage() {
                 >
                   <div className="k">{chip.key}</div>
                   <div className="t">{org.title}</div>
-                  <div className="s">{chip.note}</div>
+                  <div className="s">{org.nature}</div>
                 </Link>
               );
             })}
@@ -251,28 +276,8 @@ export function OrganizationPage() {
           </div>
 
           <div className="side-block">
-            <div className="side-kicker">GOVERNANCE</div>
-            <div className="side-title2">决策与治理</div>
-            <div className="side-copy">
-              大会、常务委员会、安全理事会及全球治理机构。
-            </div>
-            <div className="mini-list">
-              {["ueg-gov-001", "ueg-gov-002", "ueg-sec-001", "ueg-sec-011"].map(
-                (slug) => (
-                  <Link key={slug} to="/organization/$slug" params={{ slug }}>
-                    {getOrganization(slug)?.title}
-                  </Link>
-                ),
-              )}
-            </div>
-          </div>
-
-          <div className="side-block">
-            <div className="side-kicker">EXECUTIVE</div>
-            <div className="side-title2">行政执行体系</div>
-            <div className="side-copy">
-              秘书处负责大会决议执行及全球行政协调。
-            </div>
+            <div className="side-kicker">EXECUTIVE BUREAUS</div>
+            <div className="side-title2">司局直达</div>
             <div className="mini-list">
               {executive?.units.map((unit) => (
                 <Link
