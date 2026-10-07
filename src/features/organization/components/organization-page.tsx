@@ -88,11 +88,11 @@ type ChartNode = { slug: string; note?: string };
 
 const CHART_ROWS: Array<Array<ChartNode>> = [
   [
-    { slug: "ueg-gov-002", note: "常设行政决策" },
-    { slug: "ueg-sec-001", note: "安全军事决策" },
-    { slug: "ueg-jus-001", note: "司法独立" },
+    { slug: "ueg-gov-002" },
+    { slug: "ueg-sec-001" },
+    { slug: "ueg-jus-001" },
   ],
-  [{ slug: "ueg-exe-001", note: "最高行政执行" }, { slug: "ueg-sec-002" }],
+  [{ slug: "ueg-exe-001" }, { slug: "ueg-sec-002" }],
   [
     { slug: "ueg-sci-001" },
     { slug: "ueg-asa-001" },
