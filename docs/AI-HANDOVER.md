@@ -309,7 +309,7 @@ SEO/协议路由：`rss[.]xml.ts`、`atom[.]xml.ts`、`feed[.]json.ts`、`sitema
 
 ### 8.5 机构介绍（/organization）
 
-- **tabs 结构**（`organization-page.tsx`，useState 不进 URL）：「机构目录 DIRECTORY」（默认：筛选栏+卡片目录+侧栏司局直达/主要节点）与「政府组织结构 GOVERNMENT STRUCTURE」；「一线执行设施」区在 tab 外常驻。机构详情页 `organization-detail-page.tsx` + `$slug.tsx`。
+- **页面结构**（`organization-page.tsx`）：自上而下 = 页头 → 「UEG 政府组织结构 / GOVERNMENT STRUCTURE」区块（`.section-head` + `.org-tree` 架构图）→ 筛选栏 `.toolbar` → 卡片目录 `.directory` + 侧栏（司局直达/主要节点）→ 「一线执行设施」`.facility-section`。**架构图与目录同页直出，没有 tab**——历史上 dcfd61d0 曾拆成「机构目录 / 政府组织结构」两个 tab，用户要求挪回同页（参照 `preview-organization.html` 的架构图周围版式），已撤销。机构详情页 `organization-detail-page.tsx` + `$slug.tsx`。
 - **架构图（多轮返工后的最终形态，commit d46dc031 + 后续微调）**：
   - `CHART_ROWS` 世代行数组（organization-page.tsx 顶部）定义层级：
     - gen-1：大会（GOV/01，居中，根卡）
@@ -382,7 +382,7 @@ SEO/协议路由：`rss[.]xml.ts`、`atom[.]xml.ts`、`feed[.]json.ts`、`sitema
 
 - `bun test`（vitest）：`*.integration.test.ts` 用 `@cloudflare/vitest-plugin` 起 **真实 workerd + 本地 D1/KV/R2**（`tests/apply-migrations.ts` 先跑迁移）；纯逻辑 `*.test.ts` 用 node 环境（vitest.node.config.ts）。
 - 分类/归属相关测试在 `categories.integration.test.ts`、`category-options.integration.test.ts`、`posts.integration.test.ts`、`taxonomy.integration.test.ts`——**改 schema 断言要跟着补**（历史上新增字段后 4 个测试失败过）。
-- E2E/视觉验证：puppeteer-core + 系统 Chrome，脚本放 `.scratch/e2e/`（如 `shoot-org-tabs.cjs` 截 /organization 两 tab）。
+- E2E/视觉验证：puppeteer-core + 系统 Chrome，脚本放 `.scratch/e2e/`（如 `shoot-org.cjs` 截 /organization 列表与详情）。
 
 ---
 
@@ -417,7 +417,7 @@ SEO/协议路由：`rss[.]xml.ts`、`atom[.]xml.ts`、`feed[.]json.ts`、`sitema
 | 生产迁移 0026/0027 未跑 | 用户部署时执行 `bun run db:migrate` |
 | 难民署（HUM/01）、全球粮食计划署（HUM/02）未上架构图 | 等用户口述隶属关系 |
 | 架构图其余机构英文名是否统一 `UEG XXX` 短格式 | 已提议，用户未答复（现有：SECRETARIAT/ACADEMY OF SCIENCES/SPACE AGENCY 已改短） |
-| 组织架构 tab 不进 URL | 纯 useState；用户要深链时加 `?tab=structure`（validateSearch） |
+| 架构图与页头之间 18px 间距 | `.org-tree` 自带 `margin-top:18px`（tab 时期留下的），预览 html 里是紧贴；用户未表态，保留未动 |
 | `.tnode-code` 字号 fs-15 对"编号"可能偏大 | 用户已接受现状；若嫌大可单独回调（en 已是 fs-9） |
 | 首页通告栏按分类名匹配 | 后台改「政府公告」「紧急通告」名字会弄空通告栏；长期可升级为第三种归属（notice 流） |
 | 首页 MissionStrip 六段数值为前端常量 | 接后端时替换 |

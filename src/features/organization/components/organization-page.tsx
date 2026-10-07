@@ -156,12 +156,11 @@ function OrganizationCard({ slug }: { slug: string }) {
 }
 
 /**
- * 机构介绍 — the organizational directory. A tab bar switches between the
- * card directory (default) and the full structure tree; both read from the
- * authored organization archive.
+ * 机构介绍 — the organizational directory. The structure chart sits inline
+ * above the card directory, as in the approved reference page; both read
+ * from the authored organization archive.
  */
 export function OrganizationPage() {
-  const [tab, setTab] = useState<"directory" | "structure">("directory");
   const [type, setType] = useState<string | null>(null);
 
   const types = useMemo(
@@ -190,148 +189,128 @@ export function OrganizationPage() {
         </div>
       </section>
 
-      <div className="org-tabs" role="tablist" aria-label="机构内容切换">
-        <button
-          type="button"
-          role="tab"
-          aria-selected={tab === "directory"}
-          className={cn("org-tab", tab === "directory" && "active")}
-          onClick={() => setTab("directory")}
-        >
-          机构目录 <span>DIRECTORY</span>
-        </button>
-        <button
-          type="button"
-          role="tab"
-          aria-selected={tab === "structure"}
-          className={cn("org-tab", tab === "structure" && "active")}
-          onClick={() => setTab("structure")}
-        >
-          政府组织结构 <span>GOVERNMENT STRUCTURE</span>
-        </button>
-      </div>
+      <section className="section">
+        <div className="section-head">
+          <h2>UEG 政府组织结构</h2>
+          <span className="en">GOVERNMENT STRUCTURE</span>
+        </div>
 
-      {tab === "structure" ? (
-        <section className="section">
-          <div className="org-tree">
-            <div className="gen gen-1">
-              <div className="cell">
-                {root ? (
-                  <Link
-                    className="tnode tnode-root"
-                    to="/organization/$slug"
-                    params={{ slug: root.slug }}
-                  >
-                    <span className="tnode-code">{shortCode(root.code)}</span>
-                    <span className="tnode-title">{root.title}</span>
-                    <span className="tnode-en">{root.en}</span>
-                  </Link>
-                ) : null}
-              </div>
-            </div>
-
-            <div className="gen gen-2">
-              {CHART_ROWS[0].map((node) => (
-                <div className="cell" key={node.slug}>
-                  <OrgNode {...node} />
-                </div>
-              ))}
-            </div>
-
-            <div className="gen gen-3">
-              {CHART_ROWS[1].map((node) => (
-                <div className="cell" key={node.slug}>
-                  <OrgNode {...node} />
-                </div>
-              ))}
-              <div className="cell cell-empty" />
-            </div>
-
-            <div className="gen gen-4">
-              {CHART_ROWS[2].map((node) => (
-                <div className="cell" key={node.slug}>
-                  <OrgNode {...node} />
-                </div>
-              ))}
+        <div className="org-tree">
+          <div className="gen gen-1">
+            <div className="cell">
+              {root ? (
+                <Link
+                  className="tnode tnode-root"
+                  to="/organization/$slug"
+                  params={{ slug: root.slug }}
+                >
+                  <span className="tnode-code">{shortCode(root.code)}</span>
+                  <span className="tnode-title">{root.title}</span>
+                  <span className="tnode-en">{root.en}</span>
+                </Link>
+              ) : null}
             </div>
           </div>
-        </section>
-            ) : (
-        <>
-          <div className="toolbar">
-            <button
-              type="button"
-              className={cn("filter", !type && "active")}
-              onClick={() => setType(null)}
-            >
-              全部
-            </button>
-            {types.map((name) => (
-              <button
-                key={name}
-                type="button"
-                className={cn("filter", type === name && "active")}
-                onClick={() => setType(name)}
-              >
-                {name}
-              </button>
+
+          <div className="gen gen-2">
+            {CHART_ROWS[0].map((node) => (
+              <div className="cell" key={node.slug}>
+                <OrgNode {...node} />
+              </div>
             ))}
           </div>
 
-          <section className="directory">
-            <div>
-              <div className="cards">
-                {visible.map((org) => (
-                  <OrganizationCard key={org.slug} slug={org.slug} />
-                ))}
+          <div className="gen gen-3">
+            {CHART_ROWS[1].map((node) => (
+              <div className="cell" key={node.slug}>
+                <OrgNode {...node} />
               </div>
+            ))}
+            <div className="cell cell-empty" />
+          </div>
+
+          <div className="gen gen-4">
+            {CHART_ROWS[2].map((node) => (
+              <div className="cell" key={node.slug}>
+                <OrgNode {...node} />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <div className="toolbar">
+        <button
+          type="button"
+          className={cn("filter", !type && "active")}
+          onClick={() => setType(null)}
+        >
+          全部
+        </button>
+        {types.map((name) => (
+          <button
+            key={name}
+            type="button"
+            className={cn("filter", type === name && "active")}
+            onClick={() => setType(name)}
+          >
+            {name}
+          </button>
+        ))}
+      </div>
+
+      <section className="directory">
+        <div>
+          <div className="cards">
+            {visible.map((org) => (
+              <OrganizationCard key={org.slug} slug={org.slug} />
+            ))}
+          </div>
+        </div>
+
+        <aside className="sidebar">
+          <div className="side-title">
+            <h2>机构导航</h2>
+            <small>DIRECTORY INDEX</small>
+          </div>
+
+          <div className="side-block">
+            <div className="side-kicker">EXECUTIVE BUREAUS</div>
+            <div className="side-title2">司局直达</div>
+            <div className="mini-list">
+              {executive?.units.map((unit) => (
+                <Link
+                  key={unit.title}
+                  to="/organization/$slug"
+                  params={{ slug: "ueg-exe-001" }}
+                  hash={organizationUnitAnchor(unit.title)}
+                >
+                  {unit.title}
+                </Link>
+              ))}
             </div>
+          </div>
 
-            <aside className="sidebar">
-              <div className="side-title">
-                <h2>机构导航</h2>
-                <small>DIRECTORY INDEX</small>
-              </div>
-
-              <div className="side-block">
-                <div className="side-kicker">EXECUTIVE BUREAUS</div>
-                <div className="side-title2">司局直达</div>
-                <div className="mini-list">
-                  {executive?.units.map((unit) => (
-                    <Link
-                      key={unit.title}
-                      to="/organization/$slug"
-                      params={{ slug: "ueg-exe-001" }}
-                      hash={organizationUnitAnchor(unit.title)}
-                    >
-                      {unit.title}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-
-              <div className="side-block">
-                <div className="side-kicker">NETWORK</div>
-                <div className="side-title2">主要节点</div>
-                <div className="network-box">
-                  {NETWORK_NODES.map((node) => (
-                    <Link
-                      key={node.label}
-                      className="network-row"
-                      to="/organization/$slug"
-                      params={{ slug: node.slug }}
-                      hash={node.hash}
-                    >
-                      <span className="network-dot" />
-                      {node.label}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            </aside>
-          </section>
-        </>
-      )}
+          <div className="side-block">
+            <div className="side-kicker">NETWORK</div>
+            <div className="side-title2">主要节点</div>
+            <div className="network-box">
+              {NETWORK_NODES.map((node) => (
+                <Link
+                  key={node.label}
+                  className="network-row"
+                  to="/organization/$slug"
+                  params={{ slug: node.slug }}
+                  hash={node.hash}
+                >
+                  <span className="network-dot" />
+                  {node.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+        </aside>
+      </section>
 
       <section className="facility-section">
         <div className="section-head">
