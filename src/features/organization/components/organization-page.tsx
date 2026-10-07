@@ -320,22 +320,54 @@ export function OrganizationPage() {
         <section className="section">
           <div className="org-tree">
             {root ? (
-              <div className="torg">
-                <Link
-                  className="tnode"
-                  to="/organization/$slug"
-                  params={{ slug: root.slug }}
-                >
-                  <span className="tnode-code">{shortCode(root.code)}</span>
-                  <span className="tnode-title">{root.title}</span>
-                  <span className="tnode-en">{root.en}</span>
-                </Link>
-                <div className="tchildren">
-                  {STRUCTURE_TREE.map((node, index) => (
-                    <TreeNodeView key={index} node={node} />
-                  ))}
+              <>
+                <div className="org-root">
+                  <Link
+                    className="tnode tnode-center"
+                    to="/organization/$slug"
+                    params={{ slug: root.slug }}
+                  >
+                    <span className="tnode-code">{shortCode(root.code)}</span>
+                    <span className="tnode-title">{root.title}</span>
+                    <span className="tnode-en">{root.en}</span>
+                  </Link>
                 </div>
-              </div>
+
+                <div className="org-stem" />
+
+                <div className="org-branches">
+                  {STRUCTURE_TREE.map((node, index) => {
+                    if (node.kind !== "org") return null;
+                    const org = getOrganization(node.slug);
+                    if (!org) return null;
+                    return (
+                      <div key={index} className="branch-col">
+                        <Link
+                          className="tnode tnode-center"
+                          to="/organization/$slug"
+                          params={{ slug: org.slug }}
+                        >
+                          <span className="tnode-code">
+                            {shortCode(org.code)}
+                          </span>
+                          <span className="tnode-title">{org.title}</span>
+                          {node.note ? (
+                            <span className="tnode-note">{node.note}</span>
+                          ) : null}
+                          <span className="tnode-en">{org.en}</span>
+                        </Link>
+                        {node.children ? (
+                          <div className="tchildren">
+                            {node.children.map((item, i) => (
+                              <TreeNodeView key={i} node={item} />
+                            ))}
+                          </div>
+                        ) : null}
+                      </div>
+                    );
+                  })}
+                </div>
+              </>
             ) : null}
           </div>
         </section>
