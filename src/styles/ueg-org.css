@@ -267,7 +267,7 @@ display:flex;
 flex-direction:column;
 align-items:center;
 text-align:center;
-width:210px;
+width:190px;
 padding:12px 14px;
 border:1px solid var(--border2);
 background:linear-gradient(180deg,rgba(22,39,49,.95),rgba(12,24,32,.92));
@@ -276,7 +276,7 @@ transition:border-color .18s ease}
 .ueg-org-page .tnode:hover {
 border-color:var(--primary2)}
 .ueg-org-page .tnode-root {
-width:250px}
+width:230px}
 .ueg-org-page .tnode-code {
 color:var(--accent);
 font:var(--fs-8) var(--font-mono);
@@ -295,27 +295,6 @@ color:var(--primary2);
 font:var(--fs-9) var(--font-mono);
 letter-spacing:.05em;
 line-height:1.5}
-.ueg-org-page .tleafbox {
-margin-top:10px;
-padding:9px 14px;
-border:1px dashed var(--border2);
-background:rgba(10,20,28,.45);
-display:flex;
-flex-direction:column;
-gap:3px}
-.ueg-org-page .tleaf {
-position:relative;
-padding-left:13px;
-color:var(--muted);
-font-size: var(--fs-10)}
-.ueg-org-page .tleaf:before {
-content:"";
-position:absolute;
-left:0;
-top:50%;
-width:7px;
-height:1px;
-background:var(--primary2)}
 .ueg-org-page .children {
 position:relative;
 display:flex;

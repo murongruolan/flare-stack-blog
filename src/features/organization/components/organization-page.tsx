@@ -84,12 +84,10 @@ const FACILITIES = [
 type TreeNode = {
   slug: string;
   note?: string;
-  /** 非档案的下属单位（司局/部队/法庭/设施），以小盒挂在卡片下方。 */
-  leaves?: string[];
   children?: TreeNode[];
 };
 
-/** 会同设定集确定的世代：大会 → 三线 → 执行/科研/委员会 → 机构/设施。 */
+/** 会同设定集确定的世代：大会 → 三线 → 执行/司法 → 四机构。 */
 const STRUCTURE_TREE: TreeNode[] = [
   {
     slug: "ueg-gov-002",
@@ -98,26 +96,10 @@ const STRUCTURE_TREE: TreeNode[] = [
       {
         slug: "ueg-exe-001",
         note: "最高行政执行",
-        leaves: [
-          "国际合作与救援司",
-          "地下城事务部",
-          "经济规划部",
-          "政治安全事务司",
-          "时区部",
-        ],
         children: [
-          { slug: "ueg-sci-001", children: [{ slug: "ueg-sci-014" }] },
-          {
-            slug: "ueg-asa-001",
-            leaves: [
-              "月球基地",
-              "加蓬联合实验基地",
-              "UEG 飞行控制中心",
-              "领航员空间站",
-            ],
-          },
+          { slug: "ueg-sci-001" },
+          { slug: "ueg-asa-001" },
           { slug: "ueg-com-001" },
-          { slug: "ueg-com-002" },
           { slug: "ueg-sec-011" },
         ],
       },
@@ -126,17 +108,11 @@ const STRUCTURE_TREE: TreeNode[] = [
   {
     slug: "ueg-sec-001",
     note: "安全军事决策",
-    children: [
-      {
-        slug: "ueg-sec-002",
-        leaves: ["全球安全军", "维和部队", "地表守备部队"],
-      },
-    ],
+    children: [{ slug: "ueg-sec-002" }],
   },
   {
     slug: "ueg-jus-001",
     note: "司法独立",
-    leaves: ["区域巡回法庭", "军事法庭"],
   },
 ];
 
@@ -162,15 +138,6 @@ function TreeNodeView({ node }: { node: TreeNode }) {
         {node.note ? <span className="tnode-note">{node.note}</span> : null}
         <span className="tnode-en">{org.en}</span>
       </Link>
-      {node.leaves?.length ? (
-        <div className="tleafbox">
-          {node.leaves.map((leaf) => (
-            <div key={leaf} className="tleaf">
-              {leaf}
-            </div>
-          ))}
-        </div>
-      ) : null}
       {node.children?.length ? (
         <div className="children">
           {node.children.map((item) => (
