@@ -276,13 +276,6 @@ background:var(--primary2)}
 min-width:0}
 .ueg-org-page .branch .org-node h3 {
 font-size: var(--fs-15)}
-.ueg-org-page .branch-sub {
-display:block;
-margin-top:9px;
-color:var(--primary);
-font-size: var(--fs-11)}
-.ueg-org-page .branch-sub:hover {
-color:#e1c8a2}
 .ueg-org-page .sub-divider {
 margin:20px 0 10px;
 text-align:center;

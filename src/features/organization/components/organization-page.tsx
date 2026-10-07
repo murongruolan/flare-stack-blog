@@ -21,17 +21,9 @@ const TYPE_ORDER = [
 ];
 
 const STRUCTURE_BRANCHES = [
-  {
-    slug: "ueg-gov-002",
-    code: "GOV / 02",
-    subs: [] as Array<{ slug: string; label: string }>,
-  },
-  {
-    slug: "ueg-sec-001",
-    code: "SEC / 01",
-    subs: [{ slug: "ueg-sec-002", label: "地球军事委员会" }],
-  },
-  { slug: "ueg-exe-001", code: "EXE / 01", subs: [] },
+  { slug: "ueg-gov-002", code: "GOV / 02" },
+  { slug: "ueg-sec-001", code: "SEC / 01" },
+  { slug: "ueg-exe-001", code: "EXE / 01" },
 ];
 
 /** 与大会三条线并列的独立机关；note 取档案的机构性质。 */
@@ -195,16 +187,6 @@ export function OrganizationPage() {
                     <div className="code">{branch.code}</div>
                     <h3>{org.title}</h3>
                     <div className="sub">{org.en}</div>
-                    {branch.subs.map((sub) => (
-                      <Link
-                        key={sub.slug}
-                        className="branch-sub"
-                        to="/organization/$slug"
-                        params={{ slug: sub.slug }}
-                      >
-                        └ {sub.label}
-                      </Link>
-                    ))}
                   </div>
                 </div>
               );
