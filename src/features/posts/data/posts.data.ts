@@ -69,7 +69,7 @@ async function hydratePublicPosts(
         ? {
             id: assignment.category.id,
             name: assignment.category.name,
-            type: assignment.category.type,
+            streamSlug: assignment.category.streamSlug,
           }
         : null,
     );
@@ -222,7 +222,7 @@ export async function getPostsCursor(
     categoryName?: string;
     uncategorized?: boolean;
     excludePinned?: boolean;
-    categoryType?: (typeof CategoriesTable.$inferSelect)["type"];
+    categoryType?: string;
     categoryNames?: string[];
     excludeCategoryNames?: string[];
   } = {},
@@ -324,7 +324,7 @@ export async function getPostsCursor(
         SELECT 1
         FROM ${CategoriesTable}
         WHERE ${CategoriesTable.id} = ${PostsTable.categoryId}
-          AND ${CategoriesTable.type} = 'policy'
+          AND ${CategoriesTable.streamSlug} = 'policy'
       )`,
     );
   } else if (categoryType === "news") {
@@ -335,7 +335,7 @@ export async function getPostsCursor(
           SELECT 1
           FROM ${CategoriesTable}
           WHERE ${CategoriesTable.id} = ${PostsTable.categoryId}
-            AND ${CategoriesTable.type} = 'news'
+            AND ${CategoriesTable.streamSlug} = 'news'
         )
       )`,
     );

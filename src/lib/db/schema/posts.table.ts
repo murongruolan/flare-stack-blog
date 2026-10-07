@@ -13,12 +13,13 @@ import { createdAt, id, updatedAt } from "./helper";
 export const POST_STATUSES = ["draft", "published"] as const;
 
 /**
- * Category stream type: the category, not the post, decides which public
- * page a post belongs to — news-type categories feed /posts, policy-type
- * ones feed /policy.
+ * Stream slugs the public pages are wired to: news-type categories feed
+ * /posts, policy-type ones feed /policy. The full stream vocabulary lives
+ * in CategoryStreamsTable and is admin-CRUD-able; extra streams don't
+ * surface on any public page until a page starts consuming their slug.
  */
-export const CATEGORY_TYPES = ["news", "policy"] as const;
-export type CategoryType = (typeof CATEGORY_TYPES)[number];
+export const NEWS_STREAM_SLUG = "news";
+export const POLICY_STREAM_SLUG = "policy";
 
 export type PublicPostCover = {
   mediaId: number;
@@ -41,10 +42,19 @@ export type PublicPostSnapshot = {
   cover: PublicPostCover | null;
 };
 
+export const CategoryStreamsTable = sqliteTable("category_streams", {
+  id,
+  name: text().notNull().unique(),
+  slug: text().notNull().unique(),
+  createdAt,
+});
+
 export const CategoriesTable = sqliteTable("categories", {
   id,
   name: text().notNull().unique(),
-  type: text("type", { enum: CATEGORY_TYPES }).notNull().default("news"),
+  streamSlug: text("stream_slug").references(() => CategoryStreamsTable.slug, {
+    onDelete: "set null",
+  }),
   createdAt,
 });
 

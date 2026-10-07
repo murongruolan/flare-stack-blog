@@ -25,9 +25,9 @@ export function CategoriesSkeleton() {
 export function Categories() {
   const { data: allCategories } = useSuspenseQuery(categoriesQueryOptions);
   const [expanded, setExpanded] = useState(false);
-  // 分类类型决定归属：这个侧栏链接到 /posts，只列 news 类分类
+  // 归属决定内容出口：这个侧栏链接到 /posts，只列 news 流分类
   const categories = allCategories.filter(
-    (category) => category.type === "news",
+    (category) => category.streamSlug === "news",
   );
 
   if (categories.length === 0) return null;

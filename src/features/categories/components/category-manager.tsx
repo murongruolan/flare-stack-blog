@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { TaxonomyNameDialog } from "@/components/admin/taxonomy-name-dialog";
@@ -6,13 +6,13 @@ import ConfirmationModal from "@/components/ui/confirmation-modal";
 import { handleORPCError } from "@/lib/orpc/error-handler";
 import { orpc, orpcClient } from "@/lib/orpc";
 import { m } from "@/paraglide/messages";
-
-import type { CategoryType } from "@/lib/db/schema";
+import { StreamManager } from "@/features/categories/components/stream-manager";
 
 export type CategoryEdit = {
   id: number | null;
   name: string;
-  type?: CategoryType;
+  streamSlug?: string | null;
+  streamName?: string | null;
   postCount: number;
   publicPostCount: number;
 };
@@ -29,14 +29,20 @@ export function CategoryManager({
 }) {
   const queryClient = useQueryClient();
   const [name, setName] = useState("");
-  const [type, setType] = useState<CategoryType>("news");
+  const [streamSlug, setStreamSlug] = useState("news");
+  const [streamsOpen, setStreamsOpen] = useState(false);
   const [toDelete, setToDelete] = useState<{ id: number; name: string } | null>(
     null,
   );
+  const streamsQuery = useQuery({
+    ...orpc.categories.admin.streams.list.queryOptions(),
+    enabled: editing !== null,
+  });
+  const streams = streamsQuery.data ?? [];
   useEffect(() => {
     if (editing) {
       setName(editing.name);
-      setType(editing.type ?? "news");
+      setStreamSlug(editing.streamSlug ?? "news");
     }
   }, [editing]);
   const invalidate = () =>
@@ -46,7 +52,7 @@ export function CategoryManager({
       queryClient.invalidateQueries({ queryKey: orpc.posts.admin.list.key() }),
     ]);
   const createMutation = useMutation({
-    mutationFn: (input: { name: string; type: CategoryType }) =>
+    mutationFn: (input: { name: string; streamSlug: string | null }) =>
       orpcClient.categories.admin.create(input),
     onSuccess: async (category) => {
       await invalidate();
@@ -59,20 +65,25 @@ export function CategoryManager({
         defined: {
           CATEGORY_NAME_ALREADY_EXISTS: () =>
             toast.error(m.category_manager_name_exists()),
+          STREAM_NOT_FOUND: () => toast.error(m.stream_unknown_error()),
         },
         fallback: () => toast.error(m.category_manager_unknown_error()),
       }),
   });
   const updateMutation = useMutation({
-    mutationFn: (input: { id: number; name: string; type: CategoryType }) =>
+    mutationFn: (input: {
+      id: number;
+      name: string;
+      streamSlug: string | null;
+    }) =>
       orpcClient.categories.admin.update({
         id: input.id,
-        data: { name: input.name, type: input.type },
+        data: { name: input.name, streamSlug: input.streamSlug },
       }),
     onSuccess: async () => {
       await invalidate();
       onClose();
-      toast.success(m.category_manager_renamed());
+      toast.success(m.category_manager_saved());
     },
     onError: (error) =>
       handleORPCError(error, {
@@ -80,6 +91,7 @@ export function CategoryManager({
           CATEGORY_NAME_ALREADY_EXISTS: () =>
             toast.error(m.category_manager_name_exists()),
           CATEGORY_NOT_FOUND: () => toast.error(m.category_manager_not_found()),
+          STREAM_NOT_FOUND: () => toast.error(m.stream_unknown_error()),
         },
         fallback: () => toast.error(m.category_manager_unknown_error()),
       }),
@@ -100,12 +112,16 @@ export function CategoryManager({
     deleteMutation.isPending;
   const save = () => {
     if (!editing || busy || !name.trim()) return;
+    const nextSlug = streamSlug === "" ? null : streamSlug;
     if (editing.id === null) {
-      createMutation.mutate({ name: name.trim(), type });
-    } else if (name.trim() === editing.name && type === editing.type) {
+      createMutation.mutate({ name: name.trim(), streamSlug: nextSlug });
+    } else if (
+      name.trim() === editing.name &&
+      nextSlug === (editing.streamSlug ?? "news")
+    ) {
       onClose();
     } else {
-      updateMutation.mutate({ id: editing.id, name: name.trim(), type });
+      updateMutation.mutate({ id: editing.id, name: name.trim(), streamSlug: nextSlug });
     }
   };
   return (
@@ -138,17 +154,31 @@ export function CategoryManager({
             : undefined
         }
         extraField={
-          <label className="taxonomy-type-field">
-            <span>{m.category_type_label()}</span>
-            <select
-              value={type}
+          <div className="taxonomy-type-field">
+            <label>
+              <span>{m.category_type_label()}</span>
+              <select
+                value={streamSlug}
+                disabled={busy}
+                onChange={(event) => setStreamSlug(event.target.value)}
+              >
+                {streams.map((stream) => (
+                  <option key={stream.id} value={stream.slug}>
+                    {stream.name}
+                  </option>
+                ))}
+                <option value="">{m.stream_none()}</option>
+              </select>
+            </label>
+            <button
+              type="button"
+              className="taxonomy-type-manage"
               disabled={busy}
-              onChange={(event) => setType(event.target.value as CategoryType)}
+              onClick={() => setStreamsOpen(true)}
             >
-              <option value="news">{m.category_type_news()}</option>
-              <option value="policy">{m.category_type_policy()}</option>
-            </select>
-          </label>
+              {m.stream_manage()}
+            </button>
+          </div>
         }
         fallbackFocus={fallbackFocus}
         onDelete={
@@ -159,6 +189,11 @@ export function CategoryManager({
               }
             : undefined
         }
+      />
+      <StreamManager
+        open={streamsOpen}
+        onClose={() => setStreamsOpen(false)}
+        fallbackFocus={fallbackFocus}
       />
       <ConfirmationModal
         isOpen={toDelete !== null}

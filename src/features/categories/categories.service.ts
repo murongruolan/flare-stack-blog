@@ -2,12 +2,14 @@ import { getCategoryOptions as readCategoryOptions } from "./data/category-optio
 import { invalidate } from "@/features/cache/public-cache";
 import { publicCategoryList } from "@/features/categories/categories.cache";
 import * as CategoryRepo from "@/features/categories/data/categories.data";
+import * as StreamRepo from "@/features/categories/data/category-streams.data";
 import type {
   CreateCategoryInput,
   DeleteCategoryInput,
   GetCategoriesInput,
   UpdateCategoryInput,
 } from "@/features/categories/categories.schema";
+import { NEWS_STREAM_SLUG } from "@/lib/db/schema";
 import { err, ok } from "@/lib/errors";
 
 async function invalidateCategoryRelatedCache(
@@ -60,6 +62,15 @@ export async function getCategories(
   };
 }
 
+export async function resolveStreamSlug(
+  db: DB,
+  streamSlug: string | null | undefined,
+): Promise<{ reason?: "STREAM_NOT_FOUND"; slug: string | null }> {
+  if (streamSlug == null || streamSlug === "") return { slug: null };
+  const exists = await StreamRepo.streamSlugExists(db, streamSlug);
+  return exists ? { slug: streamSlug } : { reason: "STREAM_NOT_FOUND", slug: null };
+}
+
 export const createCategory = async (
   context: DbContext,
   data: CreateCategoryInput,
@@ -68,10 +79,17 @@ export const createCategory = async (
   if (exists) {
     return err({ reason: "CATEGORY_NAME_ALREADY_EXISTS" });
   }
+  const stream = await resolveStreamSlug(
+    context.db,
+    data.streamSlug ?? NEWS_STREAM_SLUG,
+  );
+  if (stream.reason) {
+    return err({ reason: stream.reason });
+  }
 
   const category = await CategoryRepo.insertCategory(context.db, {
     name: data.name,
-    type: data.type ?? "news",
+    streamSlug: stream.slug,
   });
   return ok(category);
 };
@@ -94,15 +112,25 @@ export async function updateCategory(
     }
   }
 
+  let nextStreamSlug = existing.streamSlug;
+  if (data.data.streamSlug !== undefined) {
+    const resolved = await resolveStreamSlug(context.db, data.data.streamSlug);
+    if (resolved.reason) {
+      return err({ reason: resolved.reason });
+    }
+    nextStreamSlug = resolved.slug;
+  }
+
   const affectedPosts = await CategoryRepo.getPublishedPostsByCategoryId(
     context.db,
     data.id,
   );
-  const category = await CategoryRepo.updateCategory(
-    context.db,
-    data.id,
-    data.data,
-  );
+  const category = await CategoryRepo.updateCategory(context.db, data.id, {
+    ...(data.data.name ? { name: data.data.name } : {}),
+    ...(data.data.streamSlug !== undefined
+      ? { streamSlug: nextStreamSlug }
+      : {}),
+  });
 
   context.executionCtx.waitUntil(
     invalidateCategoryRelatedCache(context, affectedPosts),

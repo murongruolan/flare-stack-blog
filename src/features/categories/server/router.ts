@@ -2,11 +2,16 @@ import { z } from "zod";
 import {
   CategoryOptionSchema,
   CreateCategoryInputSchema,
+  CreateStreamInputSchema,
   DeleteCategoryInputSchema,
+  DeleteStreamInputSchema,
   GetCategoriesInputSchema,
+  StreamSchema,
   UpdateCategoryInputSchema,
+  UpdateStreamInputSchema,
 } from "@/features/categories/categories.schema";
 import * as CategoryService from "@/features/categories/categories.service";
+import * as StreamService from "@/features/categories/category-streams.service";
 import { adminProcedure, publicProcedure } from "@/lib/orpc/procedure";
 import { unwrapResult } from "@/lib/orpc/unwrap-result";
 
@@ -16,7 +21,94 @@ const categoryErrors = {
     status: 409,
     message: "Category name already exists.",
   },
+  STREAM_NOT_FOUND: { status: 422, message: "Stream not found." },
 } as const;
+
+const streamErrors = {
+  STREAM_NOT_FOUND: { status: 404, message: "Stream not found." },
+  STREAM_NAME_ALREADY_EXISTS: {
+    status: 409,
+    message: "Stream name already exists.",
+  },
+  STREAM_RESERVED: {
+    status: 409,
+    message: "This stream is wired to a public page and cannot be deleted.",
+  },
+  STREAM_IN_USE: {
+    status: 409,
+    message: "Categories still reference this stream.",
+  },
+} as const;
+
+const streamList = adminProcedure
+  .route({
+    method: "GET",
+    path: "/admin/category-streams",
+    summary: "List category streams",
+    tags: ["Admin Categories"],
+  })
+  .output(z.array(StreamSchema))
+  .handler(({ context }) => StreamService.getStreams(context));
+
+const streamCreate = adminProcedure
+  .errors(streamErrors)
+  .route({
+    method: "POST",
+    path: "/admin/category-streams",
+    summary: "Create a category stream",
+    tags: ["Admin Categories"],
+  })
+  .input(CreateStreamInputSchema)
+  .handler(({ context, input, errors }) =>
+    unwrapResult(StreamService.createStream(context, input), {
+      STREAM_NAME_ALREADY_EXISTS: () => {
+        throw errors.STREAM_NAME_ALREADY_EXISTS();
+      },
+    }),
+  );
+
+const streamUpdate = adminProcedure
+  .errors(streamErrors)
+  .route({
+    method: "PATCH",
+    path: "/admin/category-streams/{id}",
+    summary: "Rename a category stream",
+    tags: ["Admin Categories"],
+  })
+  .input(UpdateStreamInputSchema)
+  .handler(({ context, input, errors }) =>
+    unwrapResult(StreamService.updateStream(context, input), {
+      STREAM_NOT_FOUND: () => {
+        throw errors.STREAM_NOT_FOUND();
+      },
+      STREAM_NAME_ALREADY_EXISTS: () => {
+        throw errors.STREAM_NAME_ALREADY_EXISTS();
+      },
+    }),
+  );
+
+const streamRemove = adminProcedure
+  .errors(streamErrors)
+  .route({
+    method: "DELETE",
+    path: "/admin/category-streams/{id}",
+    summary: "Delete a category stream",
+    tags: ["Admin Categories"],
+  })
+  .input(DeleteStreamInputSchema)
+  .handler(({ context, input, errors }) =>
+    unwrapResult(StreamService.deleteStream(context, input), {
+      STREAM_NOT_FOUND: () => {
+        throw errors.STREAM_NOT_FOUND();
+      },
+      STREAM_RESERVED: () => {
+        throw errors.STREAM_RESERVED();
+      },
+      STREAM_IN_USE: () => {
+        throw errors.STREAM_IN_USE();
+      },
+    }),
+  );
 
 const list = publicProcedure
   .route({
@@ -111,5 +203,11 @@ export default {
     create,
     update,
     remove,
+    streams: {
+      list: streamList,
+      create: streamCreate,
+      update: streamUpdate,
+      remove: streamRemove,
+    },
   },
 };

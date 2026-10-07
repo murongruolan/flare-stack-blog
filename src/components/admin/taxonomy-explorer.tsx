@@ -40,11 +40,8 @@ export function TaxonomyExplorer({
     >
       <span className="taxonomy-nav-name">
         {item.name}
-        {item.kind === "category" && item.type === "policy" ? (
-          <small className="taxonomy-nav-type">
-            {" "}
-            {m.category_type_policy()}
-          </small>
+        {item.kind === "category" && item.streamName ? (
+          <small className="taxonomy-nav-type"> {item.streamName}</small>
         ) : null}
       </span>
       <span className="taxonomy-nav-count">

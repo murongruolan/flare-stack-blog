@@ -9,7 +9,11 @@ import {
   ne,
   sql,
 } from "drizzle-orm";
-import { CategoriesTable, PostsTable } from "@/lib/db/schema";
+import {
+  CategoriesTable,
+  CategoryStreamsTable,
+  PostsTable,
+} from "@/lib/db/schema";
 
 export async function insertCategory(
   db: DB,
@@ -55,12 +59,17 @@ export async function getAllCategoriesWithCount(
     .select({
       id: CategoriesTable.id,
       name: CategoriesTable.name,
-      type: CategoriesTable.type,
+      streamSlug: CategoriesTable.streamSlug,
+      streamName: CategoryStreamsTable.name,
       createdAt: CategoriesTable.createdAt,
       postCount: count(PostsTable.id).as("postCount"),
     })
     .from(CategoriesTable)
     .leftJoin(PostsTable, eq(PostsTable.categoryId, CategoriesTable.id))
+    .leftJoin(
+      CategoryStreamsTable,
+      eq(CategoryStreamsTable.slug, CategoriesTable.streamSlug),
+    )
     .where(publicOnly ? isNotNull(PostsTable.publicSnapshotJson) : undefined)
     .groupBy(CategoriesTable.id)
     .$dynamic();
@@ -94,7 +103,7 @@ export async function countUncategorizedPosts(db: DB, publicOnly = false) {
 export async function updateCategory(
   db: DB,
   id: number,
-  data: { name?: string; type?: (typeof CategoriesTable.$inferSelect)["type"] },
+  data: { name?: string; streamSlug?: string | null },
 ) {
   const [category] = await db
     .update(CategoriesTable)
@@ -122,6 +131,25 @@ export async function getPublishedPostsByCategoryId(
       and(
         isNotNull(PostsTable.publicSnapshotJson),
         eq(PostsTable.categoryId, categoryId),
+      ),
+    );
+}
+
+export async function getPublishedPostsByStreamSlug(
+  db: DB,
+  slug: string,
+) {
+  return await db
+    .select({
+      id: PostsTable.id,
+      slug: PostsTable.publicSlug,
+    })
+    .from(PostsTable)
+    .innerJoin(CategoriesTable, eq(CategoriesTable.id, PostsTable.categoryId))
+    .where(
+      and(
+        isNotNull(PostsTable.publicSnapshotJson),
+        eq(CategoriesTable.streamSlug, slug),
       ),
     );
 }

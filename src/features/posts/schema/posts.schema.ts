@@ -3,7 +3,7 @@ import { z } from "zod";
 import { PublicCategorySchema } from "@/features/categories/categories.schema";
 import { TagSelectSchema } from "@/features/tags/tags.schema";
 import type { PostStatus } from "@/lib/db/schema";
-import { CATEGORY_TYPES, PostsTable } from "@/lib/db/schema";
+import { PostsTable } from "@/lib/db/schema";
 import { NullableJsonContentSchema } from "./json-content.schema";
 
 // Date fields need to accept both Date objects and ISO strings (for JSON serialization)
@@ -143,8 +143,11 @@ export const GetPostsCursorInputSchema = z.object({
   categoryName: PostCategoryNameSchema,
   uncategorized: z.boolean().optional(),
   excludePinned: z.boolean().optional(),
-  /** Stream filter: 'news' posts (plus uncategorized) vs 'policy' posts. */
-  categoryType: z.enum(CATEGORY_TYPES).optional(),
+  /**
+   * Stream filter: categories with this stream slug (plus uncategorized
+   * posts when the slug is 'news'). See NEWS_STREAM_SLUG / POLICY_STREAM_SLUG.
+   */
+  categoryType: z.string().min(1).max(40).optional(),
   categoryNames: z.array(z.string().min(1)).max(10).optional(),
   excludeCategoryNames: z.array(z.string().min(1)).max(10).optional(),
 });

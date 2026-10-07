@@ -20,8 +20,8 @@ it("lists every Category's ID and name in name order without querying Post count
   });
 
   expect(await getCategoryOptions(observedDb)).toEqual([
-    { id: 2, name: "Alpha unused", type: "news" },
-    { id: 1, name: "Zeta unused", type: "news" },
+    { id: 2, name: "Alpha unused", streamSlug: null },
+    { id: 1, name: "Zeta unused", streamSlug: null },
   ]);
   expect(statements).toHaveLength(1);
   expect(statements[0].match(/\bselect\b/gi)).toHaveLength(1);
@@ -55,6 +55,6 @@ it("requires an Admin session and exposes only Category option fields on the HTT
   const response = await request();
   expect(response.status).toBe(200);
   expect(await response.json()).toEqual([
-    { id: 1, name: "Not published yet", type: "news" },
+    { id: 1, name: "Not published yet", streamSlug: null },
   ]);
 });

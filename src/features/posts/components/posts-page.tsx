@@ -50,9 +50,9 @@ export function PostsPage({
 }: PostsPageProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const listRef = useRef<HTMLDivElement>(null);
-  // 分类类型决定归属：新闻页只展示 news 类分类
+  // 归属决定内容出口：新闻页只展示 news 流分类
   const streamCategories = categories.filter(
-    (category) => category.type === "news",
+    (category) => category.streamSlug === "news",
   );
 
   // A filter change resets pagination.

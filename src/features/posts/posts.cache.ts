@@ -122,7 +122,7 @@ export const postsList = defineEntry({
       categoryName,
       uncategorized,
       excludePinned,
-      categoryType: categoryType as "news" | "policy" | undefined,
+      categoryType,
       categoryNames,
       excludeCategoryNames,
     }),

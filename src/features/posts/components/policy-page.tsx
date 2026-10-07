@@ -54,9 +54,9 @@ export function PolicyPage({
 }: PolicyPageProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const [year, setYear] = useState<number | null>(null);
-  // 分类类型决定归属：政策页只展示 policy 类分类
+  // 归属决定内容出口：政策页只展示 policy 流分类
   const streamCategories = categories.filter(
-    (category) => category.type === "policy",
+    (category) => category.streamSlug === "policy",
   );
 
   useEffect(() => {

@@ -397,6 +397,56 @@
             "tags": ["Admin Categories"]
           }
         }
+      },
+      "streams": {
+        "list": {
+          "~orpc": {
+            "errorMap": {},
+            "meta": {},
+            "route": {
+              "method": "GET",
+              "path": "/admin/category-streams",
+              "summary": "List category streams",
+              "tags": ["Admin Categories"]
+            }
+          }
+        },
+        "create": {
+          "~orpc": {
+            "errorMap": {},
+            "meta": {},
+            "route": {
+              "method": "POST",
+              "path": "/admin/category-streams",
+              "summary": "Create a category stream",
+              "tags": ["Admin Categories"]
+            }
+          }
+        },
+        "update": {
+          "~orpc": {
+            "errorMap": {},
+            "meta": {},
+            "route": {
+              "method": "PATCH",
+              "path": "/admin/category-streams/{id}",
+              "summary": "Rename a category stream",
+              "tags": ["Admin Categories"]
+            }
+          }
+        },
+        "remove": {
+          "~orpc": {
+            "errorMap": {},
+            "meta": {},
+            "route": {
+              "method": "DELETE",
+              "path": "/admin/category-streams/{id}",
+              "summary": "Delete a category stream",
+              "tags": ["Admin Categories"]
+            }
+          }
+        }
       }
     }
   },

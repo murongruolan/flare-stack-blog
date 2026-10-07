@@ -531,6 +531,14 @@
   font-size: 14px;
   color: var(--fuwari-fg-50);
 }
+.taxonomy-type-field label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
 .taxonomy-type-field select {
   min-height: 40px;
   padding: 8px 12px;
@@ -543,7 +551,76 @@
 .taxonomy-type-field select:focus {
   border-color: var(--fuwari-primary);
 }
+.taxonomy-type-manage {
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--fuwari-input-border);
+  font-size: 13px;
+  color: var(--fuwari-fg-50);
+}
+.taxonomy-type-manage:hover {
+  color: var(--fuwari-primary);
+  border-color: var(--fuwari-primary);
+}
 .taxonomy-nav-type {
   color: var(--fuwari-primary);
   font-size: 11px;
+}
+.stream-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 14px 0 0;
+  max-height: 280px;
+  overflow-y: auto;
+}
+.stream-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.stream-row .taxonomy-delete {
+  margin: 0 0 0 auto;
+  font-size: 13px;
+}
+.stream-row .stream-name {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+  padding: 6px 4px;
+  text-align: left;
+  font-size: 14px;
+}
+.stream-row .stream-name small {
+  color: var(--fuwari-fg-50);
+  font-size: 12px;
+}
+.stream-row form {
+  flex: 1;
+}
+.stream-row form input {
+  width: 100%;
+  min-height: 36px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: var(--fuwari-input-bg);
+  border: 1px solid var(--fuwari-input-border);
+  font-size: 14px;
+  outline: none;
+}
+.stream-add {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+.stream-add input {
+  flex: 1;
+  min-height: 40px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: var(--fuwari-input-bg);
+  border: 1px solid var(--fuwari-input-border);
+  font-size: 14px;
+  outline: none;
 }

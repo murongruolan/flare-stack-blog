@@ -43,7 +43,7 @@ describe("Category", () => {
     expect(listed.items[0]?.category).toEqual({
       id: category.id,
       name: "技术",
-      type: "news",
+      streamSlug: "news",
     });
 
     const uncategorized = await PostService.getPostsCursor(publicContext, {
@@ -138,7 +138,7 @@ describe("Category", () => {
     expect(post?.category).toEqual({
       id: category.id,
       name: category.name,
-      type: "news",
+      streamSlug: "news",
     });
     expect(post?.tags?.map((item) => item.id)).toEqual([tag.id]);
     expect(

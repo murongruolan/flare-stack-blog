@@ -1,4 +1,3 @@
-import type { CategoryType } from "@/lib/db/schema";
 import type { AdminTaxonomyFilter } from "@/features/posts/schema/posts.schema";
 import type { TaxonomyState } from "./taxonomy-state";
 
@@ -8,7 +7,11 @@ type EntryCounts = {
   publicPostCount: number;
 };
 
-type CountedItem = EntryCounts & { id: number; type?: CategoryType };
+type CountedItem = EntryCounts & {
+  id: number;
+  streamSlug?: string | null;
+  streamName?: string | null;
+};
 type NamedEntry = CountedItem & { kind: "category" | "tag" };
 type UncategorizedEntry = EntryCounts & { kind: "uncategorized"; id: null };
 

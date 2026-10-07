@@ -14,7 +14,7 @@ export function postsInfiniteQueryOptions(
     tagName?: string;
     categoryName?: string;
     uncategorized?: boolean;
-    categoryType?: "news" | "policy";
+    categoryType?: string;
     limit?: number;
   } = {},
 ) {

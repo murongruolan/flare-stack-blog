@@ -6,7 +6,7 @@ export async function getCategoryOptions(db: DB) {
     .select({
       id: CategoriesTable.id,
       name: CategoriesTable.name,
-      type: CategoriesTable.type,
+      streamSlug: CategoriesTable.streamSlug,
     })
     .from(CategoriesTable)
     .orderBy(asc(CategoriesTable.name));
