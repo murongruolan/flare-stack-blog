@@ -642,9 +642,22 @@ margin-top:14px}
 .ueg-org-page .cell:before,
 .ueg-org-page .cell:after {
 display:none}
-.ueg-org-page .gen-4 .cell {
+/* :nth-child(n) keeps the (0,4,0) specificity of the span rules above so this
+   reset actually wins — a plain `.cell` selector loses to :nth-child(1..4). */
+.ueg-org-page .gen-2 .cell:nth-child(n),
+.ueg-org-page .gen-3 .cell:nth-child(n),
+.ueg-org-page .gen-4 .cell:nth-child(n) {
 grid-column:auto}
+.ueg-org-page .cell-empty {
+display:none}
 .ueg-org-page .tnode,
 .ueg-org-page .tnode-root {
 width:100%}
+.ueg-org-page .tnode-code,
+.ueg-org-page .tnode-title {
+font-size: var(--fs-13)}
+.ueg-org-page .tnode-note {
+font-size: var(--fs-9)}
+.ueg-org-page .tnode-en {
+font-size: var(--fs-10)}
 }
