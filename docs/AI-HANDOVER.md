@@ -351,6 +351,7 @@ SEO/协议路由：`rss[.]xml.ts`、`atom[.]xml.ts`、`feed[.]json.ts`、`sitema
 - 整站缩放改 html font-size 即可。例外（不纳入令牌）：邮件模板（内联 px 是邮件客户端要求）、后台 admin 的 text-[11px] 任意值。
 - UEG 配色变量（--accent/--primary2/--title/--muted/--border2 等）在各 ueg-*.css 与 styles.css 定义。
 - 各页 H1 尺寸是逐页设计过的（45/40/35/34/32/28…），用户未要求合并档位，别"顺手统一"。
+- **区块标题的英文标签统一 `--fs-11`**（`.ueg-org-page .section-head .en`、`.ueg-about-page .section-head .en`、`.ueg-homev2-page .v2-section-en`）。原始设计稿 `preview-*.html` 里是 **8px**，用户明确说太小（"外国佬也看不清楚"），2026-10 三处一起提到 11px——**别照设计稿改回 8px/10px**。
 
 ---
 
