@@ -81,100 +81,62 @@ const FACILITIES = [
 
 // ==================== 组织架构树（依据设定集） ====================
 
-type TreeNode =
-  | {
-      kind: "org";
-      slug: string;
-      note?: string;
-      children?: TreeNode[];
-    }
-  | { kind: "leaf"; label: string }
-  | { kind: "group"; label: string; en: string; items: TreeNode[] };
+type TreeNode = {
+  slug: string;
+  note?: string;
+  /** 非档案的下属单位（司局/部队/法庭/设施），以小盒挂在卡片下方。 */
+  leaves?: string[];
+  children?: TreeNode[];
+};
 
-/** 会同设定集确定的层级：大会 → 三线 → 司局/科研/委员会。 */
+/** 会同设定集确定的世代：大会 → 三线 → 执行/科研/委员会 → 机构/设施。 */
 const STRUCTURE_TREE: TreeNode[] = [
   {
-    kind: "org",
     slug: "ueg-gov-002",
     note: "常设行政决策",
     children: [
       {
-        kind: "org",
         slug: "ueg-exe-001",
         note: "最高行政执行",
+        leaves: [
+          "国际合作与救援司",
+          "地下城事务部",
+          "经济规划部",
+          "政治安全事务司",
+          "时区部",
+        ],
         children: [
+          { slug: "ueg-sci-001", children: [{ slug: "ueg-sci-014" }] },
           {
-            kind: "group",
-            label: "行政司局",
-            en: "BUREAUS",
-            items: [
-              { kind: "leaf", label: "国际合作与救援司" },
-              { kind: "leaf", label: "地下城事务部" },
-              { kind: "leaf", label: "经济规划部" },
-              { kind: "leaf", label: "政治安全事务司" },
-              { kind: "leaf", label: "时区部" },
+            slug: "ueg-asa-001",
+            leaves: [
+              "月球基地",
+              "加蓬联合实验基地",
+              "UEG 飞行控制中心",
+              "领航员空间站",
             ],
           },
-          {
-            kind: "group",
-            label: "直属科研机构",
-            en: "RESEARCH BODIES",
-            items: [
-              {
-                kind: "org",
-                slug: "ueg-sci-001",
-                children: [{ kind: "org", slug: "ueg-sci-014" }],
-              },
-              {
-                kind: "org",
-                slug: "ueg-asa-001",
-                children: [
-                  { kind: "leaf", label: "月球基地" },
-                  { kind: "leaf", label: "加蓬联合实验基地" },
-                  { kind: "leaf", label: "UEG 飞行控制中心" },
-                  { kind: "leaf", label: "领航员空间站" },
-                ],
-              },
-            ],
-          },
-          {
-            kind: "group",
-            label: "专门委员会",
-            en: "COMMITTEES",
-            items: [
-              { kind: "org", slug: "ueg-com-001" },
-              { kind: "org", slug: "ueg-com-002" },
-              { kind: "org", slug: "ueg-sec-011" },
-            ],
-          },
+          { slug: "ueg-com-001" },
+          { slug: "ueg-com-002" },
+          { slug: "ueg-sec-011" },
         ],
       },
     ],
   },
   {
-    kind: "org",
     slug: "ueg-sec-001",
     note: "安全军事决策",
     children: [
       {
-        kind: "org",
         slug: "ueg-sec-002",
-        children: [
-          { kind: "leaf", label: "全球安全军" },
-          { kind: "leaf", label: "维和部队" },
-          { kind: "leaf", label: "地表守备部队" },
-        ],
+        leaves: ["全球安全军", "维和部队", "地表守备部队"],
       },
     ],
   },
   {
-    kind: "org",
     slug: "ueg-jus-001",
     note: "司法独立",
-    children: [
-      { kind: "leaf", label: "区域巡回法庭" },
-      { kind: "leaf", label: "军事法庭" },
-    ],
+    leaves: ["区域巡回法庭", "军事法庭"],
   },
 ];
 
@@ -186,23 +148,6 @@ function shortCode(code: string): string {
 }
 
 function TreeNodeView({ node }: { node: TreeNode }) {
-  if (node.kind === "leaf") {
-    return <div className="tleaf">{node.label}</div>;
-  }
-  if (node.kind === "group") {
-    return (
-      <div className="tgroup">
-        <div className="tgroup-label">
-          {node.label} <span>{node.en}</span>
-        </div>
-        <div className="tchildren">
-          {node.items.map((item, index) => (
-            <TreeNodeView key={index} node={item} />
-          ))}
-        </div>
-      </div>
-    );
-  }
   const org = getOrganization(node.slug);
   if (!org) return null;
   return (
@@ -214,15 +159,22 @@ function TreeNodeView({ node }: { node: TreeNode }) {
       >
         <span className="tnode-code">{shortCode(org.code)}</span>
         <span className="tnode-title">{org.title}</span>
-        {node.note ? (
-          <span className="tnode-note">{node.note}</span>
-        ) : null}
+        {node.note ? <span className="tnode-note">{node.note}</span> : null}
         <span className="tnode-en">{org.en}</span>
       </Link>
-      {node.children ? (
-        <div className="tchildren">
-          {node.children.map((item, index) => (
-            <TreeNodeView key={index} node={item} />
+      {node.leaves?.length ? (
+        <div className="tleafbox">
+          {node.leaves.map((leaf) => (
+            <div key={leaf} className="tleaf">
+              {leaf}
+            </div>
+          ))}
+        </div>
+      ) : null}
+      {node.children?.length ? (
+        <div className="children">
+          {node.children.map((item) => (
+            <TreeNodeView key={item.slug} node={item} />
           ))}
         </div>
       ) : null}
@@ -320,58 +272,26 @@ export function OrganizationPage() {
         <section className="section">
           <div className="org-tree">
             {root ? (
-              <>
-                <div className="org-root">
-                  <Link
-                    className="tnode tnode-center"
-                    to="/organization/$slug"
-                    params={{ slug: root.slug }}
-                  >
-                    <span className="tnode-code">{shortCode(root.code)}</span>
-                    <span className="tnode-title">{root.title}</span>
-                    <span className="tnode-en">{root.en}</span>
-                  </Link>
+              <div className="torg">
+                <Link
+                  className="tnode tnode-root"
+                  to="/organization/$slug"
+                  params={{ slug: root.slug }}
+                >
+                  <span className="tnode-code">{shortCode(root.code)}</span>
+                  <span className="tnode-title">{root.title}</span>
+                  <span className="tnode-en">{root.en}</span>
+                </Link>
+                <div className="children">
+                  {STRUCTURE_TREE.map((node) => (
+                    <TreeNodeView key={node.slug} node={node} />
+                  ))}
                 </div>
-
-                <div className="org-stem" />
-
-                <div className="org-branches">
-                  {STRUCTURE_TREE.map((node, index) => {
-                    if (node.kind !== "org") return null;
-                    const org = getOrganization(node.slug);
-                    if (!org) return null;
-                    return (
-                      <div key={index} className="branch-col">
-                        <Link
-                          className="tnode tnode-center"
-                          to="/organization/$slug"
-                          params={{ slug: org.slug }}
-                        >
-                          <span className="tnode-code">
-                            {shortCode(org.code)}
-                          </span>
-                          <span className="tnode-title">{org.title}</span>
-                          {node.note ? (
-                            <span className="tnode-note">{node.note}</span>
-                          ) : null}
-                          <span className="tnode-en">{org.en}</span>
-                        </Link>
-                        {node.children ? (
-                          <div className="tchildren">
-                            {node.children.map((item, i) => (
-                              <TreeNodeView key={i} node={item} />
-                            ))}
-                          </div>
-                        ) : null}
-                      </div>
-                    );
-                  })}
-                </div>
-              </>
+              </div>
             ) : null}
           </div>
         </section>
-      ) : (
+            ) : (
         <>
           <div className="toolbar">
             <button
