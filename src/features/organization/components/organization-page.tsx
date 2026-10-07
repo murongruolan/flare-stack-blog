@@ -194,7 +194,7 @@ export function OrganizationPage() {
                   <div className="org-node">
                     <div className="code">{branch.code}</div>
                     <h3>{org.title}</h3>
-                    <div className="branch-desc">{org.summary}</div>
+                    <div className="sub">{org.en}</div>
                     {branch.subs.map((sub) => (
                       <Link
                         key={sub.slug}
@@ -205,13 +205,6 @@ export function OrganizationPage() {
                         └ {sub.label}
                       </Link>
                     ))}
-                    <Link
-                      className="branch-link"
-                      to="/organization/$slug"
-                      params={{ slug: branch.slug }}
-                    >
-                      查看机构 <b>→</b>
-                    </Link>
                   </div>
                 </div>
               );
