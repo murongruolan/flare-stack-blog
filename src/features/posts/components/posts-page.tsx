@@ -50,6 +50,10 @@ export function PostsPage({
 }: PostsPageProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const listRef = useRef<HTMLDivElement>(null);
+  // 分类类型决定归属：新闻页只展示 news 类分类
+  const streamCategories = categories.filter(
+    (category) => category.type === "news",
+  );
 
   // A filter change resets pagination.
   useEffect(() => {
@@ -98,7 +102,7 @@ export function PostsPage({
         >
           全部
         </button>
-        {categories.map((category) => (
+        {streamCategories.map((category) => (
           <button
             key={category.id}
             type="button"

@@ -1,6 +1,6 @@
 import { ClientOnly } from "@tanstack/react-router";
 import { X } from "lucide-react";
-import { useRef } from "react";
+import { useRef, type ReactNode } from "react";
 import { FuwariModal } from "@/components/ui/fuwari-modal";
 import { m } from "@/paraglide/messages";
 
@@ -17,6 +17,7 @@ export function TaxonomyNameDialog({
   submitLabel = m.category_manager_save(),
   maxLength,
   fallbackFocus,
+  extraField,
 }: {
   open: boolean;
   title: string;
@@ -30,6 +31,8 @@ export function TaxonomyNameDialog({
   submitLabel?: string;
   maxLength?: number;
   fallbackFocus?: () => HTMLElement | null;
+  /** Optional secondary field (e.g. category stream type) under the name input. */
+  extraField?: ReactNode;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   return (
@@ -70,6 +73,7 @@ export function TaxonomyNameDialog({
             onChange={(event) => onNameChange(event.target.value)}
             autoComplete="off"
           />
+          {extraField}
           <footer>
             {onDelete ? (
               <button

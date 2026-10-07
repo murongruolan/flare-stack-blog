@@ -73,6 +73,9 @@ export const postsList = defineEntry({
     tagName,
     categoryName,
     uncategorized,
+    categoryType,
+    categoryNames,
+    excludeCategoryNames,
   }: {
     limit: number;
     cursor: number;
@@ -80,6 +83,9 @@ export const postsList = defineEntry({
     categoryName?: string;
     uncategorized?: boolean;
     excludePinned?: boolean;
+    categoryType?: string;
+    categoryNames?: string[];
+    excludeCategoryNames?: string[];
   }) => [
     "posts",
     "list",
@@ -87,13 +93,26 @@ export const postsList = defineEntry({
     cursor,
     tagName ?? "all-tags",
     uncategorized ? "uncategorized" : (categoryName ?? "all-categories"),
+    categoryType ?? "all-types",
+    categoryNames?.join("|") ?? "no-category-names",
+    excludeCategoryNames?.join("|") ?? "no-excluded-category-names",
   ],
   schema: PostListResponseSchema,
   ttl: "7d",
   invalidatedBy: POST_PUBLIC_REASONS,
   load: (
     context,
-    { limit, cursor, tagName, categoryName, uncategorized, excludePinned },
+    {
+      limit,
+      cursor,
+      tagName,
+      categoryName,
+      uncategorized,
+      excludePinned,
+      categoryType,
+      categoryNames,
+      excludeCategoryNames,
+    },
   ) =>
     PostRepo.getPostsCursor(context.db, {
       cursor,
@@ -103,6 +122,9 @@ export const postsList = defineEntry({
       categoryName,
       uncategorized,
       excludePinned,
+      categoryType: categoryType as "news" | "policy" | undefined,
+      categoryNames,
+      excludeCategoryNames,
     }),
 });
 

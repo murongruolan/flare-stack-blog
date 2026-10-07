@@ -34,7 +34,7 @@ export function mapSnapshotToPublicPost(
     publicSnapshotJson: PublicPostSnapshot | null;
   },
   tags: Array<Tag> = [],
-  category: { id: number; name: string } | null = null,
+  category: { id: number; name: string; type: "news" | "policy" } | null = null,
 ): PostItem | null {
   const snapshot = row.publicSnapshotJson;
   if (!snapshot) return null;

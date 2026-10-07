@@ -6,7 +6,11 @@ import { siteDomainQuery } from "@/features/config/queries";
 import { engineDataSourcesQuery } from "@/features/engines/queries";
 import { HomePage } from "@/features/posts/components/home-page";
 import { HomePageSkeleton } from "@/features/posts/components/home-page-skeleton";
-import { homePostsQuery } from "@/features/posts/queries";
+import {
+  dynamicsPostsQuery,
+  homePostsQuery,
+  noticePostsQuery,
+} from "@/features/posts/queries";
 import { buildCanonicalUrl, canonicalLink } from "@/lib/seo";
 
 export const Route = createFileRoute("/_public/")({
@@ -24,6 +28,8 @@ export const Route = createFileRoute("/_public/")({
     const [posts, domain] = await Promise.all([
       context.queryClient.ensureQueryData(homePostsQuery(deps.page)),
       context.queryClient.ensureQueryData(siteDomainQuery),
+      context.queryClient.ensureQueryData(noticePostsQuery()),
+      context.queryClient.ensureQueryData(dynamicsPostsQuery()),
     ]);
     // 数据源设置仅一行 D1 读取，随页面 SSR 预热，组件侧 useSuspenseQuery 不再发请求
     await context.queryClient.ensureQueryData(engineDataSourcesQuery);
@@ -57,12 +63,13 @@ export const Route = createFileRoute("/_public/")({
 });
 
 function HomeRoute() {
-  const { page = 1 } = Route.useSearch();
-  const { data } = useSuspenseQuery(homePostsQuery(page));
   const { data: dataSources } = useSuspenseQuery(engineDataSourcesQuery);
+  const { data: notices } = useSuspenseQuery(noticePostsQuery());
+  const { data: dynamics } = useSuspenseQuery(dynamicsPostsQuery());
   return (
     <HomePage
-      posts={data.items}
+      notices={notices.items}
+      dynamics={dynamics.items}
       engineDataUrl={dataSources.dataUrl}
       engineModelUrl={dataSources.modelUrl}
     />

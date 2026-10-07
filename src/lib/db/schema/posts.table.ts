@@ -12,6 +12,14 @@ import { createdAt, id, updatedAt } from "./helper";
 
 export const POST_STATUSES = ["draft", "published"] as const;
 
+/**
+ * Category stream type: the category, not the post, decides which public
+ * page a post belongs to — news-type categories feed /posts, policy-type
+ * ones feed /policy.
+ */
+export const CATEGORY_TYPES = ["news", "policy"] as const;
+export type CategoryType = (typeof CATEGORY_TYPES)[number];
+
 export type PublicPostCover = {
   mediaId: number;
   key: string;
@@ -36,6 +44,7 @@ export type PublicPostSnapshot = {
 export const CategoriesTable = sqliteTable("categories", {
   id,
   name: text().notNull().unique(),
+  type: text("type", { enum: CATEGORY_TYPES }).notNull().default("news"),
   createdAt,
 });
 

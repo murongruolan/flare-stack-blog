@@ -45,6 +45,7 @@ export const Route = createFileRoute("/_public/posts")({
           tagName: deps.tagName,
           categoryName: deps.categoryName,
           uncategorized: deps.uncategorized,
+          categoryType: "news",
           limit: POSTS_PER_PAGE,
         }),
       ),
@@ -90,6 +91,7 @@ function RouteComponent() {
         tagName: search.tagName,
         categoryName: search.categoryName,
         uncategorized: search.uncategorized,
+        categoryType: "news",
         limit: POSTS_PER_PAGE,
       }),
     );

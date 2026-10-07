@@ -14,6 +14,7 @@ export function postsInfiniteQueryOptions(
     tagName?: string;
     categoryName?: string;
     uncategorized?: boolean;
+    categoryType?: "news" | "policy";
     limit?: number;
   } = {},
 ) {
@@ -28,9 +29,28 @@ export function postsInfiniteQueryOptions(
       tagName,
       categoryName: uncategorized ? undefined : categoryName,
       uncategorized: uncategorized || undefined,
+      categoryType: filters.categoryType,
     }),
     initialPageParam: undefined as number | undefined,
     getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
+  });
+}
+
+/**
+ * 通告分类：首页「最新通告」栏只从这里取。分类是后台数据，这里按名匹配；
+ * 改名需同步此常量。
+ */
+export const NOTICE_CATEGORY_NAMES = ["政府公告", "紧急通告"];
+
+export function noticePostsQuery(limit = 5) {
+  return orpc.posts.list.queryOptions({
+    input: { limit, categoryNames: NOTICE_CATEGORY_NAMES },
+  });
+}
+
+export function dynamicsPostsQuery(limit = 4) {
+  return orpc.posts.list.queryOptions({
+    input: { limit, excludeCategoryNames: NOTICE_CATEGORY_NAMES },
   });
 }
 

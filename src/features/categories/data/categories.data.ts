@@ -55,6 +55,7 @@ export async function getAllCategoriesWithCount(
     .select({
       id: CategoriesTable.id,
       name: CategoriesTable.name,
+      type: CategoriesTable.type,
       createdAt: CategoriesTable.createdAt,
       postCount: count(PostsTable.id).as("postCount"),
     })
@@ -93,7 +94,7 @@ export async function countUncategorizedPosts(db: DB, publicOnly = false) {
 export async function updateCategory(
   db: DB,
   id: number,
-  data: { name?: string },
+  data: { name?: string; type?: (typeof CategoriesTable.$inferSelect)["type"] },
 ) {
   const [category] = await db
     .update(CategoriesTable)

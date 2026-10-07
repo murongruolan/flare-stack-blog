@@ -43,6 +43,7 @@ describe("Category", () => {
     expect(listed.items[0]?.category).toEqual({
       id: category.id,
       name: "技术",
+      type: "news",
     });
 
     const uncategorized = await PostService.getPostsCursor(publicContext, {
@@ -134,7 +135,11 @@ describe("Category", () => {
       slug: "shared-assignments",
     });
     expect(post?.title).toBe("Public title");
-    expect(post?.category).toEqual({ id: category.id, name: category.name });
+    expect(post?.category).toEqual({
+      id: category.id,
+      name: category.name,
+      type: "news",
+    });
     expect(post?.tags?.map((item) => item.id)).toEqual([tag.id]);
     expect(
       await CategoryService.getPublicCategories(createTestContext()),

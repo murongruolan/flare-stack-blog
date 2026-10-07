@@ -430,11 +430,13 @@ function NewsCardV2({ post }: { post: PostItem }) {
 /* ---------- 页面组装 ---------- */
 
 export function HomePage({
-  posts,
+  notices,
+  dynamics,
   engineDataUrl,
   engineModelUrl,
 }: {
-  posts: Array<PostItem>;
+  notices: Array<PostItem>;
+  dynamics: Array<PostItem>;
   engineDataUrl: string;
   engineModelUrl: string;
 }) {
@@ -443,13 +445,6 @@ export function HomePage({
     siteConfig.theme.fuwari.homeBg,
     PUBLIC_IMAGE_WIDTH.banner,
   );
-
-  // 通告：置顶优先取 5 条；新闻：其余取前 4 条
-  const noticePosts = [...posts]
-    .sort((a, b) => Number(Boolean(b.pinnedAt)) - Number(Boolean(a.pinnedAt)))
-    .slice(0, 5);
-  const noticeSlugs = new Set(noticePosts.map((post) => post.slug));
-  const dynamics = posts.filter((post) => !noticeSlugs.has(post.slug)).slice(0, 4);
 
   const heroImages = PORTAL_MEDIA.hero.map((_, index) => heroImage(index));
   const featureImages = PORTAL_MEDIA.feature.map((key) =>
@@ -460,7 +455,7 @@ export function HomePage({
     <div className="ueg-homev2-page">
       <div className="v2-hero-row">
         <HeroV2 images={heroImages} fallbackImage={fallbackImage} />
-        <NoticePanelV2 notices={noticePosts} />
+        <NoticePanelV2 notices={notices} />
       </div>
 
       <MissionStrip />

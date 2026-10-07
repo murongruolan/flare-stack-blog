@@ -28,6 +28,7 @@ export const Route = createFileRoute("/_public/policy")({
       context.queryClient.prefetchInfiniteQuery(
         postsInfiniteQueryOptions({
           categoryName: deps.categoryName,
+          categoryType: "policy",
           limit: POLICY_PER_PAGE,
         }),
       ),
@@ -62,6 +63,7 @@ function RouteComponent() {
     useSuspenseInfiniteQuery(
       postsInfiniteQueryOptions({
         categoryName: search.categoryName,
+        categoryType: "policy",
         limit: POLICY_PER_PAGE,
       }),
     );

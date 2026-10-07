@@ -66,7 +66,11 @@ async function hydratePublicPosts(
       row,
       assignment?.postTags.map(({ tag }) => tag) ?? [],
       assignment?.category
-        ? { id: assignment.category.id, name: assignment.category.name }
+        ? {
+            id: assignment.category.id,
+            name: assignment.category.name,
+            type: assignment.category.type,
+          }
         : null,
     );
     return item ? [item] : [];
@@ -218,6 +222,9 @@ export async function getPostsCursor(
     categoryName?: string;
     uncategorized?: boolean;
     excludePinned?: boolean;
+    categoryType?: (typeof CategoriesTable.$inferSelect)["type"];
+    categoryNames?: string[];
+    excludeCategoryNames?: string[];
   } = {},
 ): Promise<{
   items: Array<PostItem>;
@@ -231,6 +238,9 @@ export async function getPostsCursor(
     categoryName,
     uncategorized,
     excludePinned,
+    categoryType,
+    categoryNames,
+    excludeCategoryNames,
   } = options;
 
   const conditions = [];
@@ -281,6 +291,52 @@ export async function getPostsCursor(
         FROM ${CategoriesTable}
         WHERE ${CategoriesTable.id} = ${PostsTable.categoryId}
           AND ${CategoriesTable.name} = ${categoryName}
+      )`,
+    );
+  }
+
+  if (categoryNames?.length) {
+    conditions.push(
+      sql`EXISTS (
+        SELECT 1
+        FROM ${CategoriesTable}
+        WHERE ${CategoriesTable.id} = ${PostsTable.categoryId}
+          AND ${inArray(CategoriesTable.name, categoryNames)}
+      )`,
+    );
+  }
+
+  if (excludeCategoryNames?.length) {
+    // Uncategorized posts are not notices, so they stay in the stream.
+    conditions.push(
+      sql`NOT EXISTS (
+        SELECT 1
+        FROM ${CategoriesTable}
+        WHERE ${CategoriesTable.id} = ${PostsTable.categoryId}
+          AND ${inArray(CategoriesTable.name, excludeCategoryNames)}
+      )`,
+    );
+  }
+
+  if (categoryType === "policy") {
+    conditions.push(
+      sql`EXISTS (
+        SELECT 1
+        FROM ${CategoriesTable}
+        WHERE ${CategoriesTable.id} = ${PostsTable.categoryId}
+          AND ${CategoriesTable.type} = 'policy'
+      )`,
+    );
+  } else if (categoryType === "news") {
+    conditions.push(
+      sql`(
+        ${PostsTable.categoryId} IS NULL
+        OR EXISTS (
+          SELECT 1
+          FROM ${CategoriesTable}
+          WHERE ${CategoriesTable.id} = ${PostsTable.categoryId}
+            AND ${CategoriesTable.type} = 'news'
+        )
       )`,
     );
   }

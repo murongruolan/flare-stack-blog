@@ -38,7 +38,15 @@ export function TaxonomyExplorer({
       aria-pressed={selected?.kind === item.kind && selected?.id === item.id}
       onClick={() => onChoose(item.kind, item.id ?? undefined)}
     >
-      <span className="taxonomy-nav-name">{item.name}</span>
+      <span className="taxonomy-nav-name">
+        {item.name}
+        {item.kind === "category" && item.type === "policy" ? (
+          <small className="taxonomy-nav-type">
+            {" "}
+            {m.category_type_policy()}
+          </small>
+        ) : null}
+      </span>
       <span className="taxonomy-nav-count">
         {item.postCount}
         {item.publicPostCount > 0 && item.postCount === 0 ? (

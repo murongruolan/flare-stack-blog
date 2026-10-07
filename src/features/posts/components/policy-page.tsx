@@ -54,6 +54,10 @@ export function PolicyPage({
 }: PolicyPageProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const [year, setYear] = useState<number | null>(null);
+  // 分类类型决定归属：政策页只展示 policy 类分类
+  const streamCategories = categories.filter(
+    (category) => category.type === "policy",
+  );
 
   useEffect(() => {
     setCurrentPage(1);
@@ -112,7 +116,7 @@ export function PolicyPage({
         >
           全部
         </button>
-        {categories.map((category) => (
+        {streamCategories.map((category) => (
           <button
             key={category.id}
             type="button"
@@ -260,7 +264,7 @@ export function PolicyPage({
               >
                 全部文件
               </button>
-              {categories.map((category) => (
+              {streamCategories.map((category) => (
                 <button
                   key={category.id}
                   type="button"

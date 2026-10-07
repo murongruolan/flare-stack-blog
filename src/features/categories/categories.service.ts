@@ -71,6 +71,7 @@ export const createCategory = async (
 
   const category = await CategoryRepo.insertCategory(context.db, {
     name: data.name,
+    type: data.type ?? "news",
   });
   return ok(category);
 };

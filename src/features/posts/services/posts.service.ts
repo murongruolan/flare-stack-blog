@@ -172,6 +172,9 @@ export async function getPostsCursor(
     categoryName,
     uncategorized: data.uncategorized,
     excludePinned: data.excludePinned,
+    categoryType: data.categoryType,
+    categoryNames: data.categoryNames,
+    excludeCategoryNames: data.excludeCategoryNames,
   });
 }
 

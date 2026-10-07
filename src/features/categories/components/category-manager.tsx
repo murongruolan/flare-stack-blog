@@ -7,9 +7,12 @@ import { handleORPCError } from "@/lib/orpc/error-handler";
 import { orpc, orpcClient } from "@/lib/orpc";
 import { m } from "@/paraglide/messages";
 
+import type { CategoryType } from "@/lib/db/schema";
+
 export type CategoryEdit = {
   id: number | null;
   name: string;
+  type?: CategoryType;
   postCount: number;
   publicPostCount: number;
 };
@@ -26,11 +29,15 @@ export function CategoryManager({
 }) {
   const queryClient = useQueryClient();
   const [name, setName] = useState("");
+  const [type, setType] = useState<CategoryType>("news");
   const [toDelete, setToDelete] = useState<{ id: number; name: string } | null>(
     null,
   );
   useEffect(() => {
-    if (editing) setName(editing.name);
+    if (editing) {
+      setName(editing.name);
+      setType(editing.type ?? "news");
+    }
   }, [editing]);
   const invalidate = () =>
     Promise.all([
@@ -39,8 +46,8 @@ export function CategoryManager({
       queryClient.invalidateQueries({ queryKey: orpc.posts.admin.list.key() }),
     ]);
   const createMutation = useMutation({
-    mutationFn: (nextName: string) =>
-      orpcClient.categories.admin.create({ name: nextName }),
+    mutationFn: (input: { name: string; type: CategoryType }) =>
+      orpcClient.categories.admin.create(input),
     onSuccess: async (category) => {
       await invalidate();
       onClose();
@@ -57,10 +64,10 @@ export function CategoryManager({
       }),
   });
   const updateMutation = useMutation({
-    mutationFn: (input: { id: number; name: string }) =>
+    mutationFn: (input: { id: number; name: string; type: CategoryType }) =>
       orpcClient.categories.admin.update({
         id: input.id,
-        data: { name: input.name },
+        data: { name: input.name, type: input.type },
       }),
     onSuccess: async () => {
       await invalidate();
@@ -93,9 +100,13 @@ export function CategoryManager({
     deleteMutation.isPending;
   const save = () => {
     if (!editing || busy || !name.trim()) return;
-    if (editing.id === null) createMutation.mutate(name.trim());
-    else if (name.trim() === editing.name) onClose();
-    else updateMutation.mutate({ id: editing.id, name: name.trim() });
+    if (editing.id === null) {
+      createMutation.mutate({ name: name.trim(), type });
+    } else if (name.trim() === editing.name && type === editing.type) {
+      onClose();
+    } else {
+      updateMutation.mutate({ id: editing.id, name: name.trim(), type });
+    }
   };
   return (
     <>
@@ -125,6 +136,19 @@ export function CategoryManager({
                 public: editing.publicPostCount,
               })
             : undefined
+        }
+        extraField={
+          <label className="taxonomy-type-field">
+            <span>{m.category_type_label()}</span>
+            <select
+              value={type}
+              disabled={busy}
+              onChange={(event) => setType(event.target.value as CategoryType)}
+            >
+              <option value="news">{m.category_type_news()}</option>
+              <option value="policy">{m.category_type_policy()}</option>
+            </select>
+          </label>
         }
         fallbackFocus={fallbackFocus}
         onDelete={

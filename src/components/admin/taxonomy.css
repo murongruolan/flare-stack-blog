@@ -521,3 +521,29 @@
   outline: 2px solid var(--fuwari-primary);
   outline-offset: 2px;
 }
+
+.taxonomy-type-field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 16px;
+  font-size: 14px;
+  color: var(--fuwari-fg-50);
+}
+.taxonomy-type-field select {
+  min-height: 40px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: var(--fuwari-input-bg);
+  border: 1px solid var(--fuwari-input-border);
+  font-size: 14px;
+  outline: none;
+}
+.taxonomy-type-field select:focus {
+  border-color: var(--fuwari-primary);
+}
+.taxonomy-nav-type {
+  color: var(--fuwari-primary);
+  font-size: 11px;
+}
