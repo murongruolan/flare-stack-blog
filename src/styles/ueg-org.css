@@ -315,7 +315,7 @@ font-size: var(--fs-10)}
 .ueg-org-page .tnode-en {
 margin-top:3px;
 color:var(--primary2);
-font:var(--fs-15) var(--font-mono);
+font:var(--fs-9) var(--font-mono);
 letter-spacing:.05em;
 line-height:1.5}
 .ueg-org-page .gen-1 .cell:after {
