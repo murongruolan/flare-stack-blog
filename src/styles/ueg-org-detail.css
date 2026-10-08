@@ -214,10 +214,9 @@ background:rgba(193,138,85,.05)}
 font-size: var(--fs-13);
 color:var(--accent);
 font-weight:400}
-.ueg-org-detail-page .grid {
-display:grid;
-grid-template-columns:minmax(0,1fr) 340px;
-gap:18px;
+.ueg-org-detail-page .doc {
+margin-top:18px}
+.ueg-org-detail-page .doc > .panel + .panel {
 margin-top:18px}
 .ueg-org-detail-page .panel {
 padding:18px;
@@ -253,32 +252,37 @@ margin-top:6px;
 color:var(--text);
 font-size: var(--fs-12);
 line-height:1.4}
+/* 机构概况：档案描述正文。原先只定义了样式但从未被渲染过，2026-10 启用。 */
 .ueg-org-detail-page .summary {
 margin-top:15px;
-color:var(--muted);
-font-size: var(--fs-10);
-line-height:1.8}
-.ueg-org-detail-page .side-list {
-margin-top:14px;
-display:flex;
-flex-direction:column;
-gap:8px}
-.ueg-org-detail-page .side-item {
-padding:10px 11px;
-border:1px solid var(--border);
-background:rgba(8,17,24,.55)}
-.ueg-org-detail-page .side-item .k {
-color:var(--accent);
-font:var(--fs-8) var(--font-mono)}
-.ueg-org-detail-page .side-item .t {
-margin-top:5px;
+max-width:78ch;
+color:var(--text);
+font-size: var(--fs-13);
+line-height:1.95}
+.ueg-org-detail-page .summary p {
+margin:0}
+.ueg-org-detail-page .summary p+p {
+margin-top:11px}
+/* 下属 / 关联体系：定义列表式，无卡片边框（2026-10 去盒子化） */
+.ueg-org-detail-page .units {
+margin-top:6px}
+.ueg-org-detail-page .unit {
+display:grid;
+grid-template-columns:minmax(180px,260px) 1fr;
+gap:16px;
+align-items:baseline;
+padding:14px 0;
+border-bottom:1px solid rgba(120,151,164,.13)}
+.ueg-org-detail-page .unit:last-child {
+border-bottom:0;
+padding-bottom:0}
+.ueg-org-detail-page .unit .t {
 color:var(--title);
-font-size: var(--fs-12)}
-.ueg-org-detail-page .side-item .d {
-margin-top:4px;
+font-size: var(--fs-14)}
+.ueg-org-detail-page .unit .d {
 color:var(--muted);
-font-size: var(--fs-11);
-line-height:1.5}
+font-size: var(--fs-12);
+line-height:1.6}
 .ueg-org-detail-page .detail-list {
 margin-top:14px;
 display:grid;
@@ -296,63 +300,32 @@ margin-top:6px;
 color:var(--text);
 font-size: var(--fs-11);
 line-height:1.55}
-.ueg-org-detail-page .facility-grid {
-margin-top:14px;
+/* 相关设施：无卡片边框；仅在机构有真实设施数据时渲染 */
+.ueg-org-detail-page .facilities {
+margin-top:6px;
 display:grid;
-grid-template-columns:repeat(2,1fr);
-gap:10px}
+grid-template-columns:1fr 1fr;
+gap:0 34px}
 .ueg-org-detail-page .facility {
-padding:13px;
-border:1px solid var(--border);
-background:rgba(8,17,24,.55)}
+padding:14px 0;
+border-bottom:1px solid rgba(120,151,164,.13)}
 .ueg-org-detail-page .facility .k {
 color:var(--accent);
-font:var(--fs-8) var(--font-mono)}
+font:var(--fs-10) var(--font-mono);
+letter-spacing:.08em}
 .ueg-org-detail-page .facility h3 {
 margin:6px 0 0;
 color:var(--title);
-font-size: var(--fs-12)}
+font-size: var(--fs-14)}
 .ueg-org-detail-page .facility .en {
-margin-top:4px;
+margin-top:5px;
 color:var(--primary2);
-font:var(--fs-9) var(--font-mono)}
+font:var(--fs-10) var(--font-mono)}
 .ueg-org-detail-page .facility p {
-margin-top:6px;
+margin-top:7px;
 color:var(--muted);
 font-size: var(--fs-12);
-line-height:1.55}
-.ueg-org-detail-page .timeline {
-margin-top:15px;
-border-left:1px solid var(--border2);
-padding-left:18px}
-.ueg-org-detail-page .titem {
-position:relative;
-padding:0 0 18px}
-.ueg-org-detail-page .titem:before {
-content:"";
-position:absolute;
-left:-23px;
-top:4px;
-width:7px;
-height:7px;
-border:1px solid var(--primary2);
-background:var(--bg);
-border-radius:50%}
-.ueg-org-detail-page .titem.current:before {
-border-color:var(--accent);
-background:var(--accent)}
-.ueg-org-detail-page .titem .y {
-color:var(--accent);
-font:var(--fs-8) var(--font-mono)}
-.ueg-org-detail-page .titem h3 {
-margin:5px 0 0;
-color:var(--title);
-font-size: var(--fs-11)}
-.ueg-org-detail-page .titem p {
-margin:5px 0 0;
-color:var(--muted);
-font-size: var(--fs-8);
-line-height:1.6}
+line-height:1.65}
 .ueg-org-detail-page .back {
 display:inline-flex;
 align-items:center;
@@ -426,8 +399,6 @@ min-width:230px}
 min-width:76px}
 .ueg-org-detail-page .header-tools .search {
 display:none}
-.ueg-org-detail-page .grid {
-grid-template-columns:1fr}
 .ueg-org-detail-page .footer-main {
 grid-template-columns:180px 1fr 180px}
 .ueg-org-detail-page .footer-motto {
@@ -456,8 +427,13 @@ font:var(--fs-8) var(--font-mono)}
 padding:24px 18px}
 .ueg-org-detail-page .hero h1 {
 font-size: var(--fs-30)}
-.ueg-org-detail-page .facts, .ueg-org-detail-page .detail-list, .ueg-org-detail-page .facility-grid {
+/* 机构档案固定 3 格一行（只有 3 项），到 560px 才落成单列——两列会排成
+   2+1 的豁口，正是 2026-10 要去掉的那种参差。 */
+.ueg-org-detail-page .detail-list, .ueg-org-detail-page .facilities {
 grid-template-columns:1fr 1fr}
+.ueg-org-detail-page .unit {
+grid-template-columns:1fr;
+gap:6px}
 .ueg-org-detail-page .footer-main {
 grid-template-columns:1fr;
 gap:12px;
@@ -472,7 +448,7 @@ border-left:0}
 width:calc(100% - 20px)}
 .ueg-org-detail-page .hero h1 {
 font-size: var(--fs-25)}
-.ueg-org-detail-page .facts, .ueg-org-detail-page .detail-list, .ueg-org-detail-page .facility-grid {
+.ueg-org-detail-page .facts, .ueg-org-detail-page .detail-list, .ueg-org-detail-page .facilities {
 grid-template-columns:1fr}
 .ueg-org-detail-page .footer-links {
 gap:10px 16px}
