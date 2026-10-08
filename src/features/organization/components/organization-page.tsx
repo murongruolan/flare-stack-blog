@@ -165,9 +165,14 @@ export function OrganizationPage() {
   const treeRef = useRef<HTMLDivElement | null>(null);
 
   // ≤820px the chart keeps its full desktop geometry and scrolls horizontally
-  // (see ueg-org.css). Start centred so the root node — the chart's anchor —
-  // is on screen instead of the left edge being cut off. No-op above 820px,
-  // where there is nothing to scroll.
+  // (see ueg-org.css). Centre it so the root node — the chart's anchor — opens
+  // on screen instead of the chart's left edge being cut off.
+  //
+  // Deliberately NOT bound to window resize: on mobile `resize` fires every time
+  // the URL bar shows or hides, i.e. during ordinary vertical scrolling, and
+  // re-centring there yanks the chart back mid-pan. Only a breakpoint crossing
+  // (a layout mode change) re-centres. Above 820px scrollWidth === clientWidth,
+  // so this is a no-op.
   useEffect(() => {
     const el = treeRef.current;
     if (!el) return;
@@ -176,8 +181,9 @@ export function OrganizationPage() {
       if (overflow > 1) el.scrollLeft = overflow / 2;
     };
     center();
-    window.addEventListener("resize", center);
-    return () => window.removeEventListener("resize", center);
+    const mq = window.matchMedia("(max-width: 820px)");
+    mq.addEventListener("change", center);
+    return () => mq.removeEventListener("change", center);
   }, []);
 
   const types = useMemo(

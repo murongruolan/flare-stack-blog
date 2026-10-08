@@ -324,6 +324,7 @@ SEO/协议路由：`rss[.]xml.ts`、`atom[.]xml.ts`、`feed[.]json.ts`、`sitema
     - 现在：`.org-tree{overflow-x:auto}` + `.gen{min-width:1200px}`，图保持桌面版的完整几何（卡片 200px、连线齐全、字号不缩），用户在容器内左右平移。
     - **`min-width` 必须是 1200px**：gen-4 每张卡占 6/36 = 容器宽的 1/6，卡片固定 200px，容器 <1200px 时格宽 <200px，flex 会把卡**压窄**（1000px 时只剩 167px，英文名被迫折行、行高变得参差）。1200px 是一张不改动的桌面图的等价宽度。
     - **初始滚动位置要居中**（`organization-page.tsx` 里 `treeRef` + `useEffect`：`el.scrollLeft = (scrollWidth - clientWidth)/2`）。不居中的话打开时看到的是图的左半，根节点「大会」在屏幕外；居中后正中就是中轴（大会→安理会→军委会）。>820px 时 `scrollWidth==clientWidth`，该 effect 是 no-op。
+    - **居中绝不能绑 `window.resize`**（2026-10 踩过，用户报「很卡」）：移动端 URL 栏随竖向滚动收起/展开就会触发 `resize`，每触发一次就把用户正在平移的图**拽回中间**（实测 scrollLeft 40 → 442）。现在只绑 `matchMedia('(max-width:820px)')` 的 `change`，即只有跨断点、布局模式真正变化时才重新居中。顺带实测：60 次 resize 事件总耗时仅 6.3ms、`LayoutCount 0`；60 帧横向平移 TaskDuration 10ms、`LayoutCount 0`，与纯竖向滚动同量级——**性能开销本来就不是瓶颈，瓶颈是行为**。排查"卡"别先怪 DOM 渲染。
     - 该断点另收掉角落水印 `.org-tree:before`：它是绝对定位在滚动容器内的，平移后会跟着内容跑、居中时正好被切一半（`section-head` 已标了同样的字）。
     - 桌面（**>820px**）完全不受影响：1440px 实测不滚动、水印在、卡片 200px。
     - **已知遗留**：821–1200px 走的是桌面网格，卡片会被逐级压窄（1200→184px、1100→167px、1000→150px、821→121px），1000px 以下行内卡片高度开始参差（英文名折行数不同）、821px 有名字折成 3 行。这段区间**没有**用滚动方案。要一并纳入，就把断点从 820 提到 1200（用户尚未表态）。
